@@ -4,6 +4,9 @@ from models import *
 import defaults
 from django.db.backends.sqlite3.base import IntegrityError#todo
 import random
+import bforms
+
+"""Test the models."""
 
 class TestTopic(unittest.TestCase):
     def setUp(self):
@@ -19,14 +22,14 @@ class TestTopic(unittest.TestCase):
         self.assertRaises(Exception, topic.save, )
         
     def testTopicCreation(self):
-        self.assertRaises(TooLittleKarmaForNewTopic, Topic.objects.create_new_topic, user = self.user, topic_name = 'cpp')
+        self.assertRaises(TooLittleKarmaForNewTopic, Topic.objects.create_new_topic, user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_TOPIC + 1
-        Topic.objects.create_new_topic(user = self.user, topic_name = 'cpp')
+        Topic.objects.create_new_topic(user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
         
     def testNameUnq(self):
         self.user.get_profile().karma = 2 * defaults.KARMA_COST_NEW_TOPIC + 1
-        Topic.objects.create_new_topic(user = self.user, topic_name = 'cpp')
-        self.assertRaises(IntegrityError, Topic.objects.create_new_topic, user = self.user, topic_name = 'cpp')
+        Topic.objects.create_new_topic(user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
+        self.assertRaises(IntegrityError, Topic.objects.create_new_topic, user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
     
     def tearDown(self):
         self.user.delete()
@@ -40,7 +43,7 @@ class TestLink(unittest.TestCase):
         profile = UserProfile(user = user, karma = defaults.KARMA_COST_NEW_TOPIC + 1)
         profile.save()
         self.profile = profile
-        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'cpp')
+        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'cpp', full_name='CPP primer')
         self.topic = topic
         
     def testRequiredFields(self):
@@ -55,21 +58,21 @@ class TestLink(unittest.TestCase):
         
     def testLinkUnique(self):
         self.user.get_profile().karma = 2 * defaults.KARMA_COST_NEW_LINK + 1
-        link = Link.objects.create_link(url = "http://yahoo.com",user = self.user, topic = self.topic)
-        self.assertRaises(IntegrityError, Link.objects.create_link, url = "http://yahoo.com",user = self.user, topic = self.topic)
+        link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
+        self.assertRaises(IntegrityError, Link.objects.create_link, url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
         
     def testLinkCreation(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
-        link = Link.objects.create_link(url = "http://yahoo.com",user = self.user, topic = self.topic)
+        link = Link.objects.create_link(url = "http://yahoo.com",user = self.user, text='Yahoo', topic = self.topic)
         
     def testLinkCreation2(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK - 1
-        self.assertRaises(TooLittleKarmaForNewLink, Link.objects.create_link, url = "http://yahoo.com",user = self.user, topic = self.topic)
+        self.assertRaises(TooLittleKarmaForNewLink, Link.objects.create_link, url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
         
     def testLinkKarmaCost(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
         prev_karma = self.user.get_profile().karma
-        link = Link.objects.create_link(url = "http://yahoo.com", user = self.user, topic = self.topic)
+        link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
         new_karma = self.user.get_profile().karma
         self.assertEqual(prev_karma - new_karma, defaults.KARMA_COST_NEW_LINK)
         
@@ -586,7 +589,78 @@ def __delete_data__(self):
         self.user.delete()
         self.profile.delete()
         self.topic.delete()
-        self.link.delete()    
-    
+        self.link.delete()
+        
+"""Test the forms."""
+
+class TestNewTopic(unittest.TestCase):
+    def setUp(self):
+        __populate_data__(self)
+        comment = Comment.objects.create_comment(link = self.link, user = self.user, comment_text = 'Foo bar')        
+    def tearDown(self):
+        __delete_data__(self)
+        
+    def testCreatesTopic(self):
+        "Sanity check on created Topic."
+        profile = self.user.get_profile()
+        profile.karma = defaults.KARMA_COST_NEW_TOPIC + 1
+        profile.save()
+        form = bforms.NewTopic(user = self.user, data = {'topic_name':'testCreatesTopic'})
+        status = form.is_valid()
+        self.assertEqual(status, True)
+        topic = form.save()
+        self.assertEquals(topic.name, 'testCreatesTopic')
+        self.assertEquals(topic.created_by, self.user)
+        
+    def testInvalidOnExisting(self):
+        "Do not allow creating a topic, if a topic with same name exists."
+        profile = self.user.get_profile()
+        profile.karma = defaults.KARMA_COST_NEW_TOPIC + 1
+        profile.save()
+        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'testInvalidOnExisting')
+        form = bforms.NewTopic(user = self.user, data = {'topic_name':'testInvalidOnExisting'})
+        status = form.is_valid()
+        self.assertEqual(status, False)
+        topic.delete()
+        
+    def testInvalidOnLessKarma(self):
+        "Do not allow creating new topic if too litle karma"
+        profile = self.user.get_profile()
+        profile.karma = defaults.KARMA_COST_NEW_TOPIC - 2
+        profile.save()
+        form = bforms.NewTopic(user = self.user, data = {'topic_name':'testInvalidOnLessKarma'})
+        status = form.is_valid()
+        self.assertEqual(status, False)
+        
+class TestNewLink(unittest.TestCase):
+    "Test the new link form"
+    def setUp(self):
+        __populate_data__(self)
+        comment = Comment.objects.create_comment(link = self.link, user = self.user, comment_text = 'Foo bar')        
+    def tearDown(self):
+        __delete_data__(self)
+        
+    def testCreateNewLink(self):
+        "sanity check on creating a new link using this form"
+        profile = self.user.get_profile()
+        profile.karma = defaults.KARMA_COST_NEW_LINK + 1
+        profile.save()
+        form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='http://testCreateNewLink.com', text='123'))
+        print form
+        self.assertEqual(form.is_bound, True)
+        self.assertEqual(form.is_valid(), True)
+        link = form.save()
+        
+    def testInvalidOnExisting(self):
+        Link.objects.create_link(url = 'http://testInvalidOnExisting.com', user=self.user, topic=self.topic)
+        profile = self.user.get_profile()
+        profile.karma = defaults.KARMA_COST_NEW_LINK + 1
+        profile.save()
+        form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='htp://testInvalidOnExisting.com'))
+        self.assertEqual(form.is_bound, True)
+        self.assertEqual(form.is_valid(), False)
+        
+        
+        
     
     

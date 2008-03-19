@@ -25,13 +25,13 @@ class InvalidGroup(Exception):
 
 class TopicManager(models.Manager):
     "Manager for topics"
-    def create_new_topic(self, user, topic_name, karma_factor = True):
+    def create_new_topic(self, user, full_name, topic_name, karma_factor = True):
         profile = user.get_profile()
         if profile.karma > defaults.KARMA_COST_NEW_TOPIC or not karma_factor:
             if karma_factor:
                 profile.karma -= defaults.KARMA_COST_NEW_TOPIC
                 profile.save()
-            topic = Topic(name = topic_name, created_by = user)
+            topic = Topic(name = topic_name, full_name = full_name, created_by = user)
             topic.save()
             return topic
         else:
@@ -40,6 +40,7 @@ class TopicManager(models.Manager):
 class Topic(models.Model):
     """A specific topic in the website."""
     name = models.CharField(max_length = 100, unique = True)
+    full_name = models.TextField()
     created_by = models.ForeignKey(User)
     objects = TopicManager()
     
@@ -48,12 +49,12 @@ class Topic(models.Model):
     
 class LinkManager(models.Manager):
     "Manager for links"
-    def create_link(self, url, user, topic):
+    def create_link(self, url, text, user, topic):
         profile = user.get_profile()
         if profile.karma > defaults.KARMA_COST_NEW_LINK:
             profile.karma -= defaults.KARMA_COST_NEW_LINK
             profile.save()
-            link = Link(user = user, topic = topic, url=url)
+            link = Link(user = user, text = text, topic = topic, url=url)
             link.save()
             return link
         else:
@@ -66,6 +67,7 @@ class LinkManager(models.Manager):
 class Link(models.Model):
     "A specific link within a topic."
     url = models.URLField()
+    text = models.TextField()
     user = models.ForeignKey(User, related_name="added_links")
     topic = models.ForeignKey(Topic)
     created_on = models.DateTimeField(auto_now_add = 1)
