@@ -1,0 +1,16 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+{% for link in links %}
+{% include 'news/link_row.html' %}
+{% endfor %}
+{% endblock %}
+
+{% block sidebar %}
+<div>
+<h2>Tags</h2>
+{% for tag in tags %}
+<a href="{{tag.get_absolute_url}}">{{tag.text}}</a>
+{% endfor %}
+</div>
+{% endblock %}

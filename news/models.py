@@ -1,12 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import User
 import defaults
+from django.core.urlresolvers import reverse
+from urllib2 import urlparse
+from datetime import datetime
 
+class UserProfileManager(models.Manager):
+    def create_user(self, user_name, email, password):
+        "Create user and associate a profile with it."
+        user = User.objects.create_user(user_name, email, password)
+        profile = Profile(user = user)
+        profile.save()
+        return user
+    
 class UserProfile(models.Model):
-    user = models.ForeignKey(User)
-    karma = models.IntegerField(default = 1)
+    user = models.ForeignKey(User, unique = True)
+    karma = models.IntegerField(default = defaults.DEFAULT_PROFILE)
+    
+    objects = UserProfileManager()
+    
     def __unicode__(self):
         return u'%s: %s' % (self.user, self.karma)
+    
+    class Admin:
+        pass
 
 class TooLittleKarma(Exception):
     "Exception signifying too little karma for the action."
@@ -23,16 +40,21 @@ class TooLittleKarmaForNewLink(TooLittleKarma):
 class InvalidGroup(Exception):
     pass
 
+topic_permissions = (('Public', 'Public'), ('Memeber', 'Memeber'), ('Private', 'Private'))
+topic_permissions_flat = [perm[0] for perm in topic_permissions]
+
 class TopicManager(models.Manager):
     "Manager for topics"
-    def create_new_topic(self, user, full_name, topic_name, karma_factor = True):
+    def create_new_topic(self, user, full_name, topic_name, permissions = topic_permissions_flat[0], karma_factor = True):
+        "Create topic and subscribe user to the given topic."
         profile = user.get_profile()
         if profile.karma > defaults.KARMA_COST_NEW_TOPIC or not karma_factor:
             if karma_factor:
                 profile.karma -= defaults.KARMA_COST_NEW_TOPIC
                 profile.save()
-            topic = Topic(name = topic_name, full_name = full_name, created_by = user)
+            topic = Topic(name = topic_name, full_name = full_name, created_by = user, permissions = permissions)
             topic.save()
+            subs_user = SubscribedUser.objects.subscribe_user(user = user, topic = topic, group = 'Moderator')
             return topic
         else:
             raise TooLittleKarmaForNewTopic
@@ -43,22 +65,50 @@ class Topic(models.Model):
     full_name = models.TextField()
     created_by = models.ForeignKey(User)
     objects = TopicManager()
+    permissions = models.CharField(max_length = 100, choices = topic_permissions, default = topic_permissions_flat[0])
     
     def __unicode__(self):
         return u'%s' % self.name
     
+    class Admin:
+        pass
+    
+    def get_absolute_url(self):
+        return reverse('topic', kwargs={'topic_name':self.name})
+    
+    def subscribe_url(self):
+        url = reverse('subscribe', kwargs={'topic_name':self.name})
+        return url
+    
+    def unsubscribe_url(self):
+        url = reverse('unsubscribe', kwargs={'topic_name':self.name})
+        return url
+    
+    def submit_url(self):
+        url = reverse('link_submit', kwargs={'topic_name':self.name})
+        return url
+    
+    
 class LinkManager(models.Manager):
     "Manager for links"
-    def create_link(self, url, text, user, topic):
+    def create_link(self, url, text, user, topic, karma_factor=True):
         profile = user.get_profile()
-        if profile.karma > defaults.KARMA_COST_NEW_LINK:
+        if profile.karma > defaults.KARMA_COST_NEW_LINK or not karma_factor:
             profile.karma -= defaults.KARMA_COST_NEW_LINK
             profile.save()
             link = Link(user = user, text = text, topic = topic, url=url)
+            link.points = user.get_profile().karma
             link.save()
             return link
         else:
             raise TooLittleKarmaForNewLink
+        
+    def get_query_set(self):
+        return super(LinkManager, self).get_query_set().extra(select = {'comment_count':'SELECT count(news_comment.id) FROM news_comment WHERE news_comment.link_id = news_link.id', 'visible_points':'news_link.liked_by_count - news_link.disliked_by_count'})
+    
+    def get_query_set_with_user(self, user):
+        qs = self.get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id})
+        return qs
         
     def up_vote(self, user, link):
         pass
@@ -77,6 +127,14 @@ class Link(models.Model):
     disliked_by_count = models.IntegerField(default = 0)
     points = models.IntegerField(default = 0)
     
+    objects = LinkManager()
+    
+    """The Voting algo:
+    On each upvote increase the points by min(voter.karma, 10)
+    On each upvote decrease the points by min(voter.karma, 10)
+    increase/decrease the voters karma by 1
+    """
+    
     def upvote(self, user):
         self.vote(user, True)
     
@@ -87,26 +145,29 @@ class Link(models.Model):
         "Vote the given link either up or down, using a user. Calling multiple times with same user must have now effect."
         vote, created, flipped = LinkVote.objects.do_vote(user = user, link = self, direction = direction)
         save_vote = False
+        change = max(0, min(defaults.MAX_CHANGE_PER_VOTE, user.get_profile().karma))
         if created and direction:
             self.liked_by_count += 1
-            self.points += 1
+            self.points += change
             save_vote = True
             
         if created and not direction:
             self.disliked_by_count += 1
-            self.points -= 1
+            self.points -= change
             save_vote = True
          
         if direction and flipped:
             #Upvoted and Earlier downvoted
             self.liked_by_count += 1
             self.disliked_by_count -= 1
+            self.points += 2*change
             save_vote = True
             
         if not direction and flipped:
             #downvoted and Earlier upvoted
             self.liked_by_count -= 1
             self.disliked_by_count += 1
+            self.points -= 2*change
             save_vote = True
         
         if save_vote:
@@ -114,8 +175,6 @@ class Link(models.Model):
             
     def reset_vote(self, user):
         "Reset a previously made vote"
-        import pdb
-        #pdb.set_trace()
         try:
             vote = LinkVote.objects.get(link = self, user = user)
         except LinkVote.DoesNotExist, e:
@@ -129,14 +188,44 @@ class Link(models.Model):
             self.save()
         vote.delete()
         
+    def site(self):
+        "Return the site where this link was posted."
+        return urlparse.urlparse(self.url)[1]
     
-    objects = LinkManager()
+    def humanized_time(self):
+        "Time in human friendly way, like, 1 hrs ago, etc"
+        now = datetime.now()
+        delta = now - self.created_on
+        "try if days have passed."
+        if delta.days:
+            if delta.days == 1:
+                return 'yesterday'
+            else:
+                return self.created_on
+        delta = delta.seconds
+        if delta < 60:
+            return '%s seconds ago' % delta
+        elif delta < 60 * 60:
+            return '%s minutes ago' % (delta/60)
+        elif delta < 60 * 60 * 24:
+            return '%s hours ago' % (delta/(60 * 60))
+        
+    
+    
+        
+    def get_absolute_url(self):
+        url = reverse('link_detail', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
+        return url
     
     def __unicode__(self):
         return u'%s' % self.url
     
+    class Admin:
+        pass
+    
     class Meta:
         unique_together = ('url', 'topic')
+        ordering = ('-created_on', )
         
 class VoteManager(models.Manager):
     "Handle voting for LinkVotes, Commentvotes"
@@ -185,6 +274,9 @@ class LinkVote(models.Model):
     
     class Meta:
         unique_together = ('link', 'user')
+        
+    class Admin:
+        pass
         
         
 class CommentManager(models.Manager):
@@ -251,16 +343,19 @@ class CommentVote(models.Model):
     
     objects = CommentVotesManager()
     
+    class Admin:
+        pass
+    
     class Meta:
         unique_together = ('comment', 'user')
 
-VALID_GROUPS = (('Owner', 'Owner'), ('Participant', 'Participant'), ('Viewer', 'Viewer'))
-VALID_GROUPS_ = [grp[1] for grp in VALID_GROUPS]
+VALID_GROUPS = (('Moderator', 'Moderator'), ('Memeber', 'Memeber'))
+VALID_GROUPS_FLAT = [grp[1] for grp in VALID_GROUPS]
 
 class SubscribedUserManager(models.Manager):
     "Manager for SubscribedUser"
     def subscribe_user(self, user, topic, group):
-        if not group in VALID_GROUPS_:
+        if not group in VALID_GROUPS_FLAT:
             raise InvalidGroup('%s is not a valid group' % group)
         subs = SubscribedUser(user = user, topic = topic, group = group)
         subs.save()
@@ -279,6 +374,9 @@ class SubscribedUser(models.Model):
     
     def __unicode__(self):
         return u'%s : %s-%s' % (self.topic, self.user, self.group)
+    
+    class Admin:
+        pass
     
     class Meta:
         unique_together = ('topic', 'user')
@@ -305,6 +403,14 @@ class Tag(models.Model):
     
     objects = TagManager()
     
+    def get_absolute_url(self):
+        if self.topic:
+            return reverse('topic_tag', kwargs = {'topic_name':self.topic.name, 'tag_text':self.text})
+        else:
+            return reverse('sitewide_tag', kwargs = {'tag_text':self.text})
+    class Admin:
+        pass
+    
     class Meta:
         unique_together = ('text', 'topic')
     
@@ -317,6 +423,9 @@ class LinkTagManager(models.Manager):
         site_link_tag, created = LinkTag.objects.get_or_create(tag = site_tag, link = link)
         site_link_tag.save()
         return site_link_tag, topic_link_tag
+    
+    def get_topic_tags(self):
+        return self.filter(tag__topic__isnull = False)
         
     
 class LinkTag(models.Model):
@@ -328,6 +437,9 @@ class LinkTag(models.Model):
     
     def __unicode__(self):
         return u'%s - %s' % (self.link, self.tag)
+    
+    class Admin:
+        pass
     
     class Meta:
         unique_together = ('tag', 'link')
@@ -343,6 +455,9 @@ class LinkTagUser(models.Model):
     user = models.ForeignKey(User)
     
     objects = LinkTagUserManager()
+    
+    class Admin:
+        pass
     
     class Meta:
         unique_together = ('link_tag', 'user')

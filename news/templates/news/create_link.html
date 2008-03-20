@@ -1,0 +1,11 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<h1>Add a link</h1>
+<form action="." method="post">
+<div>
+{{form.as_p}}
+<input type="submit" name="addlink" value="Add aa link" />
+</div>
+</form>
+{% endblock %}

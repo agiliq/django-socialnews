@@ -1,0 +1,2 @@
+class NoSuchTopic(Exception):
+    pass

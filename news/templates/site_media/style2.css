@@ -1,0 +1,515 @@
+/* (c) 2008 CondeNet, Inc. All rights reserved. */
+/*Just for prototyping, remove this css when we are done.*/
+html,body { height: 100% }
+
+body { font: normal small verdana, arial, helvetica, sans-serif;
+       margin: 0px;
+       background-color: white;
+       }
+
+:-moz-any-link:focus { outline: none }
+
+/* html element defaults */
+
+h1 { font-size: 18px; font-weight: normal; }
+
+h2 { color: #336699; font-size: 13px; }
+h2 a { text-decoration: none }
+h2 a:visited { color: #336699 }
+h2 a:hover { text-decoration: underline }
+
+h3 { margin: 0px; }
+
+li { margin: 0px; }
+
+table { border-collapse: collapse; }
+a img { border:none }
+
+a { text-decoration: none }
+
+div.autosize { display: table; width: 1px}
+div.autosize > div { display: table-cell; }
+
+input.btn { background-color:#e9e9e9; border: 1px solid #336699;}
+input.txt {
+    background-color:#f7f7f7;
+    border: 1px solid #336699; 
+    margin: 0px;
+}
+input.check { padding: 0px; 
+              margin: 0px;}
+
+/* main toolbar styles */
+#topbar { border-collapse: collapse; 
+          margin: 0px 0px 0px 0px; 
+          border-width: 0px; padding: 0px;
+          }
+
+#header { border: 0; position: relative; top:-1px}
+
+.topmenu { font-size: smaller; height: 1em; 
+           margin: 0px; 
+           padding-bottom: 3px;
+           text-align: right}
+
+.topmenu img { position:relative; border:none; top: 2px }
+
+#topstrip { margin-top: 4px; color: #c7def7; 
+            padding: 2px 0 2px 0; 
+            background-color:  #c6def7;}
+#topstrip a { padding: 2px 7px 2px 7px; border-right: 2px solid white;}
+#topstrip a:hover { color: white; background-color: #336699; }
+
+#searchform { margin: 4px 0 0 5px;}
+
+.menu-item { color: black; background-color: #c6def7}
+.sel-menu-item {color: white; background-color: #336699;}
+
+
+/* primary divs */
+
+.main { padding: 0 7px 0 7px; }
+
+.left { padding-right: 5px;
+        width: 305px; float: left; background-color: white;}
+.right { padding-left: 5px; 
+         width: 305px; float: right; background-color: white;}
+
+.footer {width: 100%; text-align: center; clear: both; padding-top: 1em; }
+
+.pbox {
+    border: 2px solid #73a1ca;
+    border-collapse: collapse;
+    margin: 0 5px 10px 5px;
+    width: 285px;
+    padding: 5px;
+    float: right;
+}
+
+.content {
+    margin-top: 10px;
+    margin-left: 10px;
+ }
+
+
+.infobar {
+    background-color: #f6e69f;
+    padding: 0px 10px 0px 10px;
+    margin: 5px;
+}
+
+.bottommenu { color: gray; font-size: smaller; }
+.bottommenu a { color: gray; text-decoration: underline;   }
+
+
+
+/* toolbar */
+
+#usermenu .username { background-color: white; 
+                      padding: 2px 15px 0px 0px; 
+                      font-weight: bold; color: #336699 }
+
+#usermenu { margin: 10px 0 0px 0; padding: 2px 0 0 0; 
+            border-bottom: 2px solid #336699; 
+            background-color: whitesmoke}
+
+#usermenu a { color: black;
+              padding-top: 2px;
+              padding-left: 7px;
+              padding-bottom: 0px;
+              padding-right: 7px;
+              text-decoration: none;
+              border-bottom: 2px solid #336699;
+              background-color: whitesmoke;
+              }
+#usermenu a:hover { color: white; background-color: #336699; }
+
+#usermenu .sel-user { color: white; background-color: #336699 }
+
+
+#searchmenu { margin: 10px 0 0px 0; padding: 2px 0 0 0; 
+              border-bottom: 2px solid #336699; 
+              background-color: whitesmoke}
+
+#searchmenu .searchlabel { background-color: white; 
+                           padding: 2px 15px 0px 0px; 
+                           font-weight: bold; color: #336699 }
+
+#searchmenu .searchtime { font-weight: bold; 
+                          display: inline; 
+                          width: 305px; }
+                            
+
+.searchparams { margin: 5px 20px 5px 20px
+                }
+.searchparams .labels {text-align: right;
+                        margin-left: 10px; }
+
+.searchpane { margin-left: 20px }
+.searchpane h2 { margin-bottom: 3px }
+.searchpane p { margin-bottom: 5px; margin-top:3px; }
+.searchpane a { color: #336699 }
+
+
+.advsearchtoggle { margin-bottom: 5px; margin-top:3px; }
+
+/* listing */
+
+.menu {color: gray; }
+.menu a {color: #336699;}
+.menu a:hover {text-decoration: underline  }
+
+.error {color: red;}
+
+
+.sidebox {
+    border-left: 2px solid #d3d3d3;
+    margin-bottom: 10px;
+    padding-left: 5px;
+    clear: both;
+}
+
+.sidebox td { vertical-align: top; }
+
+.sortbox { margin-right: 20px; vertical-align: top; 
+           clear:both; white-space: nowrap;}
+.sidebox p.head { color: gray; font-weight: bold; margin: 5px 0 0 0}
+.sidebox ul { list-style: none; margin: 0; padding: 0 }
+.sidebox a {text-decoration: none; color: #336699}
+.sidebox a:visited { color: #336699 }
+.sidebox a:hover { text-decoration: underline }
+
+#siteTable {border-collapse: collapse;}
+
+/* things */
+
+.arrow {
+    margin: 2px 0px 0px 0px;
+    width: 15px;
+    height: 14px;
+    display: block;
+    cursor: pointer;
+}
+
+.arrow.upmod { 
+  background: url(/site_media/aupmod.png); 
+  background-repeat: no-repeat }
+.arrow.downmod { 
+  background: url(/site_media/adownmod.png); 
+  background-repeat: no-repeat }
+.arrow.up { 
+  background: url(/site_media/aupgray.png); 
+  background-repeat: no-repeat }
+.arrow.down { 
+  background: url(/site_media/adowngray.png); 
+  background-repeat: no-repeat }
+
+.little {font-size: x-small; color: gray; }
+.little .inside { }
+.little a {color: #336699; text-decoration: none; }
+.little a.friend {color: orangered }
+.little a:hover { text-decoration: underline }
+.little .gray { color: gray }
+
+a.bylink { background-color: #f0f0f0; color: #848484; 
+           margin-left: 1px; 
+           margin-right: 2px; 
+           padding: 0px 2px 0 2px;}
+
+.highlight {color: #60a7fd;}
+
+.friends { color: gray }
+.friends a { color: #336699 }
+.friends a:hover { text-decoration: underline }
+.friends a.bylink { color: #848484 }
+
+
+/* links */
+
+.tablelink {text-decoration: none;}
+.tablelink:visited { color: blue }
+
+.userlink:visited { color:blue }
+
+.odd,
+.even { padding: 0px 0px 2px 0px }
+
+.odd {}
+.even {}
+
+.site { border-collapse: collapse; }
+.site td { padding: 0px; }
+
+.link-subreddit { font-size: x-small; color: gray; text-decoration: none; }
+
+.numbercol { font-size: medium; text-align: right; 
+             color: darkgray; padding-right: 2px; width: 0%;
+             float: left;
+             }
+
+.midcol { float: left; padding-right: 2px; }
+
+.save {text-decoration: none;}
+.save:hover {text-decoration: underline;}
+
+.star a { text-decoration: none; color: #ff8b60 }
+
+.title { font-size: medium; color: blue; padding: 0px}
+.title:visited { color: #551a8b }
+.title.click { color: #551a8b } 
+
+.title.loggedin { color: blue }
+.title.loggedin:visited { color: #551a8b }
+.title.loggedin.click { color: #551a8b } 
+.title.loggedin.click:visited { color: #551a8b }
+
+/* subreddits */
+.reddit { }
+.subreddits { margin-left: 5px }
+
+/* messages */
+
+.message {margin-bottom: 20px; margin-left: 10px }
+.message .head.new {color:orangered  }
+.message .body  img { display: none }
+.message .body  p { margin-bottom: 5px; margin-top: 0px }
+.message .subject { margin: 0px 0px 5px; font-weight: bold;  }
+
+
+/* comment */
+.commentfocus {  border: 1px solid #336699; padding: 3px; }
+
+.commentbody blockquote { border-left: 2px solid #336699; padding-left: 4px; 
+                          margin-top: 5px; margin-left: 5px;
+                          margin-bottom:  5px; margin-right: 15px; }
+.commentbody p,
+.commentbody ul,
+.commentbody ol { margin-top: 5px; margin-bottom: 5px}
+.commentbody > * { margin-bottom: 0px }
+.commentbody img { display: none }
+.commentbody.border { background-color: #ffffcc; padding-left: 5px}
+
+.commenttable { margin-bottom: 10px; }
+
+
+.md { max-width: 60em; overflow: auto; }
+#siteTable_comments { }
+
+.help,
+.help td,
+.help tr { border-collapse: collapse; border: 1px solid; 
+           border-color:  lightgray; }
+
+.nomargin { margin: 0px }
+.nopadding { padding: 0px }
+
+
+/* more comments, etc. */
+
+.permamessage {
+    border: 1px dotted black;
+    border-top: none;
+    padding: 5px 5px 5px 18px;
+    white-space: nowrap;   
+    background-image: url(http://reallystatic.reddit.com/static/permalink-arrow.png);
+    background-repeat: no-repeat;
+    background-position: 5px center;
+}
+
+.permamessage a { color: #336699 }
+.permamessage a:hover { text-decoration: underline}
+
+.deepthread {
+    padding-right: 30px;
+    background-image: 
+              url(http://reallystatic.reddit.com/static/continue-thread.png);
+    background-repeat: no-repeat;
+    background-position: center right;
+}
+.deepthread a { color: #336699 }
+.deepthread a:hover { text-decoration: underline}
+
+.morecomments {}
+.morecomments a { color: #336699 }
+.morecomments a:hover { text-decoration: underline}
+
+/* stats page */
+
+.stats { float: left; margin-right: 2em; border-collapse: collapse; }
+.stats td.space {width: 20px}
+.stats td.sec { padding-bottom: 7px; font-size : 18px; font-weight: normal }
+.stats a {color: #336699}
+.stats a:hover {text-decoration: underline;}
+.stats td.k { color: gray }
+.stats th { text-align: left; background-color: whitesmoke; 
+            color: #336699; font-weight: bold;}
+.stats td.ri { padding-left: 20px; text-align: right}
+
+/* login, register */
+
+.legal {color: #808080; font-family: serif; }
+.legal a {text-decoration: underline}
+
+.loginform h1 { margin-bottom: 0 }
+.loginform .tagline { color: #606060; margin-bottom: 20px; font-size: smaller}
+.loginform .label { margin-left: 5px; margin-top: 0px; margin-bottom: 0px; 
+                    font-weight: bold; color: #606060; font-size: smaller }
+.loginform .labelinput { margin-top: 0px; margin-bottom: 0px; 
+                         margin-left: 5px; }
+.loginform p { text-align: left}
+.loginform p .btn { margin-top: 5px }
+.loginform input.logtxt { width: 125px; }
+
+.widelogin { margin: 0px; padding: 0px; }
+.widelogin table { border-collapse: collapse;  }
+.widelogin td { white-space: nowrap; }
+.widelogin input.logtxt { color:black; width: 135px}
+.widelogin td.right { text-align: right}
+.widelogin button.btn { margin: 0px; padding: 2px 3px 2px 3px}
+.widelogin a { padding-left: 1em }
+
+#needlogin {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background-color: white;
+}
+
+#cover {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background-color: gray;
+    opacity: .7;
+    filter:alpha(opacity=70); /* IE patch */
+    z-index: 5;
+}
+
+.cover td { padding: 3px }
+
+
+#loginpopup {
+    position: absolute;
+    left: 10%;
+    float: center;
+    background-color: white;
+    top: 100px;
+    width: 80%;
+    text-align: left;
+    z-index: 1000;
+    padding: 10px;
+}
+
+
+/* buttons */
+
+.headimgcell {
+    padding: 0px;
+    background-color: #c7def7;
+    width: 18px;
+}
+
+.bottomreddit { color: black; background-color: #c7def7;}
+
+.num { font-weight: bold; font-size: larger }
+
+.blog {
+    border-collapse: collapse;
+    border: 1px solid #c7def7;
+    color: gray;
+    text-align: center;
+    margin: 1px;
+}
+.blog a {color: #336699; width: 98%; height: 96%}
+.blog a:hover { text-decoration: underline }
+
+
+.blog1 { font-size: x-small; }
+
+.blog2 td { padding: 0 2px 0 2px; }
+
+.blog3 { border: none }
+.blog3 td { padding: 0 2px 0 2px}
+
+.optional {color: green}
+
+/* miscellaneous */
+
+.littlered {font-size: x-small; color: orangered; }
+.littlered a {color: orangered; text-decoration: none; }
+.littlered a:visited {color: orangered; text-decoration: none; }
+
+.gray { color: gray }
+
+.btn { background-color:#e9e9e9; border: 1px solid #336699; 
+       margin: 0 5px 0 5px; vertical-align: bottom }
+
+.profline { color: #808080; padding-bottom: 5px }
+.details td {padding-bottom: 5px}
+
+
+.wide { width: 100%; }
+
+.nowrap { white-space: nowrap; }
+
+.info { font-size: x-small; }
+
+
+#contactlst { width: 100%; border-collapse: collapse; margin-bottom: 10px }
+#contactlst th { color: #336699; border-bottom: 1px solid #336699; 
+                 text-align: left; padding-right: 10px }
+#contactlst td { padding: 0 10px 0 10px; text-align: left }
+#contactlst a { font-size: x-small; color: gray; text-decoration: none }
+#contactlst a.add { color: #c15d64}
+#contactlst a:hover { text-decoration: underline  }
+#contactlst input {  }
+
+.iform th { text-align: right; color: black; font-weight: normal; text-transform: lowercase; }
+.iform button {background-color:#e9e9e9; border: 1px solid #336699; vertical-align: bottom}
+.wrong {color: red; font-weight: normal}
+
+.subform input.text { width: 25em }
+.subform textarea.text { width: 25em }
+.subform label { margin: 0 5px 0 5px }
+.subform td { padding: 0px 5px 5px 0}
+.subform td.nopadding { padding: 0px}
+.leftpad { padding-left: 1em }
+.subredditbox { padding: 0 0 1px 0 }
+a.morelink { background-color: lightgray; color: #4d4d4d; padding: 0 5px 1px 5px; }
+a:visited.morelink { color: #4d4d4d }
+
+.avatar { float:left }
+
+.nested { padding-left: 2em }
+
+.orangered { color: orangered; }
+
+.center { margin-left: auto; margin-right: auto; text-align: center }
+
+.delform { display: inline; margin: 0px; padding: 0px }
+
+.reported { background-color: #FFFF99 }
+.suspicious { background-color: #CCFF99 }
+.spam { background-color: #FF9999 }
+
+.thing-children { padding-left: 15px }
+
+.entry { overflow: hidden; }
+
+.titlerow {padding: 0px 0px 2px 0px}
+
+.wired a {text-decoration: underline; color: #336699; font-size: smaller;}
+.wired img {vertical-align: middle;}
+
+.block { display: block }
+
+.prefleft { padding: 10px; font-weight: bold; vertical-align: top} 
+.prefright { padding: 10px }
+
+.over18 button { margin: 0 10px 0 10px; padding: 5px}
+
+#ad-frame { border: 0px; overflow: hidden; height: 300px; width: 300px}

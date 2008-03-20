@@ -7,10 +7,13 @@ from models import *
 class NewTopic(forms.Form):
     "Create a new topic."
     topic_name = forms.CharField(max_length = 100)
+    topic_fullname = forms.CharField(max_length = 100)
     
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user, topic_name=None, *args, **kwargs):
         super(NewTopic, self).__init__(*args, **kwargs)
         self.user = user
+        if topic_name:
+            self.fields['topic_name'].initial = topic_name
     
     def clean_topic_name(self):
         try:
@@ -26,7 +29,7 @@ class NewTopic(forms.Form):
         return self.cleaned_data
     
     def save(self):
-        return Topic.objects.create_new_topic(user = self.user, topic_name=self.cleaned_data['topic_name'])
+        return Topic.objects.create_new_topic(user = self.user, full_name=self.cleaned_data['topic_fullname'], topic_name=self.cleaned_data['topic_name'])
     
 class NewLink(forms.Form):
     url = forms.URLField()
@@ -50,7 +53,33 @@ class NewLink(forms.Form):
         return self.cleaned_data
     
     def save(self):
-        #Link.objects.create
-        pass
+        return Link.objects.create_link(url = self.cleaned_data['url'], text = self.cleaned_data['text'], user = self.user, topic = self.topic)
+    
+class DoComment(forms.Form):
+    text = forms.CharField(widget = forms.Textarea)
+    
+    def __init__(self, user, link, *args, **kwargs):
+        super(DoComment, self).__init__(*args, **kwargs)
+        self.user = user
+        self.link = link
+        
+    def save(self):
+        return Comment.objects.create_comment(link = self.link, user = self.user, comment_text = self.cleaned_data['text'])
+    
+class AddTag(forms.Form):
+    tag = forms.CharField(max_length = 100)
+    
+    def __init__(self, user, link, *args, **kwargs):
+        super(AddTag, self).__init__(*args, **kwargs)
+        self.user = user
+        self.link = link
+        
+    def save(self):
+        return LinkTagUser.objects.tag_link(tag_text = self.cleaned_data['tag'], link = self.link, user=self.user)
+        
+        
+        
+        
+        
         
         

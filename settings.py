@@ -1,6 +1,7 @@
 # Django settings for implist project.
 
 DEBUG = True
+DEBUG_SQL=True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -59,9 +60,12 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    'news.libs.sqllogmiddleware.SQLLogMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
+    
 )
 
 ROOT_URLCONF = 'tapicks.urls'
@@ -84,3 +88,4 @@ INSTALLED_APPS = (
 AUTH_PROFILE_MODULE = 'news.UserProfile'
 PERSISTENT_SESSION_KEY = 'PERS_SESSION'
 LOGIN_REDIRECT_URL = '/recommended/'
+LOGIN_URL = '/login/'

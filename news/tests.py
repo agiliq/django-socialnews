@@ -30,6 +30,14 @@ class TestTopic(unittest.TestCase):
         self.user.get_profile().karma = 2 * defaults.KARMA_COST_NEW_TOPIC + 1
         Topic.objects.create_new_topic(user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
         self.assertRaises(IntegrityError, Topic.objects.create_new_topic, user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
+        
+    def testSubScription(self):
+        "Test that a subscription gets created."
+        self.user.get_profile().karma = 2 * defaults.KARMA_COST_NEW_TOPIC + 1
+        self.topic = Topic.objects.create_new_topic(user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
+        subs = SubscribedUser.objects.get(topic = self.topic, user = self.user)
+        self.assertEquals(self.user, subs.user)
+        self.assertEquals(subs.group, 'Moderator')
     
     def tearDown(self):
         self.user.delete()
@@ -76,6 +84,59 @@ class TestLink(unittest.TestCase):
         new_karma = self.user.get_profile().karma
         self.assertEqual(prev_karma - new_karma, defaults.KARMA_COST_NEW_LINK)
         
+    def testCommentCount(self):
+        "Test the comment count pseudo column."
+        self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
+        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic,)
+        com1 = Comment.objects.create_comment(user = self.user, link = self.link, comment_text = '1 coment')
+        link = Link.objects.get(pk = self.link.pk)
+        self.assertEquals(link.comment_count, 1)
+        count = random.randint(5, 10)
+        for i in xrange(count):
+            Comment.objects.create_comment(user = self.user, link = self.link, comment_text = '1 coment')
+        link = Link.objects.get(pk = self.link.pk)
+        self.assertEquals(link.comment_count, count + 1)
+        
+    def testCommentCountMultiUser(self):
+        "Comment count pseudo column in presence of multiple users"
+        users = []
+        self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
+        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic,)
+        for i in xrange(random.randint(5, 10)):
+            user = User.objects.create_user(username='testCommentCountMultiUser%s' % i, email='demo@demo.com', password='demo')
+            profile = UserProfile(user = user, karma = 0)
+            profile.save()
+            user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
+            users.append(user)
+        for user in users:
+            Comment.objects.create_comment(user = user, link = self.link, comment_text = '1 coment')
+        link =  Link.objects.get(pk = self.link.pk)
+        self.assertEquals(link.comment_count, len(users))
+        
+    def testLiked(self):
+        "Test the liked/disliked pseudo column in returned queryset."
+        users = []
+        self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
+        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic,)
+        for i in xrange(random.randint(5, 10)):
+            user = User.objects.create_user(username='testLiked%s' % i, email='demo@demo.com', password='demo')
+            profile = UserProfile(user = user, karma = 0)
+            profile.save()
+            users.append(user)
+            self.link.upvote(user)
+        link = Link.objects.get_query_set_with_user(self.user).get(pk = self.link.pk)
+        self.assertEquals(link.liked, None)
+        self.assertEquals(link.disliked, None)
+        self.link.upvote(self.user)
+        link = Link.objects.get_query_set_with_user(self.user).get(pk = self.link.pk)
+        self.assertEquals(link.liked, True)
+        self.assertEquals(link.disliked, False)
+        self.link.downvote(self.user)
+        link = Link.objects.get_query_set_with_user(self.user).get(pk = self.link.pk)
+        self.assertEquals(link.liked, False)
+        self.assertEquals(link.disliked, True)
+        
+        
     def tearDown(self):
         self.user.delete()
         self.profile.delete()
@@ -83,52 +144,26 @@ class TestLink(unittest.TestCase):
         
 class TestSubscribedUser(unittest.TestCase):
     def setUp(self):
-        user = User.objects.create_user(username="demo", email="demo@demo.com", password="demo")
-        user.save()
-        self.user = user
-        profile = UserProfile(user = user, karma = defaults.KARMA_COST_NEW_TOPIC + 1)
-        profile.save()
-        self.profile = profile
-        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'cpp')
-        self.topic = topic
-        
-        
-    def testRequiredFields(self):
-        subs = SubscribedUser()
-        self.assertRaises(IntegrityError, subs.save)
-        subs.user = self.user
-        self.assertRaises(IntegrityError, subs.save)
-        subs.topic = self.topic
-        #self.assertRaises(IntegrityError, subs.save)
-        subs.group = 'Owner'
-        subs.save()
+        __populate_data__(self)
+        comment = Comment.objects.create_comment(link = self.link, user = self.user, comment_text = 'Foo bar')        
+    def tearDown(self):
+        __delete_data__(self)
         
     def testSubsUnq(self):
-        subs = SubscribedUser.objects.subscribe_user(user = self.user, topic = self.topic, group = 'Owner')
-        self.assertRaises(IntegrityError, SubscribedUser.objects.subscribe_user, user = self.user, topic = self.topic, group = 'Owner')
+        user = User.objects.create_user(username='testSubsUnq', email='demo@demo.com', password='demo')
+        subs = SubscribedUser.objects.subscribe_user(user = user, topic = self.topic, group = 'Memeber')
+        self.assertRaises(IntegrityError, SubscribedUser.objects.subscribe_user, user = user, topic = self.topic, group = 'Memeber')
         
     def testValidGroups(self):
-        subs = self.assertRaises(InvalidGroup, SubscribedUser.objects.subscribe_user, user = self.user, topic = self.topic, group = 'Foo')
-        
-    
-    def tearDown(self):
-        self.user.delete()
-        self.profile.delete()
-        self.topic.delete()
+        self.assertRaises(InvalidGroup, SubscribedUser.objects.subscribe_user, user = self.user, topic = self.topic, group = 'Foo')
+        self.assertRaises(InvalidGroup, SubscribedUser.objects.subscribe_user, user = self.user, topic = self.topic, group = 'Viewer')
         
 class TestLinkVotes(unittest.TestCase):
     def setUp(self):
-        user = User.objects.create_user(username="demo", email="demo@demo.com", password="demo")
-        user.save()
-        self.user = user
-        profile = UserProfile(user = user, karma = defaults.KARMA_COST_NEW_TOPIC + 1)
-        profile.save()
-        self.profile = profile
-        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'cpp')
-        self.topic = topic
-        self.user.get_profile().karma = 2 * defaults.KARMA_COST_NEW_LINK + 1
-        link = Link.objects.create_link(url = "http://yahoo.com",user = self.user, topic = self.topic)
-        self.link = link
+        __populate_data__(self)
+        comment = Comment.objects.create_comment(link = self.link, user = self.user, comment_text = 'Foo bar')        
+    def tearDown(self):
+        __delete_data__(self)
         
     def testRequiredFields(self):
         vote = LinkVote()
@@ -150,13 +185,6 @@ class TestLinkVotes(unittest.TestCase):
             LinkVote.objects.do_vote(user = self.user, link = self.link, direction = dir)
         new_count = LinkVote.objects.all().count()
         self.assertEquals(prev_count, new_count)
-        
-        
-    def tearDown(self):
-        self.user.delete()
-        self.profile.delete()
-        self.topic.delete()
-        self.link.delete()
         
 class TestTag(unittest.TestCase):
     def setUp(self):
@@ -211,7 +239,7 @@ class TestTag(unittest.TestCase):
     def testManager4(self):
         "Creating a tag for an existing tag with new topic will increase count by 1."
         Tag.objects.all().delete()
-        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'java', karma_factor = False)
+        topic = Topic.objects.create_new_topic(user = self.user, full_name='A CPP primer', topic_name = 'java', karma_factor = False)
         topic.save()
         Tag.objects.create_tag('bar', self.topic)
         prev_count = Tag.objects.all().count()
@@ -288,6 +316,22 @@ class TestLinkTagUser(unittest.TestCase):
         self.assertEquals(Tag.objects.all().count(), 2)
         self.assertEquals(LinkTag.objects.all().count(), 2)
         self.assertEquals(LinkTagUser.objects.all().count(), 1)
+        
+    def testLinkTagUserManagerMultiUser(self):
+        "LinkTagUser with multiple users"
+        Tag.objects.all().delete()
+        LinkTag.objects.all().delete()
+        LinkTagUser.objects.all().delete()
+        LinkTagUser.objects.tag_link(tag_text = 'foo', link = self.link, user = self.user)
+        self.assertEquals(Tag.objects.all().count(), 2)
+        self.assertEquals(LinkTag.objects.all().count(), 2)
+        self.assertEquals(LinkTagUser.objects.all().count(), 1)
+        user = User.objects.create_user(username='testLinkTagUserManagerMultiUser', email='demo@demo.com', password='demo')
+        LinkTagUser.objects.tag_link(tag_text = 'foo', link = self.link, user = user)
+        self.assertEquals(Tag.objects.all().count(), 2)
+        self.assertEquals(LinkTag.objects.all().count(), 2)
+        self.assertEquals(LinkTagUser.objects.all().count(), 2)
+        
         
 class TestTagging(unittest.TestCase):
     "Test that tagging works correctly as a whole."
@@ -450,6 +494,19 @@ class TestVoting(unittest.TestCase):
         self.assertEquals(prev_liked_by_count, self.link.liked_by_count)
         self.assertEquals(prev_disliked_by_count, self.link.disliked_by_count)
         
+    def testVisisblePoints(self):
+        "TEst visible points pseudo column"
+        self.link.upvote(self.user)
+        link = Link.objects.get(pk = self.link.pk)
+        self.assertEquals(link.visible_points, 1)
+        self.link.downvote(self.user)
+        link = Link.objects.get(pk = self.link.pk)
+        self.assertEquals(link.visible_points, -1)
+        for i in xrange(random.randint(5, 10)):
+            self.link.upvote(self.user)
+        link = Link.objects.get(pk = self.link.pk)
+        self.assertEquals(link.visible_points, 1)
+        
     def testResetVoteMultiUser(self):
         prev_liked_by_count = self.link.liked_by_count
         prev_disliked_by_count = self.link.disliked_by_count
@@ -467,6 +524,67 @@ class TestVoting(unittest.TestCase):
         for i, user in enumerate(users):
             self.link.reset_vote(user)
             self.assertEqual(prev_disliked_by_count + len(users) - i - 1, self.link.disliked_by_count)
+            
+class TestPoints(unittest.TestCase):
+    "Test the points system"
+    def setUp(self):
+        __populate_data__(self)
+    def tearDown(self):
+        __delete_data__(self)
+    
+    def testSubmissions(self):
+        "Submitted stories start with the points of the submitter."
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testSubmissions.com/', text='testSubmissions')
+        self.assertEquals(self.user.get_profile().karma, link.points)
+        
+    def testUpvote(self):
+        "Upvoting increases the points, by karma if it is less than max_change"
+        profile = self.user.get_profile()
+        profile.karma = random.randint(2, defaults.MAX_CHANGE_PER_VOTE)
+        profile.save()
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        old_points = link.points
+        link.upvote(self.user)
+        new_points = link.points
+        self.assertEquals(old_points+profile.karma, new_points)
+        
+    def testMultipleUpvotes(self):
+        "Multiple upvotes do not change karma"
+        profile = self.user.get_profile()
+        profile.karma = random.randint(2, defaults.MAX_CHANGE_PER_VOTE)
+        profile.save()
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        old_points = link.points
+        link.upvote(self.user)
+        new_points = link.points
+        self.assertEquals(old_points+profile.karma, new_points)
+        for i in xrange(random.randint(5, 10)):
+            link.upvote(self.user)
+        new_points2 = link.points
+        self.assertEquals(new_points2, new_points)
+        
+    def testUpvoteNegative(self):
+        "If users karma is negative, it has no effect on points"
+        profile = self.user.get_profile()
+        profile.karma = -10
+        profile.save()
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        old_points = link.points
+        link.upvote(self.user)
+        new_points = link.points
+        self.assertEquals(old_points, new_points)
+        
+    def testUpvoteHigKarma(self):
+        "If karma is greater tahn max change it, only changes the value till max change"
+        profile = self.user.get_profile()
+        profile.karma = defaults.MAX_CHANGE_PER_VOTE + 100
+        profile.save()
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        old_points = link.points
+        link.upvote(self.user)
+        new_points = link.points
+        self.assertEquals(old_points+defaults.MAX_CHANGE_PER_VOTE, new_points)
+        
         
         
 class TestComents(unittest.TestCase):
@@ -579,10 +697,10 @@ def __populate_data__(self):
         profile = UserProfile(user = user, karma = defaults.KARMA_COST_NEW_TOPIC + 1)
         profile.save()
         self.profile = profile
-        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'cpp')
+        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'cpp', full_name='CPP primer')
         self.topic = topic
         self.user.get_profile().karma = 2 * defaults.KARMA_COST_NEW_LINK + 1
-        link = Link.objects.create_link(url = "http://yahoo.com",user = self.user, topic = self.topic)
+        link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
         self.link = link
         
 def __delete_data__(self):
@@ -605,7 +723,7 @@ class TestNewTopic(unittest.TestCase):
         profile = self.user.get_profile()
         profile.karma = defaults.KARMA_COST_NEW_TOPIC + 1
         profile.save()
-        form = bforms.NewTopic(user = self.user, data = {'topic_name':'testCreatesTopic'})
+        form = bforms.NewTopic(user = self.user, data = {'topic_name':'testCreatesTopic', 'topic_fullname':'testCreatesTopic'})
         status = form.is_valid()
         self.assertEqual(status, True)
         topic = form.save()
@@ -617,7 +735,7 @@ class TestNewTopic(unittest.TestCase):
         profile = self.user.get_profile()
         profile.karma = defaults.KARMA_COST_NEW_TOPIC + 1
         profile.save()
-        topic = Topic.objects.create_new_topic(user = self.user, topic_name = 'testInvalidOnExisting')
+        topic = Topic.objects.create_new_topic(user = self.user, full_name='A CPP primer', topic_name = 'testInvalidOnExisting')
         form = bforms.NewTopic(user = self.user, data = {'topic_name':'testInvalidOnExisting'})
         status = form.is_valid()
         self.assertEqual(status, False)
@@ -646,19 +764,129 @@ class TestNewLink(unittest.TestCase):
         profile.karma = defaults.KARMA_COST_NEW_LINK + 1
         profile.save()
         form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='http://testCreateNewLink.com', text='123'))
-        print form
         self.assertEqual(form.is_bound, True)
         self.assertEqual(form.is_valid(), True)
+        
         link = form.save()
+        self.assertEqual(link.url, 'http://testCreateNewLink.com')
+        self.assertEqual(link.text, '123')
+        self.assertEqual(link.user, self.user)
+        self.assertEqual(link.topic, self.topic)
         
     def testInvalidOnExisting(self):
-        Link.objects.create_link(url = 'http://testInvalidOnExisting.com', user=self.user, topic=self.topic)
+        Link.objects.create_link(url = 'http://testInvalidOnExisting.com', user=self.user, topic=self.topic, text='Yahoo')
         profile = self.user.get_profile()
         profile.karma = defaults.KARMA_COST_NEW_LINK + 1
         profile.save()
         form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='htp://testInvalidOnExisting.com'))
         self.assertEqual(form.is_bound, True)
         self.assertEqual(form.is_valid(), False)
+        
+    def testInvalidOnLessKarma(self):
+        profile = self.user.get_profile()
+        profile.karma = defaults.KARMA_COST_NEW_LINK  - 1
+        profile.save()
+        form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='htp://testInvalidOnLessKarma.com'))
+        self.assertEqual(form.is_bound, True)
+        self.assertEqual(form.is_valid(), False)
+        
+class TestDoComment(unittest.TestCase):
+    def setUp(self):
+        __populate_data__(self)
+    def tearDown(self):
+        __delete_data__(self)
+        
+    def testCreateNewComment(self):
+        "sanity check that new comment, creates the comment."
+        form = bforms.DoComment(user = self.user, link = self.link, data = dict(text = '123'))
+        self.assertEquals(form.is_bound, True)
+        self.assertEquals(form.is_valid(), True)
+        comment = form.save()
+        self.assertEquals(comment.user, self.user)
+        self.assertEquals(comment.link, self.link)
+        self.assertEquals(comment.comment_text, '123')
+        
+class TestAddTag(unittest.TestCase):
+    def setUp(self):
+        __populate_data__(self)
+    def tearDown(self):
+        __delete_data__(self)
+    
+    def testCreateNewTag(self):
+        "Test that the tag objects get created."
+        form = bforms.AddTag(link = self.link, user = self.user, data = dict(tag='asdf'))
+        self.assertEquals(form.is_bound, True)
+        self.assertEquals(form.is_valid(), True)
+        Tag.objects.all().delete()
+        LinkTag.objects.all().delete()
+        tag = form.save()
+        self.assertEqual(Tag.objects.all().count(), 2)
+        self.assertEqual(LinkTag.objects.all().count(), 2)
+        self.assertEqual(LinkTagUser.objects.all().count(), 1)
+        
+    def testCreateExistingTag(self):
+        "Exitsing tags do noot get created again"        
+        form = bforms.AddTag(link = self.link, user = self.user, data = dict(tag='asdf'))
+        self.assertEquals(form.is_valid(), True)
+        tag = form.save()
+        bforms.AddTag(link = self.link, user = self.user, data = dict(tag='asdf'))
+        count1 = Tag.objects.all().count()
+        count2 = LinkTag.objects.all().count()
+        count3 = LinkTagUser.objects.all().count()
+        self.assertEquals(form.is_valid(), True)
+        tag = form.save()
+        self.assertEqual(Tag.objects.all().count(), count1)
+        self.assertEqual(LinkTag.objects.all().count(), count2)
+        self.assertEqual(LinkTagUser.objects.all().count(), count3)
+        
+    def testCreateExistingNewUser(self):
+        "For new user a tag gets created"
+        form = bforms.AddTag(link = self.link, user = self.user, data = dict(tag='asdf'))
+        self.assertEquals(form.is_valid(), True)
+        tag = form.save()
+        user = User.objects.create_user(username = 'testCreateExistingNewUser', email='demo@demo.com', password='demo')
+        bforms.AddTag(link = self.link, user = user, data = dict(tag='asdf'))
+        count1 = Tag.objects.all().count()
+        count2 = LinkTag.objects.all().count()
+        count3 = LinkTagUser.objects.all().count()
+        self.assertEquals(form.is_valid(), True)
+        tag = form.save()
+        self.assertEqual(Tag.objects.all().count(), count1)
+        self.assertEqual(LinkTag.objects.all().count(), count2)
+        self.assertEqual(LinkTagUser.objects.all().count(), count3 + 1)
+        
+#Test the helper function
+import helpers
+import exceptions
+class TestGetTopic(unittest.TestCase):
+    "Test method get topic"
+    def setUp(self):
+        __populate_data__(self)
+    def tearDown(self):
+        __delete_data__(self)
+        
+    def testValidTopic(self):
+        "Returns a topic on get_topic, with a valid topic."
+        topic = helpers.get_topic(None, self.topic.name)
+        self.assertEquals(topic, self.topic)
+        
+    def testInValidTopic(self):
+        "Raises exceptions on invalid topic"
+        self.assertRaises(exceptions.NoSuchTopic, helpers.get_topic, None, '1234567aa')
+        
+#Test the views
+from django.test.client import Client
+class TestTopicMain(unittest.TestCase):
+    def setUp(self):
+        self.c = Client()
+    
+    def testResponse(self):
+        "Test topic_main send the correct response."
+        resp = self.c.get('/dummy/')
+        print type(resp), resp.status
+        
+        
+        
         
         
         

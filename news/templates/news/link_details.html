@@ -1,0 +1,38 @@
+{% extends 'news/base.html' %}
+
+
+{% block contents %}
+
+{% include 'news/link_row.html' %}
+
+<div class="commentform">
+<form action="." method="post">
+<div>
+{{form.as_p}}
+<input type="submit" name="comment" value="comment" />
+</div>
+</form>
+</div>
+
+<div class="comments">
+{% for comment in link.comment_set.all %}
+<div class="comment">
+{{comment.comment_text}}
+</div>
+{% endfor %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<h2>tags</h2>
+<form action="." method="post">
+{{tag_form}}
+<input type="submit" name="taglink" value="taglink" />
+</form>
+<ul class="tags">
+{% for tag in link.linktag_set.get_topic_tags %}
+<a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>
+{% endfor %}
+
+</ul>
+{% endblock %}

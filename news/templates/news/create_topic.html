@@ -1,0 +1,12 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<div class="contents">
+    <form action="." method="post">
+        <div class="contactform">
+        {{form.as_p}}
+        <input type="submit" name="createtopic" value="create a new topic" />
+        </div>        
+    </form>
+</div>
+{% endblock %}

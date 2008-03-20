@@ -1,0 +1,70 @@
+{% extends 'news/base.html' %}
+
+{% block tabs %}
+<ul class="tabs">
+<li>
+Howdy {{user.username}}
+</li>
+<li>
+<a href="{{topic.get_absolute_url}}">{{topic.name}}</a>
+</li>
+<li>
+<a href="/recommended/">recommended</a>
+</li>
+<li><a href="{{topic.submit_url}}">Submit Link</a></li>
+</ul>
+{% endblock %}
+
+{% block contents %}
+<h1>
+{{ topic.name }}
+</h1>
+
+
+{% for link in links %}
+{% include 'news/link_row.html' %}
+{% endfor %}
+
+{% endblock %}
+
+{% block sidebar %}
+<h2>Subscribed Topic</h2>
+<ul>
+{% for subs in subscriptions %}
+<a href="{{subs.topic.get_absolute_url}}">{{subs.topic.full_name}}</a>
+{% endfor %}
+</ul>
+
+<h2>Tags</h2>
+<ul>
+{% for tag in tags %}
+<li>
+<a href="{{tag.get_absolute_url}}">{{tag.text}}</a>
+</li>
+{% endfor %}
+</ul>
+
+<h2>Meta</h2>
+<ul>
+{% if subscribed %}
+<li>
+You are subscribed to this topic. 
+<a href="{{topic.unsubscribe_url}}">Unsubscribe?</a>
+</li>
+{% else %}
+<li>
+<a href="{{topic.subscribe_url}}">Subscribe</a>
+</li>
+{% endif %}
+</ul>
+
+<div id="login_or_reg">
+<div class="tab">
+Login
+</div>
+<div class="tab">
+Register
+</div>
+</div>
+
+{% endblock %}

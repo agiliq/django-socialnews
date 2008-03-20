@@ -1,0 +1,14 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<h1>{{tag.text}}</h1>
+
+<ul>
+{% for linktag in linktags %}
+{% with linktag.link as link %}
+{% include 'news/link_row.html' %}
+{% endwith %}
+{% endfor %}
+</ul>
+{% endblock %}
+
