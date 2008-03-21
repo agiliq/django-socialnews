@@ -1,0 +1,40 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<h1>{{topic.full_name}}</h1>
+<table>
+<thead>
+<tr>
+<td>
+User
+</td>
+<td>
+Status
+</td>
+</tr>
+</thead>
+<tbody>
+
+{% for sub in subs %}
+<tr>
+<td><a href="">{{sub.user.username}}</a></td>
+<td>{{sub.group}}
+{% if sub.is_moderator %}
+<form action="." method="post">
+<input type="hidden" name="username" value="{{sub.user.username}}" />
+<input type="submit" name="demote" value="demote" />
+</form>
+{% else %}
+<form action="." method="post">
+<input type="hidden" name="username" value="{{sub.user.username}}" />
+<input type="submit" name="promote" value="promote" />
+</form>
+{% endif %}
+</td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<h1>
+{{user.username}}
+</h1>
+
+<ul>
+{% for link in links %}
+{% include 'news/link_row.html' %}
+{% endfor %}
+</ul>
+
+{% endblock %}

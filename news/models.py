@@ -9,13 +9,13 @@ class UserProfileManager(models.Manager):
     def create_user(self, user_name, email, password):
         "Create user and associate a profile with it."
         user = User.objects.create_user(user_name, email, password)
-        profile = Profile(user = user)
+        profile = UserProfile(user = user)
         profile.save()
         return user
     
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique = True)
-    karma = models.IntegerField(default = defaults.DEFAULT_PROFILE)
+    karma = models.IntegerField(default = defaults.DEFAULT_PROFILE_KARMA)
     
     objects = UserProfileManager()
     
@@ -40,7 +40,11 @@ class TooLittleKarmaForNewLink(TooLittleKarma):
 class InvalidGroup(Exception):
     pass
 
-topic_permissions = (('Public', 'Public'), ('Memeber', 'Memeber'), ('Private', 'Private'))
+class CanNotUnsubscribe(Exception):
+    "Can not unsubscribe out"
+    pass
+
+topic_permissions = (('Public', 'Public'), ('Member', 'Member'), ('Private', 'Private'))
 topic_permissions_flat = [perm[0] for perm in topic_permissions]
 
 class TopicManager(models.Manager):
@@ -88,17 +92,21 @@ class Topic(models.Model):
         url = reverse('link_submit', kwargs={'topic_name':self.name})
         return url
     
+    def manage_url(self):
+        url = reverse('manage_topic', kwargs={'topic_name':self.name})
+    
     
 class LinkManager(models.Manager):
     "Manager for links"
     def create_link(self, url, text, user, topic, karma_factor=True):
         profile = user.get_profile()
-        if profile.karma > defaults.KARMA_COST_NEW_LINK or not karma_factor:
+        if profile.karma > defaults.KARMA_COST_NEW_LINK or not karma_factor:            
             profile.karma -= defaults.KARMA_COST_NEW_LINK
             profile.save()
             link = Link(user = user, text = text, topic = topic, url=url)
             link.points = user.get_profile().karma
             link.save()
+            link.upvote(user)
             return link
         else:
             raise TooLittleKarmaForNewLink
@@ -136,10 +144,10 @@ class Link(models.Model):
     """
     
     def upvote(self, user):
-        self.vote(user, True)
+        return self.vote(user, True)
     
     def downvote(self, user):
-        self.vote(user, False)
+        return self.vote(user, False)
     
     def vote(self, user, direction = True):
         "Vote the given link either up or down, using a user. Calling multiple times with same user must have now effect."
@@ -172,6 +180,7 @@ class Link(models.Model):
         
         if save_vote:
             self.save()
+        return vote
             
     def reset_vote(self, user):
         "Reset a previously made vote"
@@ -187,10 +196,15 @@ class Link(models.Model):
             self.disliked_by_count -= 1
             self.save()
         vote.delete()
+        return vote
         
     def site(self):
         "Return the site where this link was posted."
         return urlparse.urlparse(self.url)[1]
+    
+    def vis_points(self):
+        vis_points = self.liked_by_count - self.disliked_by_count
+        return vis_points
     
     def humanized_time(self):
         "Time in human friendly way, like, 1 hrs ago, etc"
@@ -349,7 +363,7 @@ class CommentVote(models.Model):
     class Meta:
         unique_together = ('comment', 'user')
 
-VALID_GROUPS = (('Moderator', 'Moderator'), ('Memeber', 'Memeber'))
+VALID_GROUPS = (('Moderator', 'Moderator'), ('Member', 'Member'))
 VALID_GROUPS_FLAT = [grp[1] for grp in VALID_GROUPS]
 
 class SubscribedUserManager(models.Manager):
@@ -360,8 +374,7 @@ class SubscribedUserManager(models.Manager):
         subs = SubscribedUser(user = user, topic = topic, group = group)
         subs.save()
         return subs
-        
-        
+    
     
 class SubscribedUser(models.Model):
     "Users who are subscribed to a Topic"
@@ -371,6 +384,27 @@ class SubscribedUser(models.Model):
     subscribed_on = models.DateTimeField(auto_now_add = 1)
     
     objects = SubscribedUserManager()
+    
+    def delete(self):
+        "If user created the topic, they can not be unssubscribed"
+        if self.topic.created_by == self.user:
+            raise CanNotUnsubscribe
+        super(SubscribedUser, self).delete()
+        
+    def is_creator(self):
+        "Is the subscriber creator of the topic"
+        return self.topic.created_by == self.user
+    
+    def is_moderator(self):
+        if self.group == 'Moderator':
+            return True
+        return False
+    
+    def set_group(self, group):
+        if not group in VALID_GROUPS_FLAT:
+            raise InvalidGroup('%s is not a valid group' % group)
+        self.group = group
+        self.save()
     
     def __unicode__(self):
         return u'%s : %s-%s' % (self.topic, self.user, self.group)

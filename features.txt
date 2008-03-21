@@ -1,0 +1,10 @@
+What features do we want in Tapiks.
+
+Users can creates their own Tapik.
+A Tapik can be public, memeber only or private.
+Public Tapik, anyone can post any one can vote etc.
+Memeber tapic. Anyone can view, only memebers can, post, upvote etc.
+Private tapic. Only memebers can post, and view.
+
+Users can post links to a tapic.
+Same link can be posted to multipll tapics

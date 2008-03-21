@@ -11,7 +11,10 @@ def topic_tag(request, topic_name, tag_text):
         tag = Tag.objects.get(topic = topic, text = tag_text)
     except Tag.DoesNotExist, e:
         raise Http404
-    linktags = LinkTag.objects.select_related(depth = 1).filter(tag = tag)
+    if request.user.is_authenticated():
+        linktags = LinkTag.objects.select_related(depth = 1).filter(tag = tag)
+    else:
+        linktags = LinkTag.objects.select_related(depth = 1).filter(tag = tag)
     payload = dict(topic=topic, tag=tag, linktags=linktags)
     return render(request, payload, 'news/tag.html')
 

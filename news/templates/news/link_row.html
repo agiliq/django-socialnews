@@ -1,6 +1,5 @@
 <div class="linkwrap">
-<div class="midcol">
-
+<div class="midcol" id="vote-{{link.id}}">
 <!-- 
 {% if link.liked %}
 <div class="arrow upmod"></div>
@@ -13,16 +12,15 @@
 <div class="arrow down"></div>
 {% endif %}
  -->
-
- {% if link.liked %}
- <a href="/up/{{link.id}}/"><img src="/site_media/images/aupmod.png" alt="" /></a>
+{% if link.liked %}
+ <a href="/up/{{link.id}}/" class="vote arrow upmod" id='up-{{link.id}}'></a>
 {% else %}
- <a href="/up/{{link.id}}/"><img src="/site_media/images/aupgray.png" alt="" /></a>
+ <a href="/up/{{link.id}}/" class="vote arrow up" id='up-{{link.id}}'></a>
 {% endif %}
 {% if link.disliked %}
- <a href="/down/{{link.id}}/"><img src="/site_media/images/adownmod.png" alt="" /></a>
+ <a href="/down/{{link.id}}/" class="vote arrow downmod" id='down-{{link.id}}'></a>
 {% else %}
- <a href="/down/{{link.id}}/"><img src="/site_media/images/adowngray.png" alt="" /></a>
+ <a href="/down/{{link.id}}/" class="vote arrow down" id='down-{{link.id}}'></a>
 {% endif %}
 
 </div>
@@ -30,7 +28,7 @@
 <div class="linkheader">
 <a href="{{link.url}}">{{link.text}}</a><span class="site">[{{link.site}}]</span>
 <div class="details">
-{{link.visible_points}} points posted  {{link.humanized_time}}. <a href="{{link.get_absolute_url}}">{{link.comment_count}} Comments.</a> By {{link.user}}.
+<span id="points-{{link.id}}">{{link.visible_points}}</span> points posted  {{link.humanized_time}}. <a href="{{link.get_absolute_url}}">{{link.comment_count}} Comments.</a> By {{link.user}}.
 </div>
 </div>
 </div>

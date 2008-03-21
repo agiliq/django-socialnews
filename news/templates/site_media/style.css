@@ -105,13 +105,7 @@ label {
     
     
 
-.arrow {
-    margin: 2px 0px 0px 0px;
-    width: 15px;
-    height: 14px;
-    display: block;
-    cursor: pointer;
-}
+
 .midcol img{
     margin: 0px 0px 0px 0px;
     padding: 0px 0px 0px 0px; 
@@ -132,7 +126,23 @@ label {
 }
 ul.tabs {margin:0px; padding:10px; list-style:none;}
 ul.tabs li {display:inline; background:#FBFCF5; }
-/*.midcol { float: left; padding-right: 2px; }
-.midcol { display: inline;}
-ul .tabs {margin:0px; padding:10px; list-style:none;}
-ul .tabs li {display:inline; background:#FBFCF5; borde 
+.arrow {
+    margin: 2px 0px 0px 0px;
+    width: 15px;
+    height: 14px;
+    display: block;
+    cursor: pointer;
+}
+
+.arrow.upmod { 
+  background: url(/site_media/images/aupmod.png); 
+  background-repeat: no-repeat }
+.arrow.downmod { 
+  background: url(/site_media/images/adownmod.png); 
+  background-repeat: no-repeat }
+.arrow.up { 
+  background: url(/site_media/images/aupgray.png); 
+  background-repeat: no-repeat }
+.arrow.down { 
+  background: url(/site_media/images/adowngray.png); 
+  background-repeat: no-repeat }

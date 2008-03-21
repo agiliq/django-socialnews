@@ -1,5 +1,47 @@
 {% extends 'news/base.html' %}
 
+{% block jqueryarea %}
+<script language="JavaScript" type="text/javascript" src="/site_media/js/voting.js">
+<!--
+//-->
+</script>
+<script language="JavaScript" type="text/javascript">
+<!--
+/*
+$(document).ready(function(){
+$('.unsubscribe').click(function(){
+el = $(this)
+$.ajax({
+url: el.attr('href')+'?ajax=1',
+type: 'post',
+dataType: 'json',
+});
+
+el.removeClass('unsubscribe')
+el.addClass('subscribe')
+el.html('Subscribe')
+return false;
+})
+
+$('.subscribe').click(function(){
+el = $(this);
+$.ajax({
+url: el.attr('href')+'?ajax=1',
+type: 'post',
+dataType: 'json',
+});
+el.removeClass('subscribe')
+el.addClass('unsubscribe')
+el.html('Unsubscribe')
+return false;
+})
+})
+*/
+//-->
+</script>
+
+{% endblock %}
+
 {% block tabs %}
 <ul class="tabs">
 <li>
@@ -49,11 +91,15 @@ Howdy {{user.username}}
 {% if subscribed %}
 <li>
 You are subscribed to this topic. 
-<a href="{{topic.unsubscribe_url}}">Unsubscribe?</a>
+<form action="{{topic.unsubscribe_url}}" method="post" >
+<input type="submit" name="unsubscribe" value="unsubscribe" />
+</form>
 </li>
 {% else %}
 <li>
-<a href="{{topic.subscribe_url}}">Subscribe</a>
+<form action="{{topic.subscribe_url}}" method="post" >
+<input type="submit" name="subscribe" value="subscribe" />
+</form>
 </li>
 {% endif %}
 </ul>

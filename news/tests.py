@@ -72,6 +72,9 @@ class TestLink(unittest.TestCase):
     def testLinkCreation(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
         link = Link.objects.create_link(url = "http://yahoo.com",user = self.user, text='Yahoo', topic = self.topic)
+        #Created link must be upvoted by the user
+        vote = LinkVote.objects.get(link = link, user=self.user)
+        self.assertEquals(vote.direction, True)
         
     def testLinkCreation2(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK - 1
@@ -125,8 +128,7 @@ class TestLink(unittest.TestCase):
             users.append(user)
             self.link.upvote(user)
         link = Link.objects.get_query_set_with_user(self.user).get(pk = self.link.pk)
-        self.assertEquals(link.liked, None)
-        self.assertEquals(link.disliked, None)
+        self.assertEquals(link.disliked, False)
         self.link.upvote(self.user)
         link = Link.objects.get_query_set_with_user(self.user).get(pk = self.link.pk)
         self.assertEquals(link.liked, True)
@@ -151,12 +153,38 @@ class TestSubscribedUser(unittest.TestCase):
         
     def testSubsUnq(self):
         user = User.objects.create_user(username='testSubsUnq', email='demo@demo.com', password='demo')
-        subs = SubscribedUser.objects.subscribe_user(user = user, topic = self.topic, group = 'Memeber')
-        self.assertRaises(IntegrityError, SubscribedUser.objects.subscribe_user, user = user, topic = self.topic, group = 'Memeber')
+        subs = SubscribedUser.objects.subscribe_user(user = user, topic = self.topic, group = 'Member')
+        self.assertRaises(IntegrityError, SubscribedUser.objects.subscribe_user, user = user, topic = self.topic, group = 'Member')
         
     def testValidGroups(self):
         self.assertRaises(InvalidGroup, SubscribedUser.objects.subscribe_user, user = self.user, topic = self.topic, group = 'Foo')
         self.assertRaises(InvalidGroup, SubscribedUser.objects.subscribe_user, user = self.user, topic = self.topic, group = 'Viewer')
+        
+    def testIsModerator(self):
+        "Test the values returned ny is_moderator"
+        user = User.objects.create_user(username='testIsModerator', email='demo@demo.com', password='demo')
+        subs = SubscribedUser.objects.subscribe_user(user = user, topic = self.topic, group = 'Member')
+        self.assertEquals(subs.is_moderator(), False)
+        subs.group = 'Moderator'
+        subs.save()
+        self.assertEquals(subs.is_moderator(), True)
+        
+    def testSetGroup(self):
+        "Set group sets the group"
+        user = User.objects.create_user(username='testSetGroup', email='demo@demo.com', password='demo')
+        subs = SubscribedUser.objects.subscribe_user(user = user, topic = self.topic, group = 'Member')
+        subs.set_group('Moderator')
+        new_subs = SubscribedUser.objects.get(user = user, topic = self.topic)
+        self.assertEquals(subs.group, new_subs.group)
+        
+    def testDelete(self):
+        "Delete should not delete subscription, if you created this topic."
+        sub = SubscribedUser.objects.get(topic = self.topic, user=self.user)
+        self.assertRaises(CanNotUnsubscribe, sub.delete)
+        user = User.objects.create_user(username='testDelete', email='demo@demo.com', password='demo')
+        sub = SubscribedUser.objects.subscribe_user(user = user, topic = self.topic, group = 'Member')
+        sub.delete()
+        
         
 class TestLinkVotes(unittest.TestCase):
     def setUp(self):
@@ -525,6 +553,19 @@ class TestVoting(unittest.TestCase):
             self.link.reset_vote(user)
             self.assertEqual(prev_disliked_by_count + len(users) - i - 1, self.link.disliked_by_count)
             
+    def testObjectReturned(self):
+        "Upvote, downvote and reset, return a LInkVote object"
+        vote = self.link.upvote(self.user)
+        self.assertEquals(type(vote), LinkVote)
+        vote = self.link.downvote(self.user)
+        self.assertEquals(type(vote), LinkVote)
+        vote = self.link.reset_vote(self.user)
+        self.assertEquals(type(vote), LinkVote)
+        
+        
+        
+
+            
 class TestPoints(unittest.TestCase):
     "Test the points system"
     def setUp(self):
@@ -684,10 +725,6 @@ class TestComents(unittest.TestCase):
         for i, user in enumerate(users):
             comment.reset_vote(user)
             self.assertEquals(comment.points, len(users) - i - 1)
-        
-        
-        
-        
         
 
 def __populate_data__(self):
@@ -879,11 +916,53 @@ from django.test.client import Client
 class TestTopicMain(unittest.TestCase):
     def setUp(self):
         self.c = Client()
+        self.user = UserProfile.objects.create_user('TestTopicMain', 'demo@demo.com', 'demo')
+        
+    def tearDown(self):
+        self.user.delete()
     
-    def testResponse(self):
-        "Test topic_main send the correct response."
+    def testResponseDummy(self):
+        "Test dumy send the correct response."
         resp = self.c.get('/dummy/')
-        print type(resp), resp.status
+        self.assertEqual(resp.status_code, 200)
+        
+    def testMain(self):
+        "Test main_page sends the correct response."
+        resp = self.c.get('/')
+        self.assertEqual(resp.status_code, 200)
+        
+    def testTopicMain(self):
+        "Test topic main sends a correct response."
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        resp = self.c.get('/wiki/')
+        self.assertEqual(resp.status_code, 200)
+        resp = self.c.get('/doesnotexits/')
+        self.assertEqual(resp.status_code, 302)
+        topic.delete()
+        
+    def testSubmitLinkGet(self):
+        "Simulate get on submit_link"
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        resp = self.c.get('/wiki/submit/')
+        self.assertEqual(resp.status_code, 302)
+        self.c.login(username='TestTopicMain', password='demo')
+        resp = self.c.get('/wiki/submit/')
+        self.assertEqual(resp.status_code, 200)
+        topic.delete()
+        
+    def testSubmitLinkPost(self):
+        import pdb
+        pdb.set_trace()
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        resp = self.c.post('/wiki/submit/', {'url':'http://yahoomail.com/', 'text':'Mail'})
+        self.assertEquals(resp.status_code, 302)
+        link = Link.objects.get(url = 'http://yahoomail.com/', topic=topic)
+        self.assertEquals(link.text, 'Mail')
+        
+        
+        
+        
+        
         
         
         

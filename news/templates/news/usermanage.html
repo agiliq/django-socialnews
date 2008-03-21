@@ -1,0 +1,42 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<h1>
+{{user.username}}
+</h1>
+
+<table>
+<th>
+<tr>
+<td>
+Topic
+</td>
+<td>
+Unsubscribe
+</td>
+</tr>
+</th>
+<tbody>
+{% for sub in subs %}
+<tr>
+<td>
+{{sub.topic.name}}
+</td>
+<td>
+{% if sub.is_creator %}
+Owner
+{% else %}
+<form action='.' method='post'>
+<input type="hidden" name="topic" value="{{topic.name}}" />
+<input type="submit" name="unsub" value="Remove">
+</input>
+</form>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endblock %}

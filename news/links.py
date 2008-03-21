@@ -4,8 +4,12 @@ from django.contrib.auth.decorators import login_required
 from helpers import *
 import bforms
 import logging
+import simplejson
 
+@login_required
 def link_submit(request, topic_name):
+    import pdb
+    pdb.set_trace()
     topic = get_topic(request, topic_name)
     if request.method == 'GET':
         form = bforms.NewLink(user = request.user, topic = topic)
@@ -44,27 +48,37 @@ def link_details(request, topic_name, link_id):
     return render(request, payload, 'news/link_details.html')
 
 def upvote_link(request, link_id):
+    if not request.method == 'POST':
+        return HttpResponseForbidden('Only Post allowed')
     link = Link.objects.get(id = link_id)
     try:
         link_vote = LinkVote.objects.get(link = link, user = request.user)
         if link_vote.direction:
-            link.reset_vote(request.user)
+            vote = link.reset_vote(request.user)
         if not link_vote.direction:
             vote = link.upvote(request.user)
     except LinkVote.DoesNotExist:
         vote = link.upvote(request.user)
+    if request.GET.has_key('ajax'):
+        payload = {'dir':'up', 'object':'link', 'id':link.id, 'state':vote.direction, 'points':link.vis_points()}
+        return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(link.get_absolute_url())
 
 def downvote_link(request, link_id):
+    if not request.method == 'POST':
+        return HttpResponseForbidden('Only Post allowed')
     link = Link.objects.get(id = link_id)
     try:
         link_vote = LinkVote.objects.get(link = link, user = request.user)
         if not link_vote.direction:
-            link.reset_vote(request.user)
+            vote = link.reset_vote(request.user)
         if link_vote.direction:
             vote = link.downvote(request.user)
     except LinkVote.DoesNotExist:
         vote = link.downvote(request.user)
+    if request.GET.has_key('ajax'):
+        payload = {'dir':'down', 'object':'link', 'id':link.id, 'state':vote.direction, 'points':link.vis_points()}
+        return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(link.get_absolute_url())    
     
     

@@ -23,10 +23,16 @@ urlpatterns += patterns('news.subscriptions',
     
 )
 
+urlpatterns +=patterns('news.users',
+    url(r'^user/(?P<username>[^\.^/]+)/', 'user_main', name='user_main'),
+    url(r'^my/', 'user_manage', name='user_manage'),
+)
+
 urlpatterns += patterns('news.topics',
     url(r'^$', 'main', name='main'),                        
     (r'^create_topic/', 'create'),
     url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
+    url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'manage_topic', name='manage_topic'),
     
 )
 
