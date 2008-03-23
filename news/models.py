@@ -68,8 +68,10 @@ class Topic(models.Model):
     name = models.CharField(max_length = 100, unique = True)
     full_name = models.TextField()
     created_by = models.ForeignKey(User)
-    objects = TopicManager()
+    num_links = models.IntegerField(default = 0)
     permissions = models.CharField(max_length = 100, choices = topic_permissions, default = topic_permissions_flat[0])
+    
+    objects = TopicManager()
     
     def __unicode__(self):
         return u'%s' % self.name
@@ -107,6 +109,8 @@ class LinkManager(models.Manager):
             link.points = user.get_profile().karma
             link.save()
             link.upvote(user)
+            link.topic.num_links += 1
+            link.topic.save()
             return link
         else:
             raise TooLittleKarmaForNewLink
@@ -207,6 +211,8 @@ class Link(models.Model):
         return vis_points
     
     def humanized_time(self):
+        return humanized_time(self.created_on)
+        """
         "Time in human friendly way, like, 1 hrs ago, etc"
         now = datetime.now()
         delta = now - self.created_on
@@ -223,7 +229,7 @@ class Link(models.Model):
             return '%s minutes ago' % (delta/60)
         elif delta < 60 * 60 * 24:
             return '%s hours ago' % (delta/(60 * 60))
-        
+        """
     
     
         
@@ -294,6 +300,11 @@ class LinkVote(models.Model):
         
         
 class CommentManager(models.Manager):
+    def get_query_set_with_user(self, user):
+        qs = self.get_query_set().extra({'liked':'SELECT news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id, 'disliked':'SELECT not news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id})
+        return qs
+
+    
     def create_comment(self, link, user, comment_text):
         comment = Comment(link = link, user = user, comment_text = comment_text)
         comment.save()
@@ -310,10 +321,10 @@ class Comment(models.Model):
     objects = CommentManager()
     
     def upvote(self, user):
-        self.vote(user, True)
+        return self.vote(user, True)
         
     def downvote(self, user):
-        self.vote(user, False)
+        return self.vote(user, False)
     
     def vote(self, user, direction):
         vote, created, flipped = CommentVote.objects.do_vote(self, user, direction)
@@ -328,6 +339,7 @@ class Comment(models.Model):
             #Earlier upvote, now downvote
             self.points -= 2
         self.save()
+        return vote
         
     def reset_vote(self, user):
         try:
@@ -343,6 +355,20 @@ class Comment(models.Model):
             self.points += 1
             self.save()
         vote.delete()
+        return vote
+        
+    def humanized_time(self):
+        return humanized_time(self.created_on)
+    
+    def downvote_url(self):
+        return reverse('downvote_comment', kwargs={'comment_id':self.id})
+    
+    
+    def upvote_url(self):
+        return reverse('upvote_comment', kwargs={'comment_id':self.id})
+    
+    class Meta:
+        ordering = ('-created_on', )
             
 class CommentVotesManager(VoteManager):
     def do_vote(self, comment, user, direction):
@@ -495,6 +521,24 @@ class LinkTagUser(models.Model):
     
     class Meta:
         unique_together = ('link_tag', 'user')
+        
+def humanized_time(time):
+        "Time in human friendly way, like, 1 hrs ago, etc"
+        now = datetime.now()
+        delta = now - time
+        "try if days have passed."
+        if delta.days:
+            if delta.days == 1:
+                return 'yesterday'
+            else:
+                return time.strftime(defaults.DATE_FORMAT)
+        delta = delta.seconds
+        if delta < 60:
+            return '%s seconds ago' % delta
+        elif delta < 60 * 60:
+            return '%s minutes ago' % (delta/60)
+        elif delta < 60 * 60 * 24:
+            return '%s hours ago' % (delta/(60 * 60))        
     
 
     

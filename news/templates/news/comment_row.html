@@ -1,0 +1,16 @@
+<div class="comment">
+{% if comment.liked %}
+ <a href="{{comment.upvote_url}}" class="comvote arrow upmod" id='upcomment-{{comment.id}}'></a>
+{% else %}
+ <a href="{{comment.upvote_url}}" class="comvote arrow up" id='upcomment-{{comment.id}}'></a>
+{% endif %}
+{% if comment.disliked %}
+ <a href="{{comment.downvote_url}}" class="comvote arrow downmod" id='downcomment-{{comment.id}}'></a>
+{% else %}
+ <a href="{{comment.downvote_url}}" class="comvote arrow down" id='downcomment-{{comment.id}}'></a>
+{% endif %}
+{{comment.comment_text}}
+<div class="commentdetails">
+<span id="compoints-{{comment.id}}">{{comment.points}}</span> points by {{comment.user.username}} on {{comment.humanized_time}}
+</div>
+</div>

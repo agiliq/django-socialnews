@@ -30,7 +30,7 @@ urlpatterns +=patterns('news.users',
 
 urlpatterns += patterns('news.topics',
     url(r'^$', 'main', name='main'),                        
-    (r'^create_topic/', 'create'),
+    url(r'^createtopic/', 'create', name='createtopic'),
     url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
     url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'manage_topic', name='manage_topic'),
     
@@ -45,5 +45,7 @@ urlpatterns += patterns('news.links',
     url(r'^(?P<topic_name>[^\.^/]+)/submit/$', 'link_submit', name='link_submit'),
     url(r'^up/(?P<link_id>\d+)/$', 'upvote_link', name='upvote_link'),
     url(r'^down/(?P<link_id>\d+)/$', 'downvote_link', name='downvote_link'),
+    url(r'^upcomment/(?P<comment_id>\d+)/$', 'upvote_comment', name='upvote_comment'),
+    url(r'^downcomment/(?P<comment_id>\d+)/$', 'downvote_comment', name='downvote_comment'),    
     url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/$', 'link_details', name='link_detail'),
 )

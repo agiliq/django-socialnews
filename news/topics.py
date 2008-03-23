@@ -15,7 +15,11 @@ def main(request):
     else:
         links = Link.objects.all()
     tags = Tag.objects.filter(topic__isnull = True)
-    payload = {'links':links, 'tags':tags}
+    if request.user.is_authenticated():
+        subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
+    else:
+        subscriptions = SubscribedUser.objects.get_empty_query_set()    
+    payload = {'links':links, 'tags':tags, 'subscriptions':subscriptions}
     return render(request, payload, 'news/main.html')
         
         
@@ -25,7 +29,8 @@ def topic_main(request, topic_name):
     try:
         topic = get_topic(request, topic_name)
     except exceptions.NoSuchTopic, e:
-        return HttpResponseRedirect('/create_topic/?topic_name=%s' % topic_name)
+        url = '/createtopic/'#reverse('createtopic');
+        return HttpResponseRedirect('%s?topic_name=%s' % (url, topic_name))
     tags = Tag.objects.filter(topic = topic)
     if request.user.is_authenticated():
         links = Link.objects.get_query_set_with_user(request.user).filter(topic = topic).select_related()

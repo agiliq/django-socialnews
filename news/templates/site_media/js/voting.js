@@ -1,9 +1,16 @@
 
 update_link = function(data){
-$('#points-'+data['id']).html(data['points']);
-}
+  if (data['object']=='link'){
+    $('#points-'+data['id']).html(data['points']);
+  }
+  else{
+    $('#compoints-'+data['id']).html(data['points']);
+    
+  }
+    
+  }
 $(document).ready(function(){
-$('.vote').click(function(){
+$('.vote, .comvote').click(function(){
 el = $(this);
 el.parent().next().children().filter('.details').children().filter('.points').html()
 if (el.hasClass('up')){

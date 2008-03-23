@@ -1,0 +1,6 @@
+<h2>Subscribed Topic</h2>
+<ul>
+{% for subs in subscriptions %}
+<a href="{{subs.topic.get_absolute_url}}">{{subs.topic.full_name}}</a>
+{% endfor %}
+</ul>

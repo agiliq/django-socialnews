@@ -7,7 +7,9 @@
 {% endblock %}
 
 {% block sidebar %}
+
 <div>
+{% include 'news/subscribed_topics.html' %}
 <h2>Tags</h2>
 {% for tag in tags %}
 <a href="{{tag.get_absolute_url}}">{{tag.text}}</a>

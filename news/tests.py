@@ -22,6 +22,7 @@ class TestTopic(unittest.TestCase):
         self.assertRaises(Exception, topic.save, )
         
     def testTopicCreation(self):
+        self.user.get_profile().karma =  defaults.KARMA_COST_NEW_TOPIC - 1
         self.assertRaises(TooLittleKarmaForNewTopic, Topic.objects.create_new_topic, user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_TOPIC + 1
         Topic.objects.create_new_topic(user = self.user, full_name = 'A CPP primer', topic_name = 'cpp')
@@ -399,7 +400,7 @@ class TestVoting(unittest.TestCase):
         prev_disliked_by_count = self.link.disliked_by_count
         self.link.upvote(self.user)
         new_liked_by_count = self.link.liked_by_count
-        self.assertEquals(prev_liked_by_count + 1, new_liked_by_count)
+        self.assertEquals(prev_liked_by_count, new_liked_by_count)
         self.assertEquals(prev_disliked_by_count,  self.link.disliked_by_count)
         
     def testUpvoteMultiple(self):
@@ -409,12 +410,11 @@ class TestVoting(unittest.TestCase):
         self.link.upvote(self.user)
         self.link.upvote(self.user)
         new_liked_by_count = self.link.liked_by_count
-        self.assertEquals(prev_liked_by_count + 1, new_liked_by_count)
-        import random
+        self.assertEquals(prev_liked_by_count, new_liked_by_count)
         for i in xrange(random.randint(5, 10)):
             self.link.upvote(self.user)
         new_liked_by_count2 = self.link.liked_by_count
-        self.assertEquals(prev_liked_by_count + 1, new_liked_by_count2)
+        self.assertEquals(prev_liked_by_count, new_liked_by_count2)
         
     def testDownvote(self):
         "Test that down a link increases the disliked_by_count by 1, and does not affect the liked_by_count"
@@ -423,7 +423,7 @@ class TestVoting(unittest.TestCase):
         self.link.downvote(self.user)
         new_disliked_by_count = self.link.disliked_by_count
         self.assertEquals(prev_disliked_by_count + 1, new_disliked_by_count)
-        self.assertEquals(prev_liked_by_count, self.link.liked_by_count)
+        self.assertEquals(prev_liked_by_count, self.link.liked_by_count+1)
         
     def testDownvoteMultiple(self):
         "Test that down a link, multiple times increases the disliked_by_count by 1 only"
@@ -459,13 +459,13 @@ class TestVoting(unittest.TestCase):
         prev_disliked_by_count = self.link.disliked_by_count
         users = []
         for i in xrange(random.randint(5, 10)):
-            user = User.objects.create_user(username = 'demo%s'%i, password='demo', email='demo@demo.com')
+            user = UserProfile.objects.create_user(user_name = 'demo%s'%i, password='demo', email='demo@demo.com')
             users.append(user)
         for user in users:
             self.link.upvote(user)
         users2 = []
         for i in xrange(random.randint(5, 10)):
-            user = User.objects.create_user(username = 'demo_%s'%i, password='demo', email='demo@demo.com')
+            user = UserProfile.objects.create_user(user_name = 'demo_%s'%i, password='demo', email='demo@demo.com')
             users2.append(user)
         for user in users2:
             self.link.downvote(user)
@@ -485,13 +485,13 @@ class TestVoting(unittest.TestCase):
         self.link.upvote(self.user)
         new_liked_by_count = self.link.liked_by_count
         new_disliked_by_count = self.link.disliked_by_count
-        self.assertEquals(prev_liked_by_count + 1, new_liked_by_count)
+        self.assertEquals(prev_liked_by_count, new_liked_by_count)
         self.assertEquals(prev_disliked_by_count, new_disliked_by_count)
         self.link.downvote(self.user)
-        self.assertEquals(prev_liked_by_count, self.link.liked_by_count)
+        self.assertEquals(prev_liked_by_count, self.link.liked_by_count+1)
         self.assertEquals(prev_disliked_by_count + 1, self.link.disliked_by_count)
         self.link.upvote(self.user)
-        self.assertEquals(prev_liked_by_count + 1, self.link.liked_by_count)
+        self.assertEquals(prev_liked_by_count, self.link.liked_by_count)
         self.assertEquals(prev_disliked_by_count, self.link.disliked_by_count)
         
     def testResetVote(self):
@@ -500,26 +500,25 @@ class TestVoting(unittest.TestCase):
         prev_disliked_by_count = self.link.disliked_by_count
         self.link.upvote(self.user)
         self.link.reset_vote(self.user)
-        self.assertEquals(prev_liked_by_count, self.link.liked_by_count)
+        self.assertEquals(prev_liked_by_count, self.link.liked_by_count+1)
         self.assertEquals(prev_disliked_by_count, self.link.disliked_by_count)
         self.link.upvote(self.user)
         self.link.reset_vote(self.user)
-        self.assertEquals(prev_liked_by_count, self.link.liked_by_count)
+        self.assertEquals(prev_liked_by_count, self.link.liked_by_count+1)
         self.assertEquals(prev_disliked_by_count, self.link.disliked_by_count)
         for i in xrange(random.randint(5, 10)):
             self.link.upvote(self.user)
         for i in xrange(random.randint(5, 10)):
             self.link.reset_vote(self.user)
-        self.assertEquals(prev_liked_by_count, self.link.liked_by_count)
+        self.assertEquals(prev_liked_by_count, self.link.liked_by_count+1)
         self.assertEquals(prev_disliked_by_count, self.link.disliked_by_count)
         for i in xrange(random.randint(5, 10)):
             self.link.upvote(self.user)
         for i in xrange(random.randint(5, 10)):
-            pass
-            #self.link.downvote(self.user)
+            self.link.downvote(self.user)
         for i in xrange(random.randint(5, 10)):
             self.link.reset_vote(self.user)
-        self.assertEquals(prev_liked_by_count, self.link.liked_by_count)
+        self.assertEquals(prev_liked_by_count, self.link.liked_by_count+1)
         self.assertEquals(prev_disliked_by_count, self.link.disliked_by_count)
         
     def testVisisblePoints(self):
@@ -540,7 +539,7 @@ class TestVoting(unittest.TestCase):
         prev_disliked_by_count = self.link.disliked_by_count
         users = []
         for i in xrange(random.randint(5, 10)):
-            user = User.objects.create_user(username = 'demo%stestResetVoteMultiUser'%i, password='demo', email='demo@demo.com')
+            user = UserProfile.objects.create_user(user_name = 'demo%stestResetVoteMultiUser'%i, password='demo', email='demo@demo.com')
             users.append(user)
         for user in users:
             self.link.upvote(user)
@@ -575,8 +574,9 @@ class TestPoints(unittest.TestCase):
     
     def testSubmissions(self):
         "Submitted stories start with the points of the submitter."
+        karma = self.user.get_profile().karma
         link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testSubmissions.com/', text='testSubmissions')
-        self.assertEquals(self.user.get_profile().karma, link.points)
+        self.assertEquals(karma, link.points)
         
     def testUpvote(self):
         "Upvoting increases the points, by karma if it is less than max_change"
@@ -587,7 +587,7 @@ class TestPoints(unittest.TestCase):
         old_points = link.points
         link.upvote(self.user)
         new_points = link.points
-        self.assertEquals(old_points+profile.karma, new_points)
+        self.assertEquals(old_points, new_points)
         
     def testMultipleUpvotes(self):
         "Multiple upvotes do not change karma"
@@ -598,7 +598,7 @@ class TestPoints(unittest.TestCase):
         old_points = link.points
         link.upvote(self.user)
         new_points = link.points
-        self.assertEquals(old_points+profile.karma, new_points)
+        self.assertEquals(old_points, new_points)
         for i in xrange(random.randint(5, 10)):
             link.upvote(self.user)
         new_points2 = link.points
@@ -607,11 +607,13 @@ class TestPoints(unittest.TestCase):
     def testUpvoteNegative(self):
         "If users karma is negative, it has no effect on points"
         profile = self.user.get_profile()
-        profile.karma = -10
+        profile.karma = defaults.KARMA_COST_NEW_LINK + 1
         profile.save()
         link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        user = UserProfile.objects.create_user(user_name='testUpvoteNegative', password='demo', email='demo@demo.com')
+        user.get_profile().karma = -10
         old_points = link.points
-        link.upvote(self.user)
+        link.upvote(user)
         new_points = link.points
         self.assertEquals(old_points, new_points)
         
@@ -624,7 +626,7 @@ class TestPoints(unittest.TestCase):
         old_points = link.points
         link.upvote(self.user)
         new_points = link.points
-        self.assertEquals(old_points+defaults.MAX_CHANGE_PER_VOTE, new_points)
+        self.assertEquals(old_points, new_points)
         
         
         
@@ -920,6 +922,12 @@ class TestTopicMain(unittest.TestCase):
         
     def tearDown(self):
         self.user.delete()
+        
+    def login(self):
+        self.c.login(username='TestTopicMain', password='demo')
+        
+    def logout(self):
+        self.c.logout()
     
     def testResponseDummy(self):
         "Test dumy send the correct response."
@@ -945,19 +953,180 @@ class TestTopicMain(unittest.TestCase):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
         resp = self.c.get('/wiki/submit/')
         self.assertEqual(resp.status_code, 302)
-        self.c.login(username='TestTopicMain', password='demo')
+        self.login()
         resp = self.c.get('/wiki/submit/')
         self.assertEqual(resp.status_code, 200)
         topic.delete()
         
     def testSubmitLinkPost(self):
-        import pdb
-        pdb.set_trace()
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
         resp = self.c.post('/wiki/submit/', {'url':'http://yahoomail.com/', 'text':'Mail'})
         self.assertEquals(resp.status_code, 302)
+        self.login()
+        resp = self.c.post('/wiki/submit/', {'url':'http://yahoomail.com/', 'text':'Mail'})
         link = Link.objects.get(url = 'http://yahoomail.com/', topic=topic)
         self.assertEquals(link.text, 'Mail')
+        topic.delete()
+        
+    def testLinkDetails(self):
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        resp = self.c.get('/wiki/%s/'%link.id)
+        self.assertEqual(resp.status_code, 200)
+        self.login()
+        resp = self.c.get('/wiki/%s/'%link.id)
+        self.assertEqual(resp.status_code, 200)
+    
+    def testCreateTopicGet(self):
+        resp = self.c.get('/createtopic/')
+        self.assertEqual(resp.status_code, 302)
+        self.login()
+        resp = self.c.get('/createtopic/')
+        self.assertEqual(resp.status_code, 200)
+        
+    def testCreateTopicPost(self):
+        self.login()
+        resp = self.c.post('/createtopic/', dict(topic_name='wiki', topic_fullname='Wiki pedia'))
+        self.assertEqual(resp.status_code, 302)
+        topic = Topic.objects.get(name='wiki',)
+        self.assertEqual(topic.full_name, 'Wiki pedia')
+        topic.delete()
+        
+    def testUpDownvote(self):
+        "Test upvote/down vote do not allow get requests."
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        resp = self.c.get('/up/%s/'% link.id)
+        self.assertEqual(resp.status_code, 302)
+        self.login()
+        resp = self.c.get('/up/%s/'% link.id)
+        self.assertEqual(resp.status_code, 403)
+        self.logout()
+        resp = self.c.get('/down/%s/'% link.id)
+        self.assertEqual(resp.status_code, 302)
+        self.login()
+        resp = self.c.get('/down/%s/'% link.id)
+        self.assertEqual(resp.status_code, 403)
+        topic.delete()
+        
+    def testUpVotePost(self):
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        link.reset_vote(self.user)
+        self.assertEquals(link.liked_by_count, 0)
+        resp = self.c.post('/up/%s/'% link.id)
+        self.assertEqual(resp.status_code, 302)
+        self.login()
+        resp = self.c.post('/up/%s/'% link.id)
+        self.assertEqual(resp.status_code, 302)
+        link = Link.objects.get(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        self.assertEquals(link.liked_by_count, 1)
+        topic.delete()
+        
+        
+    def testDownVotePost(self):
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        link.reset_vote(self.user)
+        self.assertEquals(link.disliked_by_count, 0)
+        resp = self.c.post('/down/%s/'% link.id)
+        self.assertEqual(resp.status_code, 302)
+        self.login()
+        resp = self.c.post('/down/%s/'% link.id)
+        self.assertEqual(resp.status_code, 302)
+        link = Link.objects.get(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        self.assertEquals(link.disliked_by_count, 1)
+        topic.delete()
+        
+    def testUserPage(self):
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        resp = self.c.get('/user/%s/' % self.user.username)
+        self.assertEqual(resp.status_code, 200)
+        self.login()
+        resp = self.c.get('/user/%s/' % self.user.username)
+        self.assertEqual(resp.status_code, 200)
+        
+    def testUserManagePage(self):
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        resp = self.c.get('/my/')
+        self.assertEqual(resp.status_code, 302)
+        self.login()
+        resp = self.c.get('/my/')
+        self.assertEqual(resp.status_code, 200)
+        topic.delete()
+        
+    def testTopicManagePage(self):
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        resp = self.c.get('/wiki/manage/')
+        self.assertEqual(resp.status_code, 302)
+        self.login()
+        resp = self.c.get('/wiki/manage/')
+        self.assertEqual(resp.status_code, 200)
+        self.logout()
+        user = UserProfile.objects.create_user('dd1', 'demo@demo.com', 'demo')
+        self.c.login(username='dd1', password='demo')
+        resp = self.c.get('/wiki/manage/')
+        self.assertEqual(resp.status_code, 403)
+        SubscribedUser.objects.subscribe_user(user=user, topic=topic, group='Moderator')
+        self.c.logout()
+        self.c.login(username='dd1', password='demo')
+        resp = self.c.get('/wiki/manage/')
+        self.assertEqual(resp.status_code, 200)
+        topic.delete()
+        
+    def testSubScribePage(self):
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        sub = SubscribedUser.objects.get(topic = topic, user = self.user)
+        user = UserProfile.objects.create_user('testSubScribePage', 'demo@demo.com', 'demo')
+        self.assertRaises(SubscribedUser.DoesNotExist, SubscribedUser.objects.get, user=user, topic=topic)
+        self.c.login(username='testSubScribePage', password='demo')
+        resp = self.c.get('/subscribe/wiki/')
+        self.assertEqual(resp.status_code, 403)
+        resp = self.c.post('/subscribe/wiki/')
+        self.assertEqual(resp.status_code, 302)
+        sub = SubscribedUser.objects.get(user=user, topic=topic)
+        self.assertEquals(sub.user, user)
+        topic.delete()
+        
+    def testUnsubscribePage(self):
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        resp = self.c.get('/unsubscribe/wiki/')
+        self.assertEquals(resp.status_code, 302)
+        self.login()
+        resp = self.c.get('/unsubscribe/wiki/')
+        self.assertEquals(resp.status_code, 403)
+        self.assertRaises(CanNotUnsubscribe, self.c.post, '/unsubscribe/wiki/')
+        user = UserProfile.objects.create_user('testUnsubscribePage', 'demo@demo.com', 'demo')
+        self.c.login(username='testUnsubscribePage', password='demo')
+        resp = self.c.post('/subscribe/wiki/')
+        sub = SubscribedUser.objects.get(user=user, topic=topic)
+        self.assertEquals(sub.user, user)
+        resp = self.c.post('/unsubscribe/wiki/')
+        self.assertRaises(SubscribedUser.DowsNotExist, SubscribedUser.objects.get, user=user, topic=topic)
+        
+    def testTags(self):
+        self.login()
+        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        resp = self.c.post('/wiki/%s/'% link.id, dict(taglink='taglink', tag='foo'))
+        self.assertEquals(resp.status_code, 302)
+        tag = LinkTag.objects.get(link=link, tag__text='foo', tag__topic__isnull=False)
+        self.assertEquals(tag.tag.text, 'foo')
+        tag = LinkTag.objects.get(link=link, tag__text='foo', tag__topic__isnull=True)
+        self.assertEquals(tag.tag.text, 'foo')
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         

@@ -5,6 +5,45 @@
 <!--
 //-->
 </script>
+<script language="JavaScript" type="text/javascript">
+<!--
+
+function processJson(data) { 
+    // 'data' is the json object returned from the server
+		el = $('#comments') ;
+    //el.prepend(data['text']);
+		el.prepend(data['dom']); 
+}
+function processTag(data){
+	el = $('#tags');
+	if (data['tagged']){
+		el.prepend(data['dom']);
+	}
+}
+function showError(data){
+  alert(data);
+}
+$(document).ready(function(){
+	 comment_url = $('#commentform').attr('action')+'?ajax=1';
+	 $('#commentform').ajaxForm({
+	  resetForm: true,
+		success: processJson,
+		url: comment_url,
+		dataType: 'json'
+	 });
+	 
+	 tag_url = $('#tagform').attr('action')+'?ajax=1'
+	 	 $('#tagform').ajaxForm({
+	   resetForm: true,		 
+		 url: tag_url,
+		 dataType:'json',
+		 success: processTag,
+		 failure: showError
+		 })
+});
+//-->
+</script>
+
 
 {% endblock %}
 
@@ -13,8 +52,8 @@
 
 {% include 'news/link_row.html' %}
 
-<div class="commentform">
-<form action="." method="post">
+<div class="commentform" ">
+<form action="." method="post" id="commentform">
 <div>
 {{form.as_p}}
 <input type="submit" name="comment" value="comment" />
@@ -22,24 +61,24 @@
 </form>
 </div>
 
-<div class="comments">
-{% for comment in link.comment_set.all %}
-<div class="comment">
-{{comment.comment_text}}
-</div>
+<div id="comments">
+{% for comment in comments %}
+{% include 'news/comment_row.html' %}
 {% endfor %}
 </div>
 {% endblock %}
 
 {% block sidebar %}
 <h2>tags</h2>
-<form action="." method="post">
+<form action="." method="post" id="tagform">
 {{tag_form}}
 <input type="submit" name="taglink" value="taglink" />
 </form>
-<ul class="tags">
+<ul id="tags">
 {% for tag in link.linktag_set.get_topic_tags %}
+<li>
 <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>
+</li>
 {% endfor %}
 
 </ul>
