@@ -21,6 +21,17 @@
 
 //-->
 </script>
+<script language="JavaScript" type="text/javascript">
+
+<!--
+{% if user.is_authenticated %}
+var logged_in = true;
+{% else %}
+var logged_in = false;
+{% endif %}
+//-->
+</script>
+
 {% block jqueryarea %}
 {% endblock %}
 <link href="/site_media/style.css" rel="stylesheet" type="text/css" media="screen" />
@@ -34,15 +45,21 @@
 <div id="tabs">
 
 {% block tabs %}
+
 <ul class="tabs">
 <li>
 Howdy {{user.username}}
 </li>
+{% if topic %}
 <li>
 <a href="{{topic.get_absolute_url}}">{{topic.name}}</a>
 </li>
+{% endif %}
 <li>
 <a href="/recommended/">recommended</a>
+</li>
+<li>
+<a href="{% url createtopic %}">Create a topic</a>
 </li>
 </ul>
 {% endblock %}

@@ -1,5 +1,7 @@
 {% extends 'news/base.html' %}
 
+{% load mptt_tags %}
+
 {% block jqueryarea %}
 <script language="JavaScript" type="text/javascript" src="/site_media/js/voting.js">
 <!--
@@ -8,17 +10,25 @@
 <script language="JavaScript" type="text/javascript">
 <!--
 
-function processJson(data) { 
+function processComment(data) { 
     // 'data' is the json object returned from the server
 		el = $('#comments') ;
     //el.prepend(data['text']);
 		el.prepend(data['dom']); 
+		handle_click();
+		handle_commentreply();
 }
 function processTag(data){
 	el = $('#tags');
 	if (data['tagged']){
 		el.prepend(data['dom']);
 	}
+}
+function processCommentReply(data){
+	el = 	$('#child-'+data['parent_id']);
+	el.prepend(data['dom']);
+	handle_commentreply();
+	handle_click();
 }
 function showError(data){
   alert(data);
@@ -27,7 +37,7 @@ $(document).ready(function(){
 	 comment_url = $('#commentform').attr('action')+'?ajax=1';
 	 $('#commentform').ajaxForm({
 	  resetForm: true,
-		success: processJson,
+		success: processComment,
 		url: comment_url,
 		dataType: 'json'
 	 });
@@ -41,6 +51,21 @@ $(document).ready(function(){
 		 failure: showError
 		 })
 });
+handle_commentreply = function(){
+		 $('.commentreply').ajaxForm({
+		 resetForm: true,		 
+		 dataType:'json',
+		 success: processCommentReply
+		 })
+
+  $('.commentreply').hide();
+	$('.reply:not(.handled)').click(function(){
+	   $(this).parent().children().filter('.commentreply').toggle().addclass;
+		 return false;
+	});
+	$('.reply:not(.handled)').addClass('handled');
+	}
+$(document).ready(handle_commentreply);
 //-->
 </script>
 
@@ -52,7 +77,7 @@ $(document).ready(function(){
 
 {% include 'news/link_row.html' %}
 
-<div class="commentform" ">
+<div class="commentform">
 <form action="." method="post" id="commentform">
 <div>
 {{form.as_p}}
@@ -62,8 +87,11 @@ $(document).ready(function(){
 </div>
 
 <div id="comments">
-{% for comment in comments %}
+{% for comment, structure in comments|tree_info %}
+{% if structure.new_level %}<ul><li>{% else %}</li><li>{% endif %}
 {% include 'news/comment_row.html' %}
+{% for level in structure.closed_levels %}</li></ul>{% endfor %}
+
 {% endfor %}
 </div>
 {% endblock %}

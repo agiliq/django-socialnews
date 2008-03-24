@@ -12,5 +12,14 @@
 {{comment.comment_text}}
 <div class="commentdetails">
 <span id="compoints-{{comment.id}}">{{comment.points}}</span> points by {{comment.user.username}} on {{comment.humanized_time}}
+<a href="#" class="reply">reply</a>
+<form action="./?ajax=1" method="post" class="commentreply">
+{{comment.get_subcomment_form.as_p}}
+<input type="submit" name="subcomment" value="Comment" />
+</form>
+<ul>
+<li class="children" id="child-{{comment.id}}">
+</li>
+</ul>
 </div>
 </div>

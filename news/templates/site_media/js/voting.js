@@ -9,8 +9,12 @@ update_link = function(data){
   }
     
   }
-$(document).ready(function(){
+handle_click = function(){
 $('.vote, .comvote').click(function(){
+if (!logged_in){
+  window.location = '/login/'
+  return;
+}
 el = $(this);
 el.parent().next().children().filter('.details').children().filter('.points').html()
 if (el.hasClass('up')){
@@ -50,4 +54,5 @@ failure: update_link
 return false;
 });
 
-});
+}  
+$(document).ready(handle_click);

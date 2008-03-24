@@ -7,7 +7,7 @@ urlpatterns = patterns('',
     # (r'^implist/', include('implist.foo.urls')),
     (r'^admin/', include('django.contrib.admin.urls')),
     (r'^login/$', views.login),
-    (r'^login/$', views.logout),
+    (r'^logout/$', views.logout),
     (r'^register/$', views.login),
     
 )

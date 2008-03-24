@@ -66,6 +66,20 @@ class DoComment(forms.Form):
     def save(self):
         return Comment.objects.create_comment(link = self.link, user = self.user, comment_text = self.cleaned_data['text'])
     
+class DoThreadedComment(forms.Form):
+    text = forms.CharField(widget = forms.Textarea)
+    parent_id = forms.CharField(widget = forms.HiddenInput)
+    
+    def __init__(self, user, link, parent, *args, **kwargs):
+        super(DoThreadedComment, self).__init__( *args, **kwargs)
+        self.user = user
+        self.link = link
+        self.parent = parent
+        self.fields['parent_id'].initial = parent.id
+    
+    def save(self):
+        return Comment.objects.create_comment(link = self.link, user = self.user, comment_text = self.cleaned_data['text'], parent = self.parent)
+    
 class AddTag(forms.Form):
     tag = forms.CharField(max_length = 100)
     

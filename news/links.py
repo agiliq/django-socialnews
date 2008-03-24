@@ -28,9 +28,10 @@ def link_details(request, topic_name, link_id):
     else:
         link = Link.objects.get(topic = topic, id = link_id)
     if request.user.is_authenticated():
-        comments = Comment.objects.get_query_set_with_user(request.user).filter(link = link).select_related()
+        #comments = Comment.objects.get_query_set_with_user(request.user).filter(link = link)#.select_related()
+        comments = Comment.objects.append_user_data(Comment.tree.filter(link = link).select_related(), request.user)
     else:
-        comments = Comment.objects.filter(link = link).select_related()
+        comments = Comment.tree.filter(link = link).select_related()
     form = bforms.DoComment(user = request.user, link = link)
     tag_form = bforms.AddTag(user = request.user, link = link)
     if request.method == "GET":
@@ -45,6 +46,7 @@ def link_details(request, topic_name, link_id):
             if form.is_valid():
                 comment = form.save()
                 if request.REQUEST.has_key('ajax'):
+                    comment = Comment.objects.get_query_set_with_user(request.user).get(id = comment.id)
                     tem = get_template('news/comment_row.html')
                     context = Context(dict(comment=comment))
                     dom = tem.render(context)
@@ -61,6 +63,20 @@ def link_details(request, topic_name, link_id):
                     payload=dict(text=link_tag.tag.text, dom=dom, tagged=tagged)
                     return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
                 return HttpResponseRedirect('.')
+        elif request.POST.has_key('subcomment'):
+            parent_id = int(request.POST['parent_id'])
+            parent = Comment.objects.get(id = parent_id)
+            subcomment_form = bforms.DoThreadedComment(user = request.user, link=parent.link, parent=parent, data=request.POST)
+            if subcomment_form.is_valid():
+                comment = subcomment_form.save()
+            if request.REQUEST.has_key('ajax'):
+                comment = Comment.objects.get_query_set_with_user(request.user).get(id = comment.id)
+                tem = get_template('news/comment_row.html')
+                context = Context(dict(comment=comment))
+                dom = tem.render(context)
+                payload = dict(object='comment', action='reply', id=comment.id, text=comment.comment_text, parent_id=comment.parent.id, dom=dom)
+                return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
+            return HttpResponseRedirect('.')
     payload = {'topic':topic, 'link':link, 'comments':comments, 'form':form, 'tag_form':tag_form}
     return render(request, payload, 'news/link_details.html')
 

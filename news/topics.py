@@ -11,10 +11,10 @@ def main(request):
     if request.user.is_authenticated():
         subs = SubscribedUser.objects.filter(user = request.user)
         topics = [sub.topic for sub in subs]
-        links = Link.objects.get_query_set_with_user(request.user).filter(topic__in = topics)
+        links = Link.objects.get_query_set_with_user(request.user).filter(topic__in = topics).select_related()
     else:
-        links = Link.objects.all()
-    tags = Tag.objects.filter(topic__isnull = True)
+        links = Link.objects.all().select_related()
+    tags = Tag.objects.filter(topic__isnull = True).select_related()
     if request.user.is_authenticated():
         subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
     else:
@@ -31,11 +31,11 @@ def topic_main(request, topic_name):
     except exceptions.NoSuchTopic, e:
         url = '/createtopic/'#reverse('createtopic');
         return HttpResponseRedirect('%s?topic_name=%s' % (url, topic_name))
-    tags = Tag.objects.filter(topic = topic)
+    tags = Tag.objects.filter(topic = topic).select_related()
     if request.user.is_authenticated():
         links = Link.objects.get_query_set_with_user(request.user).filter(topic = topic).select_related()
     else:
-        links = Link.objects.filter(topic = topic)
+        links = Link.objects.filter(topic = topic).select_related()
     subscribed = False
     if request.user.is_authenticated():
         subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)

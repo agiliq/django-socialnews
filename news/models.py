@@ -301,13 +301,19 @@ class LinkVote(models.Model):
         
 class CommentManager(models.Manager):
     def get_query_set_with_user(self, user):
-        qs = self.get_query_set().extra({'liked':'SELECT news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id, 'disliked':'SELECT not news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id})
+        #qs = self.get_query_set().extra({'liked':'SELECT news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id, 'disliked':'SELECT not news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id})
+        qs = self.append_user_data(self.get_query_set(), user)
         return qs
+    
+    def append_user_data(self, queryset, user):
+        return queryset.extra({'liked':'SELECT news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id, 'disliked':'SELECT not news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id})
+        
 
     
-    def create_comment(self, link, user, comment_text):
-        comment = Comment(link = link, user = user, comment_text = comment_text)
+    def create_comment(self, link, user, comment_text, parent = None):
+        comment = Comment(link = link, user = user, comment_text = comment_text, parent = parent)
         comment.save()
+        comment.upvote(user)
         return comment
 
 class Comment(models.Model):
@@ -317,8 +323,17 @@ class Comment(models.Model):
     comment_text = models.TextField()
     created_on = models.DateTimeField(auto_now_add = 1)
     points = models.IntegerField(default = 0)
+    parent = models.ForeignKey('Comment', null=True, blank=True, related_name='children')
     
     objects = CommentManager()
+    
+    def get_subcomment_form(self):
+        from bforms import DoThreadedComment
+        form = DoThreadedComment(user = self.user, link = self.link, parent=self)
+        return form
+    
+    def __str__(self):
+        return u'%s' % (self.comment_text)
     
     def upvote(self, user):
         return self.vote(user, True)
@@ -369,6 +384,9 @@ class Comment(models.Model):
     
     class Meta:
         ordering = ('-created_on', )
+        
+import mptt
+mptt.register(Comment)
             
 class CommentVotesManager(VoteManager):
     def do_vote(self, comment, user, direction):
@@ -485,7 +503,10 @@ class LinkTagManager(models.Manager):
         return site_link_tag, topic_link_tag
     
     def get_topic_tags(self):
-        return self.filter(tag__topic__isnull = False)
+        return self.filter(tag__topic__isnull = False).select_related()
+    
+    def get_sitewide_tags(self):
+        return self.filter(tag__topic__isnull = True).select_related()
         
     
 class LinkTag(models.Model):

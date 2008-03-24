@@ -82,7 +82,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'news'
+    'news',
+    'mptt',
 )
 
 AUTH_PROFILE_MODULE = 'news.UserProfile'
