@@ -14,5 +14,22 @@
 {% for tag in tags %}
 <a href="{{tag.get_absolute_url}}">{{tag.text}}</a>
 {% endfor %}
+<h2>Top topics</h2>
+<ul>
+{% for topic in top_topics %}
+<li>
+<a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a>
+</li>
+{% endfor %}
+</ul>
+
+<h2>Updated topics</h2>
+<ul>
+{% for topic in new_topics %}
+<li>
+<a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a>
+</li>
+{% endfor %}
+</ul>
 </div>
 {% endblock %}

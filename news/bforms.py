@@ -9,6 +9,8 @@ class NewTopic(forms.Form):
     topic_name = forms.CharField(max_length = 100)
     topic_fullname = forms.CharField(max_length = 100)
     
+    about = forms.CharField(widget = forms.Textarea)
+    
     def __init__(self, user, topic_name=None, *args, **kwargs):
         super(NewTopic, self).__init__(*args, **kwargs)
         self.user = user
@@ -29,7 +31,7 @@ class NewTopic(forms.Form):
         return self.cleaned_data
     
     def save(self):
-        return Topic.objects.create_new_topic(user = self.user, full_name=self.cleaned_data['topic_fullname'], topic_name=self.cleaned_data['topic_name'])
+        return Topic.objects.create_new_topic(user = self.user, full_name=self.cleaned_data['topic_fullname'], topic_name=self.cleaned_data['topic_name'], about = self.cleaned_data['about'])
     
 class NewLink(forms.Form):
     url = forms.URLField()
@@ -90,6 +92,36 @@ class AddTag(forms.Form):
         
     def save(self):
         return LinkTagUser.objects.tag_link(tag_text = self.cleaned_data['tag'], link = self.link, user=self.user)
+
+
+from django.newforms import widgets
+from django.contrib.auth.models import User    
+class LoginForm(forms.Form):
+    """Login form for users."""
+    username = forms.RegexField(r'^[a-zA-Z0-9_]{1,30}$',
+                                max_length = 30,
+                                min_length = 1,
+                                widget = widgets.TextInput(attrs={'class':'input'}),
+                                error_message = 'Must be 1-30 alphanumeric characters or underscores.')
+    password = forms.CharField(min_length = 1, 
+                               max_length = 128, 
+                               widget = widgets.PasswordInput(attrs={'class':'input'}),
+                               label = 'Password')
+    remember_user = forms.BooleanField(required = False, 
+                                       label = 'Remember Me')
+    
+    def clean(self):
+        try:
+            user = User.objects.get(username__iexact = self.cleaned_data['username'])
+        except User.DoesNotExist, KeyError:
+            raise forms.ValidationError('Invalid username, please try again.')
+        
+        if not user.check_password(self.cleaned_data['password']):
+            raise forms.ValidationError('Invalid password, please try again.')
+        
+        return self.cleaned_data
+                
+    
         
         
         

@@ -18,13 +18,13 @@ def main(request):
     if request.user.is_authenticated():
         subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
     else:
-        subscriptions = SubscribedUser.objects.get_empty_query_set()    
-    payload = {'links':links, 'tags':tags, 'subscriptions':subscriptions}
+        subscriptions = SubscribedUser.objects.get_empty_query_set()
+    top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE]
+    new_topics = Topic.objects.all().order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE]
+    payload = {'links':links, 'tags':tags, 'subscriptions':subscriptions, 'top_topics':top_topics, 'new_topics':new_topics}
     return render(request, payload, 'news/main.html')
-        
-        
     
-
+    
 def topic_main(request, topic_name):
     try:
         topic = get_topic(request, topic_name)
@@ -92,6 +92,11 @@ def manage_topic(request, topic_name):
             sub.set_group('Member')        
     payload = {'topic':topic, 'subs':subs }
     return render(request, payload, 'news/manage_topic.html')
+
+def topic_about(request, topic_name):
+    topic = get_topic(request, topic_name)
+    payload = {'topic':topic}
+    return render(request, payload, 'news/topic_about.html')
 
     
     

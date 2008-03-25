@@ -116,6 +116,15 @@ def downvote_link(request, link_id):
         return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(link.get_absolute_url())
 
+@login_required
+def save_link(request, link_id):
+    if not request.method == 'POST':
+        return HttpResponseForbidden('Only Post allowed')
+    link = Link.objects.get(id = link_id)
+    saved_l = SavedLink.objects.save_link(link = link, user = request.user)
+    return HttpResponseRedirect(link.get_absolute_url())
+    
+
 def upvote_comment(request, comment_id):
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')

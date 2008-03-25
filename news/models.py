@@ -49,14 +49,16 @@ topic_permissions_flat = [perm[0] for perm in topic_permissions]
 
 class TopicManager(models.Manager):
     "Manager for topics"
-    def create_new_topic(self, user, full_name, topic_name, permissions = topic_permissions_flat[0], karma_factor = True):
+    def create_new_topic(self, user, full_name, topic_name, permissions = topic_permissions_flat[0], about=None, karma_factor = True):
         "Create topic and subscribe user to the given topic."
         profile = user.get_profile()
         if profile.karma > defaults.KARMA_COST_NEW_TOPIC or not karma_factor:
+            if not about:
+                about = 'About %s' % topic_name
             if karma_factor:
                 profile.karma -= defaults.KARMA_COST_NEW_TOPIC
                 profile.save()
-            topic = Topic(name = topic_name, full_name = full_name, created_by = user, permissions = permissions)
+            topic = Topic(name = topic_name, full_name = full_name, created_by = user, permissions = permissions, about = about)
             topic.save()
             subs_user = SubscribedUser.objects.subscribe_user(user = user, topic = topic, group = 'Moderator')
             return topic
@@ -68,8 +70,11 @@ class Topic(models.Model):
     name = models.CharField(max_length = 100, unique = True)
     full_name = models.TextField()
     created_by = models.ForeignKey(User)
+    created_on = models.DateTimeField(auto_now_add = 1)
+    updated_on = models.DateTimeField(auto_now = 1)
     num_links = models.IntegerField(default = 0)
     permissions = models.CharField(max_length = 100, choices = topic_permissions, default = topic_permissions_flat[0])
+    about = models.TextField(default = '')
     
     objects = TopicManager()
     
@@ -111,6 +116,9 @@ class LinkManager(models.Manager):
             link.upvote(user)
             link.topic.num_links += 1
             link.topic.save()
+            count = Link.objects.count()
+            if not count % defaults.DAMPEN_POINTS_AFTER:
+                Link.objects.dampen_points(link.topic)
             return link
         else:
             raise TooLittleKarmaForNewLink
@@ -119,8 +127,15 @@ class LinkManager(models.Manager):
         return super(LinkManager, self).get_query_set().extra(select = {'comment_count':'SELECT count(news_comment.id) FROM news_comment WHERE news_comment.link_id = news_link.id', 'visible_points':'news_link.liked_by_count - news_link.disliked_by_count'})
     
     def get_query_set_with_user(self, user):
-        qs = self.get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id})
+        qs = self.get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_link.id AND news_savedlink.user_id=%s'%user.id})
         return qs
+    
+    def dampen_points(self, topic):
+        from django.db import connection
+        cursor = connection.cursor()
+        stmt = 'UPDATE news_link SET points = points/%s WHERE topic_id = %s AND points > 1' % (defaults.DAMP_FACTOR, topic.id)
+        cursor.execute(stmt)
+        
         
     def up_vote(self, user, link):
         pass
@@ -137,7 +152,7 @@ class Link(models.Model):
     disliked_by = models.ManyToManyField(User, related_name="disliked_links")
     liked_by_count = models.IntegerField(default = 0)
     disliked_by_count = models.IntegerField(default = 0)
-    points = models.IntegerField(default = 0)
+    points = models.DecimalField(default = 0, max_digits=7, decimal_places=2)
     
     objects = LinkManager()
     
@@ -162,11 +177,17 @@ class Link(models.Model):
             self.liked_by_count += 1
             self.points += change
             save_vote = True
+            profile = self.user.get_profile()
+            profile.karma += defaults.CREATORS_KARMA_PER_VOTE
+            profile.save()
             
         if created and not direction:
             self.disliked_by_count += 1
             self.points -= change
             save_vote = True
+            profile = self.user.get_profile()
+            profile.karma -= defaults.CREATORS_KARMA_PER_VOTE
+            profile.save()
          
         if direction and flipped:
             #Upvoted and Earlier downvoted
@@ -174,6 +195,9 @@ class Link(models.Model):
             self.disliked_by_count -= 1
             self.points += 2*change
             save_vote = True
+            profile = self.user.get_profile()
+            profile.karma += 2 * defaults.CREATORS_KARMA_PER_VOTE
+            profile.save()
             
         if not direction and flipped:
             #downvoted and Earlier upvoted
@@ -181,6 +205,9 @@ class Link(models.Model):
             self.disliked_by_count += 1
             self.points -= 2*change
             save_vote = True
+            profile = self.user.get_profile()
+            profile.karma -= 2 * defaults.CREATORS_KARMA_PER_VOTE
+            profile.save()
         
         if save_vote:
             self.save()
@@ -196,9 +223,15 @@ class Link(models.Model):
         if vote.direction:
             self.liked_by_count -= 1
             self.save()
+            profile = self.user.get_profile()
+            profile.karma -= defaults.CREATORS_KARMA_PER_VOTE
+            profile.save()
         if not vote.direction:
             self.disliked_by_count -= 1
             self.save()
+            profile = self.user.get_profile()
+            profile.karma += defaults.CREATORS_KARMA_PER_VOTE
+            profile.save()
         vote.delete()
         return vote
         
@@ -212,29 +245,15 @@ class Link(models.Model):
     
     def humanized_time(self):
         return humanized_time(self.created_on)
-        """
-        "Time in human friendly way, like, 1 hrs ago, etc"
-        now = datetime.now()
-        delta = now - self.created_on
-        "try if days have passed."
-        if delta.days:
-            if delta.days == 1:
-                return 'yesterday'
-            else:
-                return self.created_on
-        delta = delta.seconds
-        if delta < 60:
-            return '%s seconds ago' % delta
-        elif delta < 60 * 60:
-            return '%s minutes ago' % (delta/60)
-        elif delta < 60 * 60 * 24:
-            return '%s hours ago' % (delta/(60 * 60))
-        """
     
     
         
     def get_absolute_url(self):
         url = reverse('link_detail', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
+        return url
+    
+    def save_url(self):
+        url = reverse('save_link', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
         return url
     
     def __unicode__(self):
@@ -245,6 +264,31 @@ class Link(models.Model):
     
     class Meta:
         unique_together = ('url', 'topic')
+        ordering = ('points', '-created_on')
+        
+class SavedLinkManager(models.Manager):
+    def save_link(self, link, user):
+        try:
+            return SavedLink.objects.get(link = link, user = user)
+        except SavedLink.DoesNotExist:
+            pass            
+        savedl = SavedLink(link = link, user = user)
+        savedl.save()
+        return savedl
+    
+        
+class SavedLink(models.Model):
+    link = models.ForeignKey(Link)
+    user = models.ForeignKey(User)
+    created_on = models.DateTimeField(auto_now_add = 1)
+    
+    objects = SavedLinkManager()
+    
+    class Admin:
+        pass
+    
+    class Meta:
+        unique_together = ('link', 'user')
         ordering = ('-created_on', )
         
 class VoteManager(models.Manager):

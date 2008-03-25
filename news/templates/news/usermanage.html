@@ -26,11 +26,14 @@ Unsubscribe
 {% if sub.is_creator %}
 Owner
 {% else %}
+{% with sub.topic as topic %}
 <form action='.' method='post'>
 <input type="hidden" name="topic" value="{{topic.name}}" />
 <input type="submit" name="unsub" value="Remove">
 </input>
 </form>
+<a href="{{topic.unsubscribe_url}}" class="unsubscribe">Unsubscribe</a>
+{% endwith %}
 {% endif %}
 </td>
 </tr>

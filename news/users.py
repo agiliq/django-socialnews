@@ -4,15 +4,27 @@ from django.contrib.auth.decorators import login_required
 from helpers import *
 import bforms
 import exceptions
+from django.conf import settings as settin
+from django.contrib import auth
+from django.contrib.auth import REDIRECT_FIELD_NAME
 
 def user_main(request, username):
     user = User.objects.get(username = username)
     if request.user.is_authenticated():
         links = Link.objects.get_query_set_with_user(request.user).filter(user = user).select_related()
     else:
-        links = Link.objects.filter(user = user)
-    payload = dict(user=user, links=links)
+        links = Link.objects.filter(user = user).select_related()
+    payload = dict(pageuser=user, links=links)
     return render(request, payload, 'news/userlinks.html')
+
+def user_comments(request, username):
+    user = User.objects.get(username = username)
+    if request.user.is_authenticated():
+        comments = Comment.objects.get_query_set_with_user(request.user).filter(user = user).select_related()
+    else:
+        comments = Comment.objects.filter(user = user).select_related()
+    payload = dict(pageuser=user, comments=comments)
+    return render(request, payload, 'news/usercomments.html')    
 
 @login_required
 def user_manage(request):

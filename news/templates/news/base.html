@@ -33,6 +33,16 @@ var logged_in = false;
 </script>
 
 {% block jqueryarea %}
+<script language="JavaScript" type="text/javascript" src="/site_media/js/voting.js">
+<!--
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/main.js">
+<!--
+//-->
+</script>
+
+
 {% endblock %}
 <link href="/site_media/style.css" rel="stylesheet" type="text/css" media="screen" />
 <link href="print.css" rel="stylesheet" type="text/css" media="print" />
@@ -63,6 +73,14 @@ Howdy {{user.username}}
 </li>
 </ul>
 {% endblock %}
+
+</div>
+
+<div class="loginout">
+{% if user.is_authenticated %}
+<a href="{% url logout %}">logout</a>
+{% else %}
+{% endif %}
 </div>
 
 </div>

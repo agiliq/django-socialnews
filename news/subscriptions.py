@@ -13,7 +13,8 @@ def subscribe(request, topic_name):
     topic = get_topic(request, topic_name)
     subs = SubscribedUser.objects.subscribe_user(user = request.user, topic = topic, group='Member')
     if request.REQUEST.has_key('ajax'):
-        payload = dict(action='subscribe', topic=topic.name, id=topic.id)
+        dom = '<a href="%s" class="unsubscribe">unsubscribe</a>' % topic.unsubscribe_url()
+        payload = dict(action='subscribe', topic=topic.name, id=topic.id, dom=dom)
         return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(topic.get_absolute_url())
 
@@ -28,7 +29,8 @@ def unsubscribe(request, topic_name):
     except SubscribedUser.DoesNotExist:
         pass
     if request.REQUEST.has_key('ajax'):
-        payload = dict(action='subscribe', topic=topic.name, id=topic.id)
+        dom = '<a href="%s" class="subscribe">subscribe</a>' % topic.subscribe_url()
+        payload = dict(action='subscribe', topic=topic.name, id=topic.id, dom=dom)
         return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(topic.get_absolute_url())
 

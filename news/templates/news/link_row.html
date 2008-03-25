@@ -27,8 +27,16 @@
 
 <div class="linkheader">
 <a href="{{link.url}}">{{link.text}}</a><span class="site">[{{link.site}}]</span>
+{% if not topic %}
+<span class="topic">[<a href="{{link.topic.get_absolute_url}}">{{link.topic.name}}</a>]</span>
+{% endif %}
 <div class="details">
-<span id="points-{{link.id}}">{{link.visible_points}}</span> points posted  {{link.humanized_time}}. <a href="{{link.get_absolute_url}}">{{link.comment_count}} Comments.</a> By {{link.user}}.
+<span id="points-{{link.id}}">{{link.visible_points}}</span> points posted  {{link.humanized_time}}. <a href="{{link.get_absolute_url}}">{{link.comment_count}} Comments.</a> By <a href="/user/{{link.user}}/">{{link.user}}</a>.
+{% if link.saved %}
+saved
+{% else %}
+<a href="{{link.save_url}}" class="saved">save</a>
+{% endif %}
 </div>
 </div>
 </div>

@@ -561,6 +561,58 @@ class TestVoting(unittest.TestCase):
         vote = self.link.reset_vote(self.user)
         self.assertEquals(type(vote), LinkVote)
         
+    def testSubmittersKarma(self):
+        "Upvoting a link, increases the posters karma."
+        user = UserProfile.objects.create_user(user_name='testSubmittersKarma', email='demo@demo.com', password='demo')
+        prev_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
+        self.link.upvote(user)
+        new_karma = UserProfile.objects.get(user = self.user).karma
+        self.assertEquals(prev_karma+1, new_karma)
+        
+    def testSubmittersKarmaMultiple(self):
+        "Multiple upvotes do not modify the karma multiple."
+        user = UserProfile.objects.create_user(user_name='testSubmittersKarmaMultiple', email='demo@demo.com', password='demo')
+        prev_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
+        for i in xrange(random.randint(5, 10)):
+            self.link.upvote(user)
+        new_karma = UserProfile.objects.get(user = self.user).karma
+        self.assertEquals(prev_karma+defaults.CREATORS_KARMA_PER_VOTE, new_karma)
+        
+    def testSubmittersKarmaMulUser(self):
+        "Multiple user upvotes"
+        users = []
+        for i in xrange(random.randint(5, 10)):
+            user = UserProfile.objects.create_user(user_name='testSubmittersKarmaMulUser%s'%i, email='demo@demo.com', password='demo')
+            users.append(user)
+        prev_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
+        for user in users:
+            self.link.upvote(user)
+        new_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
+        self.assertEquals(prev_karma+len(users)*defaults.CREATORS_KARMA_PER_VOTE, new_karma)
+        for user in users:
+            self.link.downvote(user)
+        new_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
+        self.assertEquals(prev_karma-len(users)*defaults.CREATORS_KARMA_PER_VOTE, new_karma)
+        for user in users:
+            self.link.reset_vote(user)
+        new_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
+        self.assertEquals(prev_karma, new_karma)
+        
+    def test_dampen_points(self):
+        "Dampening points"
+        #link = Link.objects.create_link(url = 'http://yahoomail.com', user=self.user, topic=self.topic, text='Mail')
+        links = []
+        for i in xrange(random.randint(50, 100)):
+            link = Link.objects.create_link(url = 'http://yahoomail%s.com'%i, user=self.user, topic=self.topic, text='Mail')
+            link.save()
+            links.append(link)
+        
+        
+        
+        
+        
+        
+        
         
         
 
