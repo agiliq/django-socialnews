@@ -17,6 +17,7 @@ function processCommentReply(data){
 	el.prepend(data['dom']);
 	handle_commentreply();
 	handle_click();
+        $('.nocomment').hide();
 }
 function showError(data){
   alert(data);

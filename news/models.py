@@ -276,6 +276,15 @@ class Link(models.Model):
         url = reverse('save_link', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
         return url
     
+    def related_url(self):
+        url = reverse('link_related', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
+        return url
+    
+    def info_url(self):
+        url = reverse('link_info', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
+        return url
+    
+    
     def __unicode__(self):
         return u'%s' % self.url
     
@@ -362,11 +371,24 @@ class LinkVote(models.Model):
     class Admin:
         pass
     
+class RelatedLinkManager(models.Manager):
+    "Manager for related links."
+    def get_query_set_with_user(self, user):
+        qs = self.get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_relatedlink.link_id AND news_linkvote.user_id = %s' % user.id, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_relatedlink.link_id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_relatedlink.link_id AND news_savedlink.user_id=%s'%user.id})
+        return qs
+    
 class RelatedLink(models.Model):
     "Links related to a specific link"
     link = models.ForeignKey(Link, related_name = 'link')
     related_link = models.ForeignKey(Link, related_name='related_link_set')
     corelation = models.DecimalField(max_digits = 6, decimal_places = 5)
+    
+    objects = RelatedLinkManager()
+    
+    
+    
+    class Admin:
+        pass
         
         
 class CommentManager(models.Manager):

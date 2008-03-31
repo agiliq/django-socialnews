@@ -1,0 +1,57 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<div class="post">
+<ul class="hot">
+{% include 'news/link_row.html' %}
+</ul>
+
+{% include 'news/link_details_menu.html' %}
+				<div>
+				
+
+				<table class="link-info">
+				<tr>
+				<td>
+				Submitted on
+				</td>
+				<td>
+				{{link.created_on|date}}
+				</td>
+				</tr>
+				
+				<tr>
+				<td>
+				Points
+				</td>
+				<td>
+				{{link.vis_points}}
+				</td>
+				</tr>
+				
+				<tr>
+				<td>
+				Liked by
+				</td>
+				<td>
+				{{link.liked_by_count}}
+				</td>
+				</tr>
+				
+				<tr>
+				<td>
+				Disliked by
+				</td>
+				<td>
+				{{link.disliked_by_count}}				
+				</td>
+				</tr>
+				</table>			
+				</div>
+</div>				
+{% endblock %}
+
+{% block sidebar %}
+
+
+{% endblock %}

@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+{% block title %}
+{% endblock %}
+</title>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.forms.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.tabs.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript">
+
+<!--
+{% if user.is_authenticated %}
+var logged_in = true;
+{% else %}
+var logged_in = false;
+{% endif %}
+{% if access %}
+var access = '{{access}}';
+{% else %}
+var access = false;
+{% endif %}
+//-->
+</script>
+
+{% block jqueryarea %}
+<script language="JavaScript" type="text/javascript" src="/site_media/js/voting.js">
+<!--
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/main.js">
+<!--
+//-->
+</script>
+
+
+{% endblock %}
+<link href="/site_media/style.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="print.css" rel="stylesheet" type="text/css" media="print" />
+</head>
+
+<body>
+<div id="wrap">
+<div id="header">
+<h1><span class="logo">&nbsp;</span>Topiks</h1>
+<div id="tabs">
+
+{% block tabs %}
+
+<ul class="tabs">
+<li>
+Howdy {{user.username}}
+</li>
+{% if topic %}
+<li>
+<a href="{{topic.get_absolute_url}}">{{topic.name}}</a>
+</li>
+{% endif %}
+<li>
+<a href="/recommended/">recommended</a>
+</li>
+<li>
+<a href="{% url createtopic %}">Create a topic</a>
+</li>
+</ul>
+{% endblock %}
+
+</div>
+
+<div class="loginout">
+{% if user.is_authenticated %}
+<a href="{% url logout %}">logout</a>
+{% else %}
+{% endif %}
+</div>
+
+</div>
+
+<div id="content">
+<div class="message">
+{% block message %}
+{% endblock %}
+</div>
+<div id="pagecontent">
+{% block contents %}
+{% endblock %}
+</div> <!-- End pagecontent -->
+
+<div id="sidebar">
+  {% block sidebar %}
+  {% endblock %}
+  </div> <!-- End sidebar -->
+	
+<p class="clear">&nbsp;</p>
+
+</div> <!-- End content -->
+
+<div id="footer">
+{% block footer %}
+
+Copyright &copy; YourSiteName.com <br />
+<a href="#">Your</a> | <a href="#">Links</a> | <a href="#">Here</a></div>
+{% endblock %}
+</div> <!-- End footer -->
+</body>
+</html>

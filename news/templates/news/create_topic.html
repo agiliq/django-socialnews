@@ -1,12 +1,23 @@
 {% extends 'news/base.html' %}
 
 {% block contents %}
-<div class="contents">
-    <form action="." method="post">
+<div class="post">
+<form action="." method="post" class="new-topic">
         <div class="contactform">
         {{form.as_p}}
-        <input type="submit" name="createtopic" value="create a new topic" />
-        </div>        
-    </form>
+        <input type="submit" name="createtopic" class="generic" value="create a new topic" />
+        </div>    
+			</form>     
 </div>
+
+ 
+{% endblock %}
+
+{% block sidebar %}
+	 <div class="oneblock">
+			<div class="box hot">
+				<h3>Create a topic</h3>
+		</div>
+
+</div>			
 {% endblock %}

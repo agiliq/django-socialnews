@@ -77,6 +77,27 @@ def link_details(request, topic_name, link_id):
     payload = {'topic':topic, 'link':link, 'comments':comments, 'form':form, 'tag_form':tag_form}
     return render(request, payload, 'news/link_details.html')
 
+def link_info(request, topic_name, link_id):
+    topic = get_topic(request, topic_name)
+    if request.user.is_authenticated():
+        link = Link.objects.get_query_set_with_user(request.user).get(id = link_id)
+    else:
+        link = Link.objects.get(id = link_id)
+    payload = dict(topic=topic, link=link)
+    return render(request, payload, 'news/link_info.html')
+
+
+def link_related(request, topic_name, link_id):
+    topic = get_topic(request, topic_name)
+    if request.user.is_authenticated():
+        link = Link.objects.get_query_set_with_user(request.user).get(id = link_id)
+        related = RelatedLink.objects.get_query_set_with_user(request.user).filter(link = link)
+    else:
+        link = Link.objects.get(id = link_id)
+        related = RelatedLink.objects.filter(link = link)    
+    payload = dict(topic=topic, link=link, related=related)
+    return render(request, payload, 'news/link_related.html')
+
 @login_required
 def upvote_link(request, link_id):
     if not request.method == 'POST':

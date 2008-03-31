@@ -39,8 +39,6 @@ a img {border: 0;}
 .center ul.hot div.left a.up:hover{background: url('images/up-hover.gif') no-repeat;}
 .center ul.hot div.left a.down{background: url('images/down.gif') no-repeat;}
 .center ul.hot div.left a.down:hover{background: url('images/down-hover.gif') no-repeat;}
-.center ul.hot div.left a.upmod{background: url('images/up-hover.gif') no-repeat;}
-.center ul.hot div.left a.downmod{background: url('images/down-hover.gif') no-repeat;}
 .center ul.hot a.title{color: #b22222;font-size: 1.1em;font-weight: bold;line-height: 1em;margin: 0;}
 .center ul.hot p{margin: 0;color: #413e3e;font-size: 12px;}
 .center ul.hot p.details{margin: 0;color: #969696;}
@@ -52,9 +50,6 @@ a img {border: 0;}
 .center .post div.left a.up:hover{background: url('images/up-hover.gif') no-repeat;}
 .center .post div.left a.down{background: url('images/down.gif') no-repeat;}
 .center .post div.left a.down:hover{background: url('images/down-hover.gif') no-repeat;}
-.center .post div.left a.up{background: url('images/up.gif') no-repeat;}
-.center .post div.left a.upmod{background: url('images/up-hover.gif') no-repeat;}
-.center .post div.left a.downmod{background: url('images/down-hover.gif') no-repeat;}
 .center .post a.title{color: #b22222;font-size: 1.1em;font-weight: bold;line-height: 1em;margin: 0;}
 .center .post p{margin: 0;color: #413e3e;font-size: 12px;}
 .center .post p.details{margin: 0 0 10px 0;color: #969696;}
@@ -97,9 +92,9 @@ a img {border: 0;}
 .right div.box{background: #fafafa;padding: 11px;border-top: 2px solid #f1f1f1;}
 .right div.box h3{margin: 0;}
 .right div.box h3 span{color: #b22222;}
-.right div.box.others{background: #fafafa;padding: 11px;overflow: hidden;}
-.right div.box.others ul{list-style: none;margin: 0;padding: 0;}
-.right div.box.others ul li{float: left;width: 100px;color: #b22222;margin: 0 0 0 10px;font-size: 11px;}
+.right div.box.other-reddits{background: #fafafa;padding: 11px;overflow: hidden;}
+.right div.box.other-reddits ul{list-style: none;margin: 0;padding: 0;}
+.right div.box.other-reddits ul li{float: left;width: 100px;color: #b22222;margin: 0 0 0 10px;font-size: 11px;}
 .right div.box.hot{padding: 0;border: 0;}
 .right div.box.hot a{font-size: 1.9em;z-index:100;color: #413e3e;width: 254px;height: 42px;line-height: 42px;padding: 0 0 0 60px;font-weight: normal;display: block;cursor: pointer;background: url('images/button-bg.gif') no-repeat;position: relative;left: -10px;text-decoration: none;}
 .right div.box.hot a span{color: #b22222;}
@@ -140,21 +135,3 @@ pre {font-family: monospace;font-size: 1.0em;}
 strong, b {font-weight: bold;}
 em, i {font-style:italic;}
 code {font-family: "Courier New", Courier, monospace;font-size: 1em;white-space: pre;}
-
-/* my edits */
-p.details a{
-    /*text-decoration: none;
-    color: #999666;*/
-}
-.center .post form.new-topic, .center .post form.new-link{width: 95.6%;padding: 2%;background: #fcfcfc;border-bottom: 1px solid #d7d7d7;border-left: 1px solid #d7d7d7;border-right: 1px solid #d7d7d7; border-top: 1px solid #d7d7d7;}
-.center .post form.new-topic label, .center .post form.new-link label{display: block;font-size: 16px;margin: 0 0 10px 0;}
-input.generic{display: block;text-align: center; margin: 10px 0 0 200px;}
-.post label{
-    font-weight: bold;
-}
-.right .oneblock{padding-top: 50px;}
-.right div.box.hot h3{font-size: 1.9em;z-index:100;color: #413e3e;width: 254px;height: 42px;line-height: 42px;padding: 0 0 0 60px;font-weight: normal;display: block;cursor: pointer;background: url('images/button-bg.gif') no-repeat;position: relative;left: -10px;text-decoration: none; color: #b22222;}
-.center .post ul.menu li a.active{background: #fdf2df;color: #413e3e;text-decoration: none;}
-table.link-info td{
-    padding-left: 10px;    
-}

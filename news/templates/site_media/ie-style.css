@@ -1,0 +1,8 @@
+.right div.box.hot a{font-size: 1.9em;color: #413e3e;width: 246px;height: 42px;line-height: 42px;padding: 0 0 0 60px;font-weight: normal;display: block;cursor: pointer;background: url('images/button-bg.gif') no-repeat;position: relative;left: -10px;text-decoration: none;}
+
+.header form input.submit{background: url('images/searchbutton-bg.gif') no-repeat;display: block;cursor: pointer;border: 0;width: 56px;height: 22px;margin: 1px 0 0 0;float: right;color: #413e3e;}
+
+.center ul.comments li{width: 95.5%;display: overflow;margin: 0 0 10px 0;padding: 2%;background: #fcfcfc;border: 1px solid #d7d7d7;}
+
+.minwidth {border-left: 979px solid #fff;}
+.wrapper {margin-left: -979px;position: relative;}

@@ -22,13 +22,9 @@
 {% include 'news/link_row.html' %}
 </ul>
 
-				<ul class="menu">
-					<li><a href="#">info</a></li>
-					<li><a href="#">comments</a></li>
-					<li><a href="#">related</a></li>
-					<li><a href="#">details</a></li>
-				</ul>
-      
+		 {% include 'news/link_details_menu.html' %}
+
+      {% if user.is_authenticated %}
       <div class="commentform">
       <form action="." method="post" id="commentform" class="new-comment">
       <div>
@@ -37,26 +33,32 @@
       </div>
       </form>
       </div>
+			{% endif %}
+<a name="comments"></a>
 
-<div id="comments">
+<div id="comments">				
+{% if comments %}
 {% for comment, structure in comments|tree_info %}
 {% if structure.new_level %}
-{% if comment.is_child_node %}
 <ul class="comments"><li>
-{% else %}
-<ul class="comments"><li>
-{% endif %}
 {% else %}
 </li><li>{% endif %}
    {% include 'news/comment_row.html' %}
 {% for level in structure.closed_levels %}</li></ul>{% endfor %}
-
 {% endfor %}
+{% else %}
+
+<div class="nocomment">
+There are no comments on this story, yet.
+</div>
+{% endif %}
+</div>
 </div>
 </div>
 {% endblock %}
 
 {% block sidebar %}
+	 		{{ block.super }}
 	 		<div class="box others">
 				<h3>Tags</h3>
         <form action="." method="post" id="tagform">
@@ -71,4 +73,12 @@
         {% endfor %}
         </ul>
 			</div>
+
+						
+			{% if topic %}
+			<div class="box hot">
+			<h3>{{topic.name}}</h3>
+			</div>
+			{% endif %}
+			
 {% endblock %}

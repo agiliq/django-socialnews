@@ -12,3 +12,11 @@
 </ul>
 {% endblock %}
 
+{% block sidebar %}
+	 		{% if topic %}
+			<div class="box hot">
+				<h3>{{ topic.name }}</h3>
+			</div>
+			{% endif %}
+{% endblock %}
+

@@ -1,11 +1,23 @@
 {% extends 'news/base.html' %}
 
 {% block contents %}
-<h1>Add a link</h1>
-<form action="." method="post">
+<div class="post">
+<form action="." method="post" class="new-link">
 <div>
 {{form.as_p}}
-<input type="submit" name="addlink" value="Add aa link" />
+<input type="submit" name="addlink" value="Add a link" class="generic"/>
 </div>
 </form>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div class="oneblock">
+{% if topic %}
+			<div class="box hot">
+				<h3>Add a link</h3>
+			</div>
+			{% endif %}
+
+</div>			
 {% endblock %}

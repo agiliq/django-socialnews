@@ -3,54 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>
-{% block title %}
-{% endblock %}
-</title>
-<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.js">
-<!--
-
-//-->
-</script>
-<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.forms.js">
-<!--
-
-//-->
-</script>
-<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.tabs.js">
-<!--
-
-//-->
-</script>
-<script language="JavaScript" type="text/javascript">
-
-<!--
-{% if user.is_authenticated %}
-var logged_in = true;
-{% else %}
-var logged_in = false;
-{% endif %}
-{% if access %}
-var access = '{{access}}';
-{% else %}
-var access = false;
-{% endif %}
-//-->
-</script>
-
-{% block jqueryarea %}
-<script language="JavaScript" type="text/javascript" src="/site_media/js/voting.js">
-<!--
-//-->
-</script>
-<script language="JavaScript" type="text/javascript" src="/site_media/js/main.js">
-<!--
-//-->
-</script>
-
-
-{% endblock %}
-
+<title>Rsstechnet</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <link rel="stylesheet" type="text/css" href="/site_media/style.css" />
 <!--[if lt IE 7]>
@@ -73,29 +26,19 @@ var access = false;
 
 	<div class="header">
 		
-		<a href="/" class="logo"><img src="/site_media/images/logo.jpg" alt="" height="128" width="273" /></a>
+		<a href="#" class="logo"><img src="images/logo.jpg" alt="" height="128" width="273" /></a>
 		
 		<ul class="nav">
-			<li><a href="{{topic.get_absolute_url}}">hot</a></li>
-			<li><a href="{{topic.new_url}}">new</a></li>
+			<li><a href="#">hot</a></li>
+			<li><a href="#">new</a></li>
 			<li><a href="#">browse</a></li>
 			<li><a href="#">stats</a></li>
 		</ul>
 		
 		<div class="top-right">
-		{% block topbar %}
 			<p>
-				{% if user.is_authenticated %}
-				Howdy {{user.username}}
-				| <a href="/logout/">logout</a>
-				{% else %}
-				<a href="/register/">want to join?</a> register in seconds 
-				{% endif %}
-				| <a href="{% url createtopic %}">create</a>
-				| <a href="{{topic.submit_url}}">submit</a> 
-				| <a href="/help/">help</a> | <a href="/blog/">blog</a>
+				<a href="#">want to join?</a> register in seconds | <a href="#">submit</a> | <a href="#">help</a> | <a href="#">blog</a>
 			</p>
-		{% endblock %}
 		</div>
 		
 		<form action="#">
@@ -108,8 +51,7 @@ var access = false;
 	<div class="outer">
 
 		<div class="center"><div class="incenter">
-		
-		{% block contents %}			
+			
 			<ul class="hot">
 				<li>
 					<div class="left">
@@ -207,14 +149,12 @@ var access = false;
 				<a href="#">200</a>
 				<a href="#">next &gt;&gt;</a>
 			</div>		
-		{% endblock %}
+			
 		</div></div> <!-- end center div -->
 
 		<div class="right"><div class="inright">
-		
-		{% block sidebar %}
-		{% if not user.is_authenticated %}
-		<form class="login" action="#">
+
+			<form class="login" action="#">
 			
 				<!--[if lte IE 7]>
 				<br />
@@ -225,7 +165,6 @@ var access = false;
 				
 				<input type="text" />
 				<input type="password" />
-
 				
 				<div class="clear"></div>
 				
@@ -233,9 +172,27 @@ var access = false;
 				
 				<div class="clear"></div>
 				
-			</form>		
-		{% endif %}
-		{% endblock %}
+			</form>
+			
+			<div class="box other-reddits">
+				<h3><span>other</span> reddits</h3>
+				
+				<ul>
+					<li>*<a href="#">reddit.com</a></li>
+					<li>*<a href="#">pics</a></li>
+					<li>*<a href="#">science</a></li>
+					<li>*<a href="#">worldnews</a></li>
+					<li>*<a href="#">politics</a></li>
+					<li>*<a href="#">programming</a></li>
+					<li>*<a href="#">business</a></li>
+					<li>*<a href="#">funny</a></li>
+				</ul>
+			</div>
+			
+			<div class="box hot">
+				<a><span>Hot</span> articles</a>
+			</div>
+		
 		</div></div> <!-- end right div -->
 
 		<br class="clear" />

@@ -53,4 +53,6 @@ urlpatterns += patterns('news.links',
     url(r'^upcomment/(?P<comment_id>\d+)/$', 'upvote_comment', name='upvote_comment'),
     url(r'^downcomment/(?P<comment_id>\d+)/$', 'downvote_comment', name='downvote_comment'),    
     url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/$', 'link_details', name='link_detail'),
+    url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/info/$', 'link_info', name='link_info'),
+    url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/related/$', 'link_related', name='link_related'),
 )

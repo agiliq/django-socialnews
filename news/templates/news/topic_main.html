@@ -21,10 +21,6 @@ Howdy {{user.username}}
 {% endblock %}
 
 {% block contents %}
-<h1>
-{{ topic.name }}
-</h1>
-
 <ul class="hot">
 {% for link in links %}
 {% include 'news/link_row.html' %}
@@ -34,6 +30,7 @@ Howdy {{user.username}}
 {% endblock %}
 
 {% block sidebar %}
+	 		{{ block.super }}
 	 		{% include 'news/subscribed_topics.html' %}
 
 	 		{% include 'news/tags.html' %}
@@ -53,5 +50,15 @@ Howdy {{user.username}}
 			</li>
 			</ul>
 			</div>
+			
+		  <div class="box hot">
+			
+			</div>
+			
+			{% if topic %}
+			<div class="box hot">
+				<a><span>{{ topic.name }}</span></a>
+			</div>
+			{% endif %}
 
 {% endblock %}

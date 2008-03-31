@@ -9,7 +9,8 @@
 {% endblock %}
 
 {% block sidebar %}
-{% include 'news/subscribed_topics.html' %}
+	 		{{ block.super }}
+			{% include 'news/subscribed_topics.html' %}
 	 		<div class="box others">
 				<h3>Tags</h3>
 				

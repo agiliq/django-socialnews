@@ -1,0 +1,20 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<div class="post">
+<ul class="hot">
+{% include 'news/link_row.html' %}
+</ul>
+
+{% include 'news/link_details_menu.html' %}
+
+<ul>
+{% for rel_link in related %}
+{% with rel_link.related_link as link %}
+{% include 'news/link_row.html' %}
+{% endwith %}
+{% endfor %}
+</ul>
+
+</div>
+{% endblock %}
