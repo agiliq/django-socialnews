@@ -28,7 +28,6 @@ def link_details(request, topic_name, link_id):
     else:
         link = Link.objects.get(topic = topic, id = link_id)
     if request.user.is_authenticated():
-        #comments = Comment.objects.get_query_set_with_user(request.user).filter(link = link)#.select_related()
         comments = Comment.objects.append_user_data(Comment.tree.filter(link = link).select_related(), request.user)
     else:
         comments = Comment.tree.filter(link = link).select_related()
@@ -37,8 +36,6 @@ def link_details(request, topic_name, link_id):
     if request.method == "GET":
         pass    
     if request.method == 'POST':
-        import pdb
-        #pdb.set_trace()
         if not request.user.is_authenticated():
             return HttpResponseForbidden('Please login')
         if request.POST.has_key('comment'):
@@ -160,5 +157,22 @@ def downvote_comment(request, comment_id):
         payload = {'dir':'down', 'object':'comment', 'id':comment.id, 'state':vote.direction, 'points':comment.points}
         return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(comment.link.get_absolute_url())
+
+def find_related_link(request, link_id):
+    link = Link.objects.get(id = link_id)
+    cursor = connection.cursor()
+    stmt = """SELECT main_link.link_id, peer.link_id, count( peer.user_id ) count, count( peer.user_id ) / (
+SELECT COUNT( countr.user_id )
+FROM news_linkvote countr
+WHERE countr.link_id = peer.link_id ) correlation
+FROM news_linkvote peer, news_linkvote main_link
+WHERE main_link.link_id =149
+AND peer.user_id = main_link.user_id
+AND peer.direction = main_link.direction
+GROUP BY peer.link_id
+HAVING count( peer.user_id ) > 5
+ORDER BY correlation DESC
+LIMIT 0 , 10"""
+    
 
     

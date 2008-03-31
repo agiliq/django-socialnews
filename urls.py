@@ -33,7 +33,8 @@ urlpatterns += patterns('news.topics',
     url(r'^$', 'main', name='main'),                        
     url(r'^createtopic/', 'create', name='createtopic'),
     url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
-    url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'manage_topic', name='manage_topic'),
+    url(r'^(?P<topic_name>[^\.^/]+)/new/$', 'topic_main', {'order_by':'new'}, name='topic_new', ),
+    url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'topic_manage', name='topic_manage'),
     url(r'^(?P<topic_name>[^\.^/]+)/about/$', 'topic_about', name='topic_about'),
 )
 

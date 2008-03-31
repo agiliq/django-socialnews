@@ -29,6 +29,11 @@ var logged_in = true;
 {% else %}
 var logged_in = false;
 {% endif %}
+{% if access %}
+var access = '{{access}}';
+{% else %}
+var access = false;
+{% endif %}
 //-->
 </script>
 

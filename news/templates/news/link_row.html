@@ -1,17 +1,5 @@
 <div class="linkwrap">
 <div class="midcol" id="vote-{{link.id}}">
-<!-- 
-{% if link.liked %}
-<div class="arrow upmod"></div>
-{% else %}
-<div class="arrow up"></div>
-{% endif %}
-{% if link.disliked %}
-<div class="arrow downmod"></div>
-{% else %}
-<div class="arrow down"></div>
-{% endif %}
- -->
 {% if link.liked %}
  <a href="/up/{{link.id}}/" class="vote arrow upmod" id='up-{{link.id}}'></a>
 {% else %}
@@ -22,7 +10,6 @@
 {% else %}
  <a href="/down/{{link.id}}/" class="vote arrow down" id='down-{{link.id}}'></a>
 {% endif %}
-
 </div>
 
 <div class="linkheader">

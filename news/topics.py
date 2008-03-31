@@ -6,6 +6,7 @@ import bforms
 import exceptions
 
 
+
 def main(request):
     "Sitewide main page"
     if request.user.is_authenticated():
@@ -14,7 +15,8 @@ def main(request):
         links = Link.objects.get_query_set_with_user(request.user).filter(topic__in = topics).select_related()
     else:
         links = Link.objects.all().select_related()
-    tags = Tag.objects.filter(topic__isnull = True).select_related()
+    links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
+    tags = Tag.objects.filter(topic__isnull = True).select_related().order_by()
     if request.user.is_authenticated():
         subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
     else:
@@ -25,7 +27,7 @@ def main(request):
     return render(request, payload, 'news/main.html')
     
     
-def topic_main(request, topic_name):
+def topic_main(request, topic_name, order_by = None):
     try:
         topic = get_topic(request, topic_name)
     except exceptions.NoSuchTopic, e:
@@ -36,6 +38,9 @@ def topic_main(request, topic_name):
         links = Link.objects.get_query_set_with_user(request.user).filter(topic = topic).select_related()
     else:
         links = Link.objects.filter(topic = topic).select_related()
+    if order_by == 'new':
+        links = links.order_by('-created_on')
+    links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
     subscribed = False
     if request.user.is_authenticated():
         subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
@@ -49,6 +54,8 @@ def topic_main(request, topic_name):
     
     payload = dict(topic = topic, links = links, subscriptions=subscriptions, tags=tags, subscribed=subscribed)
     return render(request, payload, 'news/topic_main.html')
+
+
 
 @login_required    
 def create(request, topic_name=None):
@@ -68,7 +75,7 @@ def create(request, topic_name=None):
     return render(request, payload, 'news/create_topic.html')
 
 @login_required
-def manage_topic(request, topic_name):
+def topic_manage(request, topic_name):
     """Allow moderators to manage a topic.
     Only moderators of the topic have access to this page.
     """

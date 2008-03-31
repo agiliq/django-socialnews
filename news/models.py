@@ -44,6 +44,10 @@ class CanNotUnsubscribe(Exception):
     "Can not unsubscribe out"
     pass
 
+class CanNotVote(Exception):
+    "Can not vote. Not a member."
+    pass
+
 topic_permissions = (('Public', 'Public'), ('Member', 'Member'), ('Private', 'Private'))
 topic_permissions_flat = [perm[0] for perm in topic_permissions]
 
@@ -99,9 +103,13 @@ class Topic(models.Model):
         url = reverse('link_submit', kwargs={'topic_name':self.name})
         return url
     
-    def manage_url(self):
-        url = reverse('manage_topic', kwargs={'topic_name':self.name})
+    def about_url(self):
+        url = reverse('topic_about', kwargs={'topic_name':self.name})
+        return url
     
+    def manage_url(self):
+        url = reverse('topic_manage', kwargs={'topic_name':self.name})
+        return url
     
 class LinkManager(models.Manager):
     "Manager for links"
@@ -133,12 +141,8 @@ class LinkManager(models.Manager):
     def dampen_points(self, topic):
         from django.db import connection
         cursor = connection.cursor()
-        stmt = 'UPDATE news_link SET points = points/%s WHERE topic_id = %s AND points > 1' % (defaults.DAMP_FACTOR, topic.id)
+        stmt = 'UPDATE news_link SET points = TRUNCATE(points/%s, 2) WHERE topic_id = %s AND points > 1' % (defaults.DAMP_FACTOR, topic.id)
         cursor.execute(stmt)
-        
-        
-    def up_vote(self, user, link):
-        pass
     
     
 class Link(models.Model):
@@ -169,17 +173,26 @@ class Link(models.Model):
         return self.vote(user, False)
     
     def vote(self, user, direction = True):
+        
         "Vote the given link either up or down, using a user. Calling multiple times with same user must have now effect."
+        #Check if the current user can vote this, link or raise xception
+        if self.topic.permissions == 'Public':
+            pass #Anyone can vote
+        else:
+            try:
+                subscribed_user = SubscribedUser.objects.get(topic = self.topic, user = user)
+            except SubscribedUser.DoesNotExist:
+                raise CanNotVote('The topic %s is non-public, and you are not subscribed to it.' % self.topic.name)
         vote, created, flipped = LinkVote.objects.do_vote(user = user, link = self, direction = direction)
         save_vote = False
-        change = max(0, min(defaults.MAX_CHANGE_PER_VOTE, user.get_profile().karma))
+        profile = user.get_profile()
+        change = max(0, min(defaults.MAX_CHANGE_PER_VOTE, profile.karma))
         if created and direction:
             self.liked_by_count += 1
             self.points += change
             save_vote = True
             profile = self.user.get_profile()
             profile.karma += defaults.CREATORS_KARMA_PER_VOTE
-            profile.save()
             
         if created and not direction:
             self.disliked_by_count += 1
@@ -187,7 +200,6 @@ class Link(models.Model):
             save_vote = True
             profile = self.user.get_profile()
             profile.karma -= defaults.CREATORS_KARMA_PER_VOTE
-            profile.save()
          
         if direction and flipped:
             #Upvoted and Earlier downvoted
@@ -197,7 +209,6 @@ class Link(models.Model):
             save_vote = True
             profile = self.user.get_profile()
             profile.karma += 2 * defaults.CREATORS_KARMA_PER_VOTE
-            profile.save()
             
         if not direction and flipped:
             #downvoted and Earlier upvoted
@@ -207,30 +218,35 @@ class Link(models.Model):
             save_vote = True
             profile = self.user.get_profile()
             profile.karma -= 2 * defaults.CREATORS_KARMA_PER_VOTE
+        if not user == self.user:
             profile.save()
-        
         if save_vote:
             self.save()
         return vote
             
     def reset_vote(self, user):
         "Reset a previously made vote"
+        import pdb
+        #pdb.set_trace()
         try:
             vote = LinkVote.objects.get(link = self, user = user)
         except LinkVote.DoesNotExist, e:
             "trying to reset vote, which does not exist."
             return
+        change = max(0, min(defaults.MAX_CHANGE_PER_VOTE, user.get_profile().karma))
         if vote.direction:
             self.liked_by_count -= 1
+            self.points -= change
             self.save()
             profile = self.user.get_profile()
             profile.karma -= defaults.CREATORS_KARMA_PER_VOTE
-            profile.save()
         if not vote.direction:
+            self.points += change
             self.disliked_by_count -= 1
             self.save()
             profile = self.user.get_profile()
             profile.karma += defaults.CREATORS_KARMA_PER_VOTE
+        if not user == self.user:
             profile.save()
         vote.delete()
         return vote
@@ -264,7 +280,7 @@ class Link(models.Model):
     
     class Meta:
         unique_together = ('url', 'topic')
-        ordering = ('points', '-created_on')
+        ordering = ('-points', '-created_on')
         
 class SavedLinkManager(models.Manager):
     def save_link(self, link, user):
@@ -328,7 +344,7 @@ class LinkVote(models.Model):
     "Vote on a specific link"
     link = models.ForeignKey(Link)
     user = models.ForeignKey(User)
-    direction = models.BooleanField()#Up is true, down is false.
+    direction = models.BooleanField(default = True)#Up is true, down is false.
     created_on = models.DateTimeField(auto_now_add = 1)
     
     objects = LinkVoteManager()
@@ -341,6 +357,12 @@ class LinkVote(models.Model):
         
     class Admin:
         pass
+    
+class RelatedLink(models.Model):
+    "Links related to a specific link"
+    link = models.ForeignKey(Link, related_name = 'link')
+    related_link = models.ForeignKey(Link, related_name='related_link_set')
+    corelation = models.DecimalField(max_digits = 6, decimal_places = 5)
         
         
 class CommentManager(models.Manager):
@@ -440,7 +462,7 @@ class CommentVote(models.Model):
     "Votes on a comment"
     comment = models.ForeignKey(Comment)
     user = models.ForeignKey(User)
-    direction = models.BooleanField()#Up is true, down is false.
+    direction = models.BooleanField(default = True)#Up is true, down is false.
     created_on = models.DateTimeField(auto_now_add = 1)
     
     objects = CommentVotesManager()

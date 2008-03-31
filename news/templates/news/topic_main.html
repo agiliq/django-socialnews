@@ -35,14 +35,7 @@ Howdy {{user.username}}
 {% block sidebar %}
 {% include 'news/subscribed_topics.html' %}
 
-<h2>Tags</h2>
-<ul>
-{% for tag in tags %}
-<li>
-<a href="{{tag.get_absolute_url}}">{{tag.text}}</a>
-</li>
-{% endfor %}
-</ul>
+{% include 'news/tags.html' %}
 
 <h2>Meta</h2>
 <ul>

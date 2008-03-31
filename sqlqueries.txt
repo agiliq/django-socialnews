@@ -1,0 +1,130 @@
+
+SELECT auth.username, count( peer.link_id ) / (
+SELECT COUNT( countr.link_id )
+FROM news_linkvote countr
+WHERE countr.user_id = peer.user_id ) correlation
+FROM news_linkvote peer, news_linkvote main_user, auth_user auth
+WHERE main_user.user_id =1
+AND auth.id = peer.user_id
+AND peer.link_id = main_user.link_id
+AND peer.direction = main_user.direction
+GROUP BY peer.user_id
+ORDER BY correlation
+LIMIT 0 , 30
+
+SELECT l1.url, l2.url, count(peer.user_id)
+FROM news_linkvote main_link, news_linkvote peer, news_link link l1, news_link l2
+WHERE main_link.user_id = peer.user_id
+AND main_link.direction = peer.direction
+AND main_link.link_id = l1.id
+AND peer.link_id = l2.id
+GROUP BY peer.link_id
+
+SELECT link.url, count( peer.user_id) / (
+SELECT COUNT( countr.user_id )
+FROM news_linkvote countr
+WHERE countr.link_id = peer.link_id ) correlation
+FROM news_linkvote peer, news_linkvote main_link, news_link link
+WHERE main_link.link_id =149
+AND link.id = peer.link_id
+AND peer.user_id = main_link.user_id
+AND peer.direction = main_link.direction
+GROUP BY peer.link_id
+ORDER BY correlation DESC
+LIMIT 0 , 30
+
+SELECT main_link.link_id, peer.link_id, count( peer.user_id ) / (
+SELECT COUNT( countr.user_id )
+FROM news_linkvote countr
+WHERE countr.link_id = peer.link_id ) correlation
+FROM news_linkvote peer, news_linkvote main_link
+WHERE main_link.link_id =149
+AND peer.user_id = main_link.user_id
+AND peer.direction = main_link.direction
+GROUP BY peer.link_id
+ORDER BY correlation DESC
+LIMIT 0 , 30
+
+SELECT main_link.link_id, peer.link_id, count(peer.link_id) kount, count( peer.user_id ) / (
+SELECT COUNT( countr.user_id )
+FROM news_linkvote countr
+WHERE countr.link_id = peer.link_id ) correlation
+FROM news_linkvote peer, news_linkvote main_link
+WHERE main_link.link_id =149
+AND NOT main_link.link_id = peer.link_id
+AND peer.user_id = main_link.user_id
+AND peer.direction = main_link.direction
+GROUP BY peer.link_id
+HAVING count(peer.link_id) > 2
+ORDER BY correlation DESC
+LIMIT 0 , 30
+
+wikipedia
+-------------
+SELECT page_id, page_title, count( rev_id ) countr
+FROM page, revision
+WHERE page.page_id = revision.rev_page
+GROUP BY page_title
+HAVING count( rev_id ) > 20 ORDER BY countr DESC 
+
+SELECT main_book_pg.page_title, peer_pg.page_title, count(peer.rev_id) kount
+FROM revision main_book, revision peer, page main_book_pg, page peer_pg
+WHERE main_book.rev_user = peer.rev_user
+AND main_book.rev_page = main_book_pg.page_id
+AND peer.rev_page = peer_pg.page_id
+AND not main_book.rev_page = peer.rev_page
+AND main_book_pg.page_id = 39
+GROUP BY peer.rev_page
+HAVING count(peer.rev_id) > 20
+Order by kount desc
+
+select page_title, count(rev_page) kount
+from page, revision
+WHERE page.page_id = revision.rev_page
+AND page_title = 'Blender_3D:_Noob_to_Pro'
+group by page.page_title
+having kount > 20
+order by kount desc
+limit 0, 30;
+
+select distinct rev_page from revision where rev_user in(
+SELECT distinct rev_user from revision
+where rev_page = 18423)
+LIMIT 0, 50;
+
+select rev_page, page.page_title, count(rev_user) kount, count(rev_user)/page.num_revisions korrelation
+from revision, page
+where rev_user in(
+SELECT rev_user from revision
+where rev_page = 18292
+and not rev_user = 0
+)
+AND revision.rev_page = page.page_id
+group by rev_page
+having kount > 10
+and korrelation > .1
+LIMIT 0, 50;
+
+
+select peer.rev_page, page.page_title, count(peer.rev_user) kount, count(peer.rev_user)/page.num_revisions korrelation
+from revision peer, revision main, page
+where peer.rev_user = main.rev_user
+AND main.rev_page = 18292
+AND NOT main.rev_user = 0
+AND peer.rev_page = page.page_id
+group by rev_page
+having kount > 10
+and korrelation > .1
+LIMIT 0, 50;
+
+select peer.rev_page, page.page_title, count(peer.rev_user) kount, count(peer.rev_user)/page.num_revisions korrelation
+from revision peer, revision main, page
+where peer.rev_user = main.rev_user
+AND main.rev_page = 8793
+AND NOT main.rev_user = 0
+AND peer.rev_page = page.page_id
+group by rev_page
+having kount > 10
+and korrelation > .1
+order by korrelation desc
+LIMIT 0, 50;
