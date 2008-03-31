@@ -3,7 +3,7 @@
 {% block contents %}
 <h1>{{tag.text}}</h1>
 
-<ul>
+<ul class="hot">
 {% for linktag in linktags %}
 {% with linktag.link as link %}
 {% include 'news/link_row.html' %}

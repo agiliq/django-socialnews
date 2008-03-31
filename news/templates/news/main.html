@@ -1,35 +1,42 @@
 {% extends 'news/base.html' %}
 
 {% block contents %}
+<ul class="hot">
 {% for link in links %}
 {% include 'news/link_row.html' %}
 {% endfor %}
+</ul>
 {% endblock %}
 
 {% block sidebar %}
-
-<div>
 {% include 'news/subscribed_topics.html' %}
-<h2>Tags</h2>
-{% for tag in tags %}
-<a href="{{tag.get_absolute_url}}">{{tag.text}}</a>
-{% endfor %}
-<h2>Top topics</h2>
-<ul>
-{% for topic in top_topics %}
-<li>
-<a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a>
-</li>
-{% endfor %}
-</ul>
-
-<h2>Updated topics</h2>
-<ul>
-{% for topic in new_topics %}
-<li>
-<a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a>
-</li>
-{% endfor %}
-</ul>
-</div>
+	 		<div class="box others">
+				<h3>Tags</h3>
+				
+				<ul>
+					{% for tag in tags %}
+					<li><a href="{{tag.get_absolute_url}}">{{tag.text}}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+			
+			<div class="box others">
+				<h3>Top topics</h3>
+				
+				<ul>
+					{% for topic in top_topics %}
+					<li><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+			
+			<div class="box others">
+				<h3>Updated topics</h3>
+				
+				<ul>
+					{% for topic in new_topics %}
+					<li><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
 {% endblock %}

@@ -2,7 +2,6 @@
 function processComment(data) { 
     // 'data' is the json object returned from the server
 		el = $('#comments') ;
-    //el.prepend(data['text']);
 		el.prepend(data['dom']); 
 		handle_click();
 		handle_commentreply();
@@ -59,7 +58,7 @@ handle_commentreply = function(){
 
   $('.commentreply').hide();
 	$('.reply:not(.handled)').click(function(){
-	   $(this).parent().children().filter('.commentreply').toggle().addclass;
+	   $(this).parent().parent().children().filter('.commentreply').toggle().addClass('handled');
 		 return false;
 	});
 	$('.reply:not(.handled)').addClass('handled');
@@ -81,5 +80,4 @@ $('.unsubscribe, .subscribe').click(function(){
 	 return false;
 });
 }
-$(document).ready(handle_subscription
-);
+$(document).ready(handle_subscription);

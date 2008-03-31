@@ -107,6 +107,10 @@ class Topic(models.Model):
         url = reverse('topic_about', kwargs={'topic_name':self.name})
         return url
     
+    def new_url(self):
+        url = reverse('topic_new', kwargs={'topic_name':self.name})
+        return url
+    
     def manage_url(self):
         url = reverse('topic_manage', kwargs={'topic_name':self.name})
         return url

@@ -17,40 +17,58 @@
 
 
 {% block contents %}
-
+<div class="post">
+<ul class="hot">
 {% include 'news/link_row.html' %}
+</ul>
 
-<div class="commentform">
-<form action="." method="post" id="commentform">
-<div>
-{{form.as_p}}
-<input type="submit" name="comment" value="comment" />
-</div>
-</form>
-</div>
+				<ul class="menu">
+					<li><a href="#">info</a></li>
+					<li><a href="#">comments</a></li>
+					<li><a href="#">related</a></li>
+					<li><a href="#">details</a></li>
+				</ul>
+      
+      <div class="commentform">
+      <form action="." method="post" id="commentform" class="new-comment">
+      <div>
+      {{form.as_p}}
+      <input type="submit" name="comment" value="comment" />
+      </div>
+      </form>
+      </div>
 
 <div id="comments">
 {% for comment, structure in comments|tree_info %}
-{% if structure.new_level %}<ul><li>{% else %}</li><li>{% endif %}
-{% include 'news/comment_row.html' %}
+{% if structure.new_level %}
+{% if comment.is_child_node %}
+<ul class="comments"><li>
+{% else %}
+<ul class="comments"><li>
+{% endif %}
+{% else %}
+</li><li>{% endif %}
+   {% include 'news/comment_row.html' %}
 {% for level in structure.closed_levels %}</li></ul>{% endfor %}
 
 {% endfor %}
 </div>
+</div>
 {% endblock %}
 
 {% block sidebar %}
-<h2>tags</h2>
-<form action="." method="post" id="tagform">
-{{tag_form}}
-<input type="submit" name="taglink" value="taglink" />
-</form>
-<ul id="tags">
-{% for tag in link.linktag_set.get_topic_tags %}
-<li>
-<a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>
-</li>
-{% endfor %}
-
-</ul>
+	 		<div class="box others">
+				<h3>Tags</h3>
+        <form action="." method="post" id="tagform">
+        {{tag_form.as_p}}
+        <input type="submit" name="taglink" value="taglink" />
+        </form>			
+        <ul id="tags">
+        {% for tag in link.linktag_set.get_topic_tags %}
+        <li>
+        <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>
+        </li>
+        {% endfor %}
+        </ul>
+			</div>
 {% endblock %}

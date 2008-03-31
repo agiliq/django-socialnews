@@ -44,7 +44,7 @@ def link_details(request, topic_name, link_id):
                 comment = form.save()
                 if request.REQUEST.has_key('ajax'):
                     comment = Comment.objects.get_query_set_with_user(request.user).get(id = comment.id)
-                    tem = get_template('news/comment_row.html')
+                    tem = get_template('news/comment_row_new.html')
                     context = Context(dict(comment=comment))
                     dom = tem.render(context)
                     payload = dict(text=comment.comment_text, user=comment.user.username, dom=dom)

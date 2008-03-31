@@ -5,11 +5,11 @@
 {{user.username}}
 </h1>
 
-<ul>
+<div class="post">
 {% for comment in comments %}
-{% include 'news/comment_row.html' %}
+{% include 'news/comment_row_new.html' %}
 {% endfor %}
-</ul>
+</div>
 
 {% endblock %}
 

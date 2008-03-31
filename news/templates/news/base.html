@@ -1,7 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC
+"-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>
 {% block title %}
 {% endblock %}
@@ -49,72 +50,230 @@ var access = false;
 
 
 {% endblock %}
-<link href="/site_media/style.css" rel="stylesheet" type="text/css" media="screen" />
-<link href="print.css" rel="stylesheet" type="text/css" media="print" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="/site_media/style.css" />
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" href="/site_media/ie-style.css" />
+<![endif]-->
+<!--[if lt IE 8]><style>
+.outer, .wide, h2, .wrapper, .minwidth {
+	_height: 0;
+	zoom: 1;
+}
+/* rimuove complicazione per Gecko 1.7- */
+.right {
+	margin-right: 0;
+}
+</style><![endif]-->
 </head>
-
 <body>
-<div id="wrap">
-<div id="header">
-<h1><span class="logo">&nbsp;</span>Topiks</h1>
-<div id="tabs">
 
-{% block tabs %}
+<div class="minwidth"><div class="wrapper">
 
-<ul class="tabs">
-<li>
-Howdy {{user.username}}
-</li>
-{% if topic %}
-<li>
-<a href="{{topic.get_absolute_url}}">{{topic.name}}</a>
-</li>
-{% endif %}
-<li>
-<a href="/recommended/">recommended</a>
-</li>
-<li>
-<a href="{% url createtopic %}">Create a topic</a>
-</li>
-</ul>
-{% endblock %}
+	<div class="header">
+		
+		<a href="/" class="logo"><img src="/site_media/images/logo.jpg" alt="" height="128" width="273" /></a>
+		
+		<ul class="nav">
+			<li><a href="{{topic.get_absolute_url}}">hot</a></li>
+			<li><a href="{{topic.new_url}}">new</a></li>
+			<li><a href="#">browse</a></li>
+			<li><a href="#">stats</a></li>
+		</ul>
+		
+		<div class="top-right">
+		{% block topbar %}
+			<p>
+				{% if user.is_authenticated %}
+				Howdy {{user.username}}
+				{% else %}
+				<a href="/register/">want to join?</a> register in seconds 
+				{% endif %}
+				| <a href="/create/">submit</a>
+				| <a href="{{topic.submit_url}}">submit</a> 
+				| <a href="/help/">help</a> | <a href="/blog/">blog</a>
+			</p>
+		{% endblock %}
+		</div>
+		
+		<form action="#">
+			<input type="text" />
+			<input type="submit" class="submit" value="Search" />
+		</form>
+		
+	</div>
 
-</div>
+	<div class="outer">
 
-<div class="loginout">
-{% if user.is_authenticated %}
-<a href="{% url logout %}">logout</a>
-{% else %}
-{% endif %}
-</div>
+		<div class="center"><div class="incenter">
+		
+		{% block contents %}			
+			<ul class="hot">
+				<li>
+					<div class="left">
+						<a href="#" class="up"></a>
+						<a href="#" class="down"></a>
+					</div>
+					<a href="#" class="title">The Pope has a pretty badass background [PIC]</a>
+					<p class="tags">[pics] (ectomo.com)</p>
+					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
+					<div class="clear"></div>
+				</li>
+				<li>
+					<div class="left">
+						<a href="#" class="up"></a>
+						<a href="#" class="down"></a>
+					</div>
+					<a href="#" class="title">Uncomfortable Questions: Was the Death Star Attack an Inside Job?</a>
+					<p class="tags">[funny] (websurdity.com)</p>
+					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
+					<div class="clear"></div>
+				</li>
+				<li>
+					<div class="left">
+						<a href="#" class="up"></a>
+						<a href="#" class="down"></a>
+					</div>
+					<a href="#" class="title">Every SOUTH PARK episode - uncensored, free, and totally legit! Thank you, Trey and Matt.</a>
+					<p class="tags">[pics] (ectomo.com)</p>
+					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
+					<div class="clear"></div>
+				</li>
+				<li>
+					<div class="left">
+						<a href="#" class="up"></a>
+						<a href="#" class="down"></a>
+					</div>
+					<a href="#" class="title">The Pope has a pretty badass background [PIC]</a>
+					<p class="tags">[pics] (ectomo.com)</p>
+					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
+					<div class="clear"></div>
+				</li>		
+				<li>
+					<div class="left">
+						<a href="#" class="up"></a>
+						<a href="#" class="down"></a>
+					</div>
+					<a href="#" class="title">The Pope has a pretty badass background [PIC]</a>
+					<p class="tags">[pics] (ectomo.com)</p>
+					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
+					<div class="clear"></div>
+				</li>
+				<li>
+					<div class="left">
+						<a href="#" class="up"></a>
+						<a href="#" class="down"></a>
+					</div>
+					<a href="#" class="title">Uncomfortable Questions: Was the Death Star Attack an Inside Job?</a>
+					<p class="tags">[funny] (websurdity.com)</p>
+					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
+					<div class="clear"></div>
+				</li>
+				<li>
+					<div class="left">
+						<a href="#" class="up"></a>
+						<a href="#" class="down"></a>
+					</div>
+					<a href="#" class="title">Every SOUTH PARK episode - uncensored, free, and totally legit! Thank you, Trey and Matt.</a>
+					<p class="tags">[pics] (ectomo.com)</p>
+					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
+					<div class="clear"></div>
+				</li>
+				<li>
+					<div class="left">
+						<a href="#" class="up"></a>
+						<a href="#" class="down"></a>
+					</div>
+					<a href="#" class="title">The Pope has a pretty badass background [PIC]</a>
+					<p class="tags">[pics] (ectomo.com)</p>
+					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
+					<div class="clear"></div>
+				</li>				
+			</ul>
 
-</div>
+			<div class="pagination">
+				<p class="more">view more :</p>
+				<a href="#">1</a>
+				<a href="#">2</a>
+				<a href="#">3</a>
+				<a href="#">4</a>
+				<a href="#">5</a>
+				<a href="#">6</a>
+				<a href="#">7</a>
+				<a href="#">8</a>
+				<p>...</p>
+				<a href="#">200</a>
+				<a href="#">next &gt;&gt;</a>
+			</div>		
+		{% endblock %}
+		</div></div> <!-- end center div -->
 
-<div id="content">
-<div class="message">
-{% block message %}
-{% endblock %}
-</div>
-<div id="pagecontent">
-{% block contents %}
-{% endblock %}
-</div> <!-- End pagecontent -->
+		<div class="right"><div class="inright">
+		{% block sidebar %}
+			<form class="login" action="#">
+			
+				<!--[if lte IE 7]>
+				<br />
+				<![endif]-->
+			
+				<label>Username</label>
+				<label>Password</label>
+				
+				<input type="text" />
+				<input type="password" />
+				
+				<div class="clear"></div>
+				
+				<input type="submit" class="submit" value="Submit" />
+				
+				<div class="clear"></div>
+				
+			</form>
+			
+			<div class="box other-reddits">
+				<h3><span>other</span> reddits</h3>
+				
+				<ul>
+					<li>*<a href="#">reddit.com</a></li>
+					<li>*<a href="#">pics</a></li>
+					<li>*<a href="#">science</a></li>
+					<li>*<a href="#">worldnews</a></li>
+					<li>*<a href="#">politics</a></li>
+					<li>*<a href="#">programming</a></li>
+					<li>*<a href="#">business</a></li>
+					<li>*<a href="#">funny</a></li>
+				</ul>
+			</div>
+			
+			<div class="box hot">
+				<a><span>Hot</span> articles</a>
+			</div>		
+		{% endblock %}
+		</div></div> <!-- end right div -->
 
-<div id="sidebar">
-  {% block sidebar %}
-  {% endblock %}
-  </div> <!-- End sidebar -->
-	
-<p class="clear">&nbsp;</p>
+		<br class="clear" />
+		<!--[if IE 8]><div class="clear"></div><![endif]-->
+	</div> <!-- end outer div -->
 
-</div> <!-- End content -->
+	<div class="footer">
+		
+		<ul class="nav">
+			<li><a href="#">feedback</a>|</li>
+			<li><a href="#">bookmarklets</a>|</li>
+			<li><a href="#">buttons</a>|</li>
+			<li><a href="#">widget</a>|</li>
+			<li><a href="#">store</a>|</li>
+			<li><a href="#">advertiseinnocuous</a></li>
+		</ul>
+		
+		<p><a href="#">wired WIRED.com</a> - <a href="#">WIRED How-To</a></p>
+		
+		<p class="copyright">Use of this site constitutes acceptance of our User Agreement and Privacy Policy(c) 2008 CondeNet, Inc. All rights reserved.</p>
+		
+	</div>
 
-<div id="footer">
-{% block footer %}
+</div></div>
 
-Copyright &copy; YourSiteName.com <br />
-<a href="#">Your</a> | <a href="#">Links</a> | <a href="#">Here</a></div>
-{% endblock %}
-</div> <!-- End footer -->
 </body>
 </html>

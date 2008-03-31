@@ -1,10 +1,12 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth import views
 from django.views.generic import simple
+from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('',
     # Example:
     # (r'^implist/', include('implist.foo.urls')),
+    (r'^foo/$', direct_to_template, {'template':'news/base.html'}),
     (r'^admin/', include('django.contrib.admin.urls')),
     url(r'^login/$', views.login, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
