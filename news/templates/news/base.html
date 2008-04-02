@@ -97,7 +97,7 @@ var access = false;
 		{% block topbar %}
 			<p>
 				{% if user.is_authenticated %}
-				Howdy {{user.username}}
+				Howdy <a href="/user/{{user.username}}/">{{user.username}}</a>
 				| <a href="/logout/">logout</a>
 				{% else %}
 				<a href="/register/">want to join?</a> register in seconds 

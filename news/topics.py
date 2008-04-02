@@ -53,8 +53,9 @@ def topic_main(request, topic_name, order_by = None):
             pass
     else:
         subscriptions = SubscribedUser.objects.get_empty_query_set()
-    
-    payload = dict(topic = topic, links = links, subscriptions=subscriptions, tags=tags, subscribed=subscribed, page_data=page_data)
+    top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE]
+    new_topics = Topic.objects.all().order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE]
+    payload = dict(topic = topic, links = links, subscriptions=subscriptions, tags=tags, subscribed=subscribed, page_data=page_data, top_topics=top_topics, new_topics=new_topics)
     return render(request, payload, 'news/topic_main.html')
 
 @login_required

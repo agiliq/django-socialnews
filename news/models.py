@@ -312,6 +312,9 @@ class SavedLinkManager(models.Manager):
         savedl.save()
         return savedl
     
+    def get_user_data(self):
+        return self.get_query_set().extra({'liked':'SELECT direction FROM news_linkvote WHERE news_linkvote.link_id = news_savedlink.link_id AND news_linkvote.user_id = news_savedlink.user_id', 'disliked':'SELECT NOT direction FROM news_linkvote WHERE news_linkvote.link_id = news_savedlink.link_id AND news_linkvote.user_id = news_savedlink.user_id', 'saved':'SELECT 1', })
+    
         
 class SavedLink(models.Model):
     link = models.ForeignKey(Link)
@@ -357,7 +360,9 @@ class LinkVoteManager(VoteManager):
         return vote, created, flipped"""
     def do_vote(self, user, link, direction):
         return super(LinkVoteManager, self).do_vote(user = user, object = link, direction = direction, voted_class = LinkVote, )
-        
+    
+    def get_user_data(self):
+        return self.get_query_set().extra({'liked':'direction', 'disliked':'NOT direction', 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_linkvote.link_id AND news_savedlink.user_id = news_linkvote.user_id'})
         
         
 class LinkVote(models.Model):

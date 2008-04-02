@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     (r'^foo/$', direct_to_template, {'template':'news/base.html'}),
     (r'^admin/', include('django.contrib.admin.urls')),
     url(r'^login/$', views.login, name='login'),
-    url(r'^logout/$', views.logout, name='logout'),
+    url(r'^logout/$', views.logout, {'template_name':'registration/logout.html'}, name='logout'),
     url(r'^register/$', views.login, name='register'),
     
 )
@@ -28,7 +28,10 @@ urlpatterns += patterns('news.subscriptions',
 urlpatterns +=patterns('news.users',
     url(r'^user/(?P<username>[^\.^/]+)/$', 'user_main', name='user_main'),
     url(r'^user/(?P<username>[^\.^/]+)/comments/$', 'user_comments', name='user_comments'),
-    url(r'^my/', 'user_manage', name='user_manage'),
+    url(r'^my/$', 'user_manage', name='user_manage'),
+    url(r'^my/liked/$', 'liked_links', name='liked_links'),
+    url(r'^my/disliked/$', 'disliked_links', name='disliked_links'),
+    url(r'^my/saved/$', 'saved_links', name='saved_links'),
 )
 
 urlpatterns += patterns('news.topics',

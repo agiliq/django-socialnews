@@ -5,10 +5,6 @@
 
 
 {% block contents %}
-<h1>
-{{user.username}}
-</h1>
-
 <ul class="hot">
 {% for link in links %}
 {% include 'news/link_row.html' %}
@@ -20,9 +16,23 @@
 {% endblock %}
 
 {% block sidebar %}
-<h2>Actions</h2>
-<ul>
-<li>Links</li>
-<li><a href="/user/{{user.username}}/comments/">Comments</a></li>
-</ul>
+	 	<div class="box singlecol">
+				<h3>Actions</h3>
+        <ul>
+        <li><a href="/user/{{username}}/"></a>  Links</li>
+				<li><a href="/user/{{pageuser.username}}/comments/">Comments</a></li>
+				{% ifequal user pageuser %}
+				<li><a href="{% url liked_links %}">Liked</a>  </li>
+				<li><a href="{% url disliked_links %}">Disliked</a>  </li>
+				<li><a href="{% url saved_links %}">Saved</a>  </li>				
+				{% endifequal %}
+        </ul>
+			</div>
+			
+			<div class="box hot">
+			<h3>
+			{{pageuser.username}}
+			</h3>
+			</div>
+			
 {% endblock %}

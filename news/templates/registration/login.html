@@ -1,7 +1,12 @@
 {% extends "registration/base.html" %}
 
 {% block contents %}
+
 <div class="post">
+{% if user.is_authenticated %}
+<h3>You are already logged in.</h3>
+<a href="{% url logout %}">logout</a>
+{% else %}
 {% if form.has_errors %}
 <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
@@ -16,5 +21,6 @@
 <input type="hidden" name="next" value="{{ next }}" />
 </form>
 </div>
+{% endif %}
 
 {% endblock %}
