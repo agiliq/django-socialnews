@@ -1,45 +1,42 @@
 {% extends 'news/base.html' %}
 
-{% block contents %}
-<h1>
+{% block title %}
 {{user.username}}
-</h1>
+{% endblock %}
 
-<table>
-<th>
-<tr>
-<td>
-Topic
-</td>
-<td>
-Unsubscribe
-</td>
-</tr>
-</th>
-<tbody>
-{% for sub in subs %}
-<tr>
-<td>
-{{sub.topic.name}}
-</td>
-<td>
-{% if sub.is_creator %}
-Owner
-{% else %}
-{% with sub.topic as topic %}
-<form action='.' method='post'>
-<input type="hidden" name="topic" value="{{topic.name}}" />
-<input type="submit" name="unsub" value="Remove">
-</input>
-</form>
-<a href="{{topic.unsubscribe_url}}" class="unsubscribe">Unsubscribe</a>
-{% endwith %}
-{% endif %}
-</td>
-</tr>
-{% endfor %}
 
-</tbody>
-</table>
+{% block contents %}
+<div class="post">
+    
+    <table>
+    <tbody>
+    {% for sub in subs %}
+    <tr>
+    <td>
+    {{sub.topic.name}}
+    </td>
+    <td>
+    {% if sub.is_creator %}
+    Owner
+    {% else %}
+    {% with sub.topic as topic %}
+    <a href="{{topic.unsubscribe_url}}" class="unsubscribe">Unsubscribe</a>
+    {% endwith %}
+    {% endif %}
+    </td>
+    </tr>
+    {% endfor %}
+    
+    </tbody>
+    </table>
+</div>
+{% endblock %}
 
+{% block sidebar %}
+	 <div class="oneblock">
+			<div class="box hot">
+				<h3>Subscribed topics</h3>
+		</div>
+
+		</div>	
 {% endblock %}

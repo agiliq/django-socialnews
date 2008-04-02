@@ -1,0 +1,11 @@
+{% extends 'news/base.html' %}
+
+{% block contents %}
+<ul class="hot">
+{% for rlink in recommended %}
+{% with rlink as obj %}
+{% include 'news/link_row_wrapped.html' %}
+{% endwith %}
+{% endfor %}
+</ul>
+{% endblock %}

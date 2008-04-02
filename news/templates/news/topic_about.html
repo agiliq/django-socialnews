@@ -1,9 +1,26 @@
 {% extends 'news/base.html' %}
 
-{% block contents %}
-<h1>{{topic.name}}</h1>
+{% block title %}
+{% endblock %}
 
-<div class="about">
+
+{% block contents %}
+
+<div class="post">
 {{topic.about}}
+<br />
 </div>
+<div class="post">
+Subscribed users: {{count}}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+
+	 <div class="oneblock">
+			<div class="box hot">
+				<h3>{{topic.name}}</h3>
+		</div>
+
+		</div>	
 {% endblock %}

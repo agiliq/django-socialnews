@@ -16,3 +16,11 @@ MAX_RELATED_LINKS = 10
 MIN_VOTES_IN_RELATED = 5
 
 LINKS_PER_PAGE = 15
+
+#For Stats Page
+TOP_TOPICS = 10
+TOP_USERS = 10
+TOP_LINKS = 10
+
+
+#Recommnded for users

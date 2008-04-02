@@ -158,3 +158,8 @@ input.generic{display: block;text-align: center; margin: 10px 0 0 200px;}
 table.link-info td{
     padding-left: 10px;    
 }
+.floatdiv{
+    float: left;
+    margin-right: 20px;
+    
+}

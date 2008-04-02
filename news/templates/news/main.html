@@ -1,11 +1,20 @@
 {% extends 'news/base.html' %}
 
+{% block title %}
+
+{% endblock %}
+
+
 {% block contents %}
+
 <ul class="hot">
 {% for link in links %}
 {% include 'news/link_row.html' %}
 {% endfor %}
 </ul>
+
+{% include 'news/pagination.html' %}
+
 {% endblock %}
 
 {% block sidebar %}
@@ -29,6 +38,8 @@
 					<li><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></li>
 					{% endfor %}
 				</ul>
+				<div class="clear"></div>
+				<a href="{% url topic_list %}"><img src="/site_media/images/add.png" alt=""></a>
 			</div>
 			
 			<div class="box others">
@@ -39,5 +50,7 @@
 					<li><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></li>
 					{% endfor %}
 				</ul>
+				<div class="clear"></div>
+				<a href="{% url topic_list %}"><img src="/site_media/images/add.png" alt=""></a>
 			</div>
 {% endblock %}

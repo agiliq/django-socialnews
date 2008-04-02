@@ -1,5 +1,9 @@
 {% extends 'news/base.html' %}
 
+{% block title %}
+{% endblock %}
+
+
 {% block contents %}
 <h1>
 {{user.username}}
@@ -10,6 +14,8 @@
 {% include 'news/link_row.html' %}
 {% endfor %}
 </ul>
+
+{% include 'news/pagination.html' %}
 
 {% endblock %}
 

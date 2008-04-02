@@ -1,0 +1,9 @@
+
+<div class="pagination">
+{% if page_data.has_prev_page %}
+<a href=".?page={{page_data.prev_page}}">&lt;&lt; prev</a>
+{% endif %}
+{% if page_data.has_next_page %}
+<a href=".?page={{page_data.next_page}}">next &gt;&gt;</a>
+{% endif %}
+</div>

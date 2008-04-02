@@ -75,12 +75,23 @@ var access = false;
 		
 		<a href="/" class="logo"><img src="/site_media/images/logo.jpg" alt="" height="128" width="273" /></a>
 		
+		{% block nav %}
 		<ul class="nav">
+		  {% if topic %}
 			<li><a href="{{topic.get_absolute_url}}">hot</a></li>
 			<li><a href="{{topic.new_url}}">new</a></li>
-			<li><a href="#">browse</a></li>
-			<li><a href="#">stats</a></li>
+			{% else %}
+			<li><a href="/">hot</a></li>
+			<li><a href="/new/">new</a></li>			
+			{% endif %}
+			<li><a href="/recommended/">recommended</a></li>
+			{% if topic %}
+			<li><a href="{{topic.about_url}}">about</a></li>
+			{% else %}
+			<li><a href="/about/">about</a></li>
+			{% endif %}
 		</ul>
+		{% endblock %}
 		
 		<div class="top-right">
 		{% block topbar %}
@@ -214,7 +225,7 @@ var access = false;
 		
 		{% block sidebar %}
 		{% if not user.is_authenticated %}
-		<form class="login" action="#">
+		<form class="login" method="post" action="/login/">
 			
 				<!--[if lte IE 7]>
 				<br />
@@ -223,13 +234,14 @@ var access = false;
 				<label>Username</label>
 				<label>Password</label>
 				
-				<input type="text" />
-				<input type="password" />
+				<input type="text" name="username" />
+				<input type="password" name="password" />
 
 				
 				<div class="clear"></div>
 				
-				<input type="submit" class="submit" value="Submit" />
+				<input type="submit" class="submit" value="login" />
+				<input type="hidden" name="next" value="" />
 				
 				<div class="clear"></div>
 				

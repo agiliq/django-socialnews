@@ -14,7 +14,8 @@ def user_main(request, username):
         links = Link.objects.get_query_set_with_user(request.user).filter(user = user).select_related()
     else:
         links = Link.objects.filter(user = user).select_related()
-    payload = dict(pageuser=user, links=links)
+    links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
+    payload = dict(pageuser=user, links=links, page_data=page_data)
     return render(request, payload, 'news/userlinks.html')
 
 def user_comments(request, username):

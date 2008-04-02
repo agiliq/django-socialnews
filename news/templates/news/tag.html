@@ -1,22 +1,33 @@
 {% extends 'news/base.html' %}
 
+{% block title %}
+{% endblock %}
+
+
 {% block contents %}
-<h1>{{tag.text}}</h1>
 
 <ul class="hot">
 {% for linktag in linktags %}
-{% with linktag.link as link %}
-{% include 'news/link_row.html' %}
+{% with linktag as obj %}
+{% include 'news/link_row_wrapped.html' %}
 {% endwith %}
 {% endfor %}
 </ul>
+
+{% include 'news/pagination.html' %}
+
 {% endblock %}
 
 {% block sidebar %}
 	 		{% if topic %}
 			<div class="box hot">
-				<h3>{{ topic.name }}</h3>
+				<h3>{{ topic.name }} - {{tag.text}}</h3>
 			</div>
+			{% else %}
+			<div class="box hot">
+				<h3>{{tag.text}}</h3>
+			</div>
+			
 			{% endif %}
 {% endblock %}
 

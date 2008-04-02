@@ -8,6 +8,7 @@ class NewTopic(forms.Form):
     "Create a new topic."
     topic_name = forms.CharField(max_length = 100)
     topic_fullname = forms.CharField(max_length = 100)
+    permission = forms.ChoiceField(choices = topic_permissions)
     
     about = forms.CharField(widget = forms.Textarea)
     
@@ -31,7 +32,8 @@ class NewTopic(forms.Form):
         return self.cleaned_data
     
     def save(self):
-        return Topic.objects.create_new_topic(user = self.user, full_name=self.cleaned_data['topic_fullname'], topic_name=self.cleaned_data['topic_name'], about = self.cleaned_data['about'])
+        return Topic.objects.create_new_topic(user = self.user, full_name=self.cleaned_data['topic_fullname'], topic_name=self.cleaned_data['topic_name'], about = self.cleaned_data['about'], permissions = self.cleaned_data['permission'])
+    
     
 class NewLink(forms.Form):
     url = forms.URLField()

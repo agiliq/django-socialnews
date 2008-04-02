@@ -1,9 +1,15 @@
+
+
 	 		<div class="box others">
-				<h3>Subscribed Topic</h3>
+				<h3>Subscribed Topic </h3> 
 				
 				<ul>
 				{% for subs in subscriptions %}
 					<li><a href="{{subs.topic.get_absolute_url}}">{{subs.topic.full_name}}</a></li>
 				{% endfor %}
 				</ul>
+				<div class="clear"></div>
+				<div class="sub_edit">
+				<a href="{% url user_manage %}"><img src="/site_media/images/application_edit.png" alt="" /></a>
+				</div>
 			</div>

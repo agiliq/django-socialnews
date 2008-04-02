@@ -69,6 +69,10 @@ class TopicManager(models.Manager):
         else:
             raise TooLittleKarmaForNewTopic
         
+    def append_user_data(self, user):
+        return self.get_query_set().extra({'is_subscribed':'SELECT 1 FROM news_subscribeduser WHERE topic_id = news_topic.id AND user_id = %s' % user.id})
+        
+        
 class Topic(models.Model):
     """A specific topic in the website."""
     name = models.CharField(max_length = 100, unique = True)
@@ -284,6 +288,9 @@ class Link(models.Model):
         url = reverse('link_info', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
         return url
     
+    def as_text(self):
+        "Full textual represenatation of link"
+        return '%s %s topic:%s user:%s' % (self.url, self.text, self.topic, self.user.username)
     
     def __unicode__(self):
         return u'%s' % self.url
@@ -374,7 +381,9 @@ class LinkVote(models.Model):
 class RelatedLinkManager(models.Manager):
     "Manager for related links."
     def get_query_set_with_user(self, user):
-        qs = self.get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_relatedlink.link_id AND news_linkvote.user_id = %s' % user.id, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_relatedlink.link_id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_relatedlink.link_id AND news_savedlink.user_id=%s'%user.id})
+        liked_sql = 'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_relatedlink.related_link_id AND news_linkvote.user_id = %s' % user.id
+        print liked_sql
+        qs = self.get_query_set().extra({'liked':liked_sql, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_relatedlink.related_link_id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_relatedlink.related_link_id AND news_savedlink.user_id=%s'%user.id})      
         return qs
     
 class RelatedLink(models.Model):
@@ -385,8 +394,29 @@ class RelatedLink(models.Model):
     
     objects = RelatedLinkManager()
     
+    class Meta:
+        unique_together = ('link', 'related_link')
     
+    class Admin:
+        pass
     
+class RecommendedLinkManager(models.Manager):
+    "Manager"
+    def get_query_set(self):
+        qs = super(RecommendedLinkManager, self).get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_recommendedlink.link_id AND news_linkvote.user_id = news_recommendedlink.user_id', 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_recommendedlink.link_id AND news_linkvote.user_id = news_recommendedlink.user_id', 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_recommendedlink.link_id AND news_savedlink.user_id=news_recommendedlink.user_id'})      
+        return qs
+    
+class RecommendedLink(models.Model):
+    "Links recommended to an User."
+    link = models.ForeignKey(Link)
+    user = models.ForeignKey(User)
+    recommended_on = models.DateTimeField(auto_now_add = 1)
+    
+    objects = RecommendedLinkManager()
+    
+    class Meta:
+        unique_together = ('link', 'user')
+        
     class Admin:
         pass
         
@@ -593,6 +623,11 @@ class LinkTagManager(models.Manager):
         site_link_tag, created = LinkTag.objects.get_or_create(tag = site_tag, link = link)
         site_link_tag.save()
         return site_link_tag, topic_link_tag
+    
+    def get_query_set_with_user(self, user):
+        qs = self.get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_linktag.link_id AND news_linkvote.user_id = %s' % user.id, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_linktag.link_id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_linktag.link_id AND news_savedlink.user_id=%s'%user.id})
+        return qs
+    
     
     def get_topic_tags(self):
         return self.filter(tag__topic__isnull = False).select_related()

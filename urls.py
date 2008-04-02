@@ -32,8 +32,13 @@ urlpatterns +=patterns('news.users',
 )
 
 urlpatterns += patterns('news.topics',
-    url(r'^$', 'main', name='main'),                        
+    url(r'^$', 'main', name='main'),
+    url(r'^new/$', 'main', {'order_by':'new'}, name='new'),
+    url(r'^recommended/$', 'recommended',  name='recommended'),                        
     url(r'^createtopic/', 'create', name='createtopic'),
+    url(r'^about/$', 'site_about', name='site_about'),
+    url(r'^topics/$', 'topic_list', name='topic_list'),
+    
     url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
     url(r'^(?P<topic_name>[^\.^/]+)/new/$', 'topic_main', {'order_by':'new'}, name='topic_new', ),
     url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'topic_manage', name='topic_manage'),

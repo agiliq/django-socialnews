@@ -94,7 +94,7 @@ def link_related(request, topic_name, link_id):
         related = RelatedLink.objects.get_query_set_with_user(request.user).filter(link = link)
     else:
         link = Link.objects.get(id = link_id)
-        related = RelatedLink.objects.filter(link = link)    
+        related = RelatedLink.objects.filter(link = link)
     payload = dict(topic=topic, link=link, related=related)
     return render(request, payload, 'news/link_related.html')
 
@@ -103,6 +103,7 @@ def upvote_link(request, link_id):
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')
     link = Link.objects.get(id = link_id)
+    check_permissions(link.topic, request.user)
     try:
         link_vote = LinkVote.objects.get(link = link, user = request.user)
         if link_vote.direction:
@@ -121,6 +122,7 @@ def downvote_link(request, link_id):
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')
     link = Link.objects.get(id = link_id)
+    check_permissions(link.topic, request.user)
     try:
         link_vote = LinkVote.objects.get(link = link, user = request.user)
         if not link_vote.direction:
@@ -139,13 +141,15 @@ def save_link(request, link_id):
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')
     link = Link.objects.get(id = link_id)
+    check_permissions(link.topic, request.user)
     saved_l = SavedLink.objects.save_link(link = link, user = request.user)
     return HttpResponseRedirect(link.get_absolute_url())
     
-
+@login_required
 def upvote_comment(request, comment_id):
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')
+    check_permissions(link.topic, request.user)
     comment = Comment.objects.get(id = comment_id)
     try:
         comment_vote = CommentVote.objects.get(comment = comment, user = request.user)
@@ -161,11 +165,12 @@ def upvote_comment(request, comment_id):
     return HttpResponseRedirect(comment.link.get_absolute_url())
         
     
-    
+@login_required    
 def downvote_comment(request, comment_id):
-    comment = Comment.objects.get(id = comment_id)
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')
+    comment = Comment.objects.get(id = comment_id)
+    check_permissions(link.topic, request.user)
     try:
         comment_vote = CommentVote.objects.get(comment = comment, user = request.user)
         if not comment_vote.direction:

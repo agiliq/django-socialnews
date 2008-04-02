@@ -12,10 +12,11 @@ def topic_tag(request, topic_name, tag_text):
     except Tag.DoesNotExist, e:
         raise Http404
     if request.user.is_authenticated():
-        linktags = LinkTag.objects.select_related(depth = 1).filter(tag = tag)
+        linktags = LinkTag.objects.get_query_set_with_user(user = request.user).filter(tag = tag)
     else:
-        linktags = LinkTag.objects.select_related(depth = 1).filter(tag = tag)
-    payload = dict(topic=topic, tag=tag, linktags=linktags)
+        linktags = LinkTag.objects.filter(tag = tag).select_related(depth = 1)
+    linktags, page_data = get_paged_objects(linktags, request, defaults.LINKS_PER_PAGE)
+    payload = dict(topic=topic, tag=tag, linktags=linktags, page_data=page_data)
     return render(request, payload, 'news/tag.html')
 
 def sitewide_tag(request, tag_text):
@@ -23,6 +24,9 @@ def sitewide_tag(request, tag_text):
         tag = Tag.objects.get(topic__isnull = True, text = tag_text)
     except Tag.DoesNotExist, e:
         raise Http404
-    linktags = LinkTag.objects.select_related(depth = 1).filter(tag = tag)
+    if request.user.is_authenticated():
+        linktags = LinkTag.objects.get_query_set_with_user(user = request.user).filter(tag = tag)
+    else:
+        linktags = LinkTag.objects.filter(tag = tag)
     payload = dict(tag=tag, linktags=linktags)
     return render(request, payload, 'news/tag.html')

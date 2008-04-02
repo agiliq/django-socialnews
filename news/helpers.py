@@ -10,6 +10,15 @@ def get_topic(request, topic_name):
         topic = Topic.objects.get(name = topic_name)
     except Topic.DoesNotExist:
         raise exceptions.NoSuchTopic
+    #If this is a private topic, and you are not  a member, go away
+    if topic.permissions == 'Private':
+        if not request.user.is_authenticated():
+            raise exceptions.PrivateTopicNoAccess
+        try:
+            SubscribedUser.objects.get(user = request.user, topic = topic)
+        except SubscribedUser.DoesNotExist:
+            raise exceptions.PrivateTopicNoAccess
+        
     return topic
 
 def render(request, payload, template):
@@ -48,4 +57,11 @@ def get_paged_objects(query_set, request, obj_per_page):
     page_data = get_pagination_data(object_page, page)
     return object, page_data
     
+def check_permissions(topic, user):
+    "Check that the current user has permssions to acces the page or raise exception if no"
+    if topic.permissions == 'Private':
+        try:
+            SubscribedUser.objects.get(user = user, topic = topic)
+        except SubscribedUser.DoesNotExist:
+            raise exceptions.PrivateTopicNoAccess
     

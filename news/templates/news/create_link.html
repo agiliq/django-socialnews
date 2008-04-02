@@ -1,5 +1,8 @@
 {% extends 'news/base.html' %}
 
+{% block title %}
+{% endblock %}
+
 {% block contents %}
 <div class="post">
 <form action="." method="post" class="new-link">
@@ -17,7 +20,7 @@
 			<div class="box hot">
 				<h3>Add a link</h3>
 			</div>
-			{% endif %}
+{% endif %}
 
 </div>			
 {% endblock %}
