@@ -1,0 +1,27 @@
+		{% if top_topics %}
+		<div class="box others">
+				<h3>Top topics</h3>
+				
+				<ul>
+					{% for topic in top_topics %}
+					<li><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></li>
+					{% endfor %}
+				</ul>
+				<div class="clear"></div>
+				<a href="{% url topic_list %}"><img src="/site_media/images/add.png" alt=""></a>
+			</div>
+		{% endif %}
+			
+		{% if new_topics %}
+			<div class="box others">
+				<h3>Updated topics</h3>
+				
+				<ul>
+					{% for topic in new_topics %}
+					<li><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></li>
+					{% endfor %}
+				</ul>
+				<div class="clear"></div>
+				<a href="{% url topic_list %}"><img src="/site_media/images/add.png" alt=""></a>
+			</div>
+		{% endif %}

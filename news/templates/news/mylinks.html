@@ -1,0 +1,36 @@
+{% extends 'news/base.html' %}
+
+{% block title %}
+{% endblock %}
+
+
+{% block contents %}
+<ul class="hot">
+{% for obj in objects %}
+{% include 'news/link_row_wrapped.html' %}
+{% endfor %}
+</ul>
+
+{% include 'news/pagination.html' %}
+
+{% endblock %}
+
+{% block sidebar %}
+	 	<div class="box singlecol">
+				<h3>Actions</h3>
+        <ul>
+        <li><a href="/user/{{username}}/"></a>  Links</li>
+				<li><a href="/user/{{user.username}}/comments/">Comments</a></li>
+				<li><a href="{% url liked_links %}">Liked</a>  </li>
+				<li><a href="{% url disliked_links %}">Disliked</a>  </li>
+				<li><a href="{% url saved_links %}">Saved</a>  </li>	
+        </ul>
+			</div>
+			
+			<div class="box hot">
+			<h3>
+			{{user.username}}
+			</h3>
+			</div>
+			
+{% endblock %}
