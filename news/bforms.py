@@ -162,7 +162,7 @@ class UserCreationForm(forms.Form):
         except User.DoesNotExist:
             return self.cleaned_data['email']
         #raise ValidationError(_('A user with this email already exists.'))
-	pass
+        pass
     
     def save(self):
         if self.cleaned_data['email']:
@@ -176,8 +176,8 @@ class UserCreationForm(forms.Form):
             key = "".join([random.choice(keyfrom) for i in xrange(50)])
             EmailActivationKey.objects.save_key(user, key)
             #helpers.send_mail_test(user=user, message = key)
-	    mail_text = render_to_string('registration/new_user_mail.txt', dict(key=key, user=user))
-	    send_mail('Your account was created.', mail_text, 'hello@42topics.com', [user.email])
+            mail_text = render_to_string('registration/new_user_mail.txt', dict(key=key, user=user))
+            send_mail('Your account was created.', mail_text, 'hello@42topics.com', [user.email])
                 
     
 class PasswordChangeForm(forms.Form):
@@ -222,9 +222,9 @@ class PasswordResetForm(forms.Form):
         keyfrom = 'abcdefghikjlmnopqrstuvwxyz1234567890'
         key = "".join([random.choice(keyfrom) for i in xrange(50)])
         PasswordResetKey.objects.save_key(user = self.user, key = key)
-	mail_text = render_to_string('registration/password_reset_mail.txt', dict(key=key, user=self.user))
+        mail_text = render_to_string('registration/password_reset_mail.txt', dict(key=key, user=self.user))
         #helpers.send_mail_test(user=self.user, message = key)
-	send_mail('Password reset request', mail_text, 'hello@42topics.com', [self.user.email])
+        send_mail('Password reset request', mail_text, 'hello@42topics.com', [self.user.email])
         
             
     
