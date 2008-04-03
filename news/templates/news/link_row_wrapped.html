@@ -1,5 +1,6 @@
 				<li>
 					<div class="left" id="vote-{{obj.link.id}}">
+					  {% if obj.can_vote or not user.is_authenticated %}					
             {% if obj.liked %}
              <a href="/up/{{obj.link.id}}/" class="vote arrow upmod" id='up-{{obj.link.id}}'></a>
             {% else %}
@@ -10,6 +11,7 @@
             {% else %}
              <a href="/down/{{obj.link.id}}/" class="vote arrow down" id='down-{{obj.link.id}}'></a>
             {% endif %}
+						{% endif %}
 					</div>
 					<a href="{{obj.link.url}}" class="title">{{obj.link.text}}</a>
 					<p class="tags">

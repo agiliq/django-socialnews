@@ -163,3 +163,14 @@ table.link-info td{
     margin-right: 20px;
     
 }
+.post label{
+    display: block;
+}
+.registerdiv{
+    float: left;
+    margin-right: 20px;
+    
+}
+.registerdiv .form{
+    margin: 15px 10px 5px 10px;
+}

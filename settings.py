@@ -69,12 +69,12 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'news.libs.sqllogmiddleware.SQLLogMiddleware',
+    #'news.libs.sqllogmiddleware.SQLLogMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    
+    'news.tapicks_middleware.ExceptionHandlerMiddleware'
 )
 
 ROOT_URLCONF = 'tapicks.urls'
@@ -91,6 +91,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.markup',
     'news',
     'mptt',
 )

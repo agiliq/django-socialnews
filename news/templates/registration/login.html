@@ -1,26 +1,42 @@
 {% extends "registration/base.html" %}
 
-{% block contents %}
+{% block title %}
+{{block.super}} - Login
+{% endblock %}
 
+{% block contents %}
 <div class="post">
+<div class="floatdiv">
+<div class="message">
 {% if user.is_authenticated %}
-<h3>You are already logged in.</h3>
-<a href="{% url logout %}">logout</a>
+<h3>
+    You are already logged in. <a href="/accounts/logout/">Logout?</a>
+</h3>
 {% else %}
+</div>
 {% if form.has_errors %}
 <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
-<form method="post" action=".">
-<table>
-<tr><td><label for="id_username">Username:</label></td><td>{{ form.username }}</td></tr>
-<tr><td><label for="id_password">Password:</label></td><td>{{ form.password }}</td></tr>
-</table>
+<div class="password">
+			<h3>Login</h3>
+			<div class="createcontent">
+				<form method="post" action=".">
 
-<input type="submit" value="login" />
-<input type="hidden" name="next" value="{{ next }}" />
-</form>
-</div>
+    {{form.as_p}}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <input type="submit" name="Login" value="login" />
+    </form>
+			</div>
+      <p style="padding-left:110px; margin-top:30px;"><span style="font-size:15px;">Don't have a Account yet ?</span><br />
+      <span style="font-size:13px;">Signing up is easy.</span></p>
+      <p style="font-size:14px; text-align:right; padding-right:10px"><a href="#">Sign Up</a></p>
+	</div>			
+</div>			
 {% endif %}
+</div>
+<div class="floatdiv">
 
+</div>
+</div>
 {% endblock %}

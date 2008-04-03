@@ -8,11 +8,15 @@ urlpatterns = patterns('',
     # (r'^implist/', include('implist.foo.urls')),
     (r'^foo/$', direct_to_template, {'template':'news/base.html'}),
     (r'^admin/', include('django.contrib.admin.urls')),
-    url(r'^login/$', views.login, name='login'),
     url(r'^logout/$', views.logout, {'template_name':'registration/logout.html'}, name='logout'),
-    url(r'^register/$', views.login, name='register'),
+    
     
 )
+
+urlpatterns += patterns('news.accounts',
+    url(r'^register/$', 'create_user', name='register'),
+    url(r'^login/$', 'login', name='login'),
+)                        
 
 urlpatterns += patterns('',
         (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'G:/tapicks/news/templates/site_media'}),
@@ -26,6 +30,10 @@ urlpatterns += patterns('news.subscriptions',
 )
 
 urlpatterns +=patterns('news.users',
+    url(r'^user/reset_password/$', 'reset_password', name='reset_password'),
+    url(r'^user/reset_password/sent/$', 'reset_password_sent', name='reset_password_sent'),
+    url(r'^user/reset_password/done/(?P<username>[^\.^/]+)/$', 'reset_password_done', name='reset_password_done'),
+    url(r'^user/activate/(?P<username>[^\.^/]+)/$', 'activate_user', name='activate_user'),                       
     url(r'^user/(?P<username>[^\.^/]+)/$', 'user_main', name='user_main'),
     url(r'^user/(?P<username>[^\.^/]+)/comments/$', 'user_comments', name='user_comments'),
     url(r'^my/$', 'user_manage', name='user_manage'),

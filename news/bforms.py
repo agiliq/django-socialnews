@@ -3,6 +3,12 @@ from django.contrib.auth.models import User
 from django.newforms import ValidationError
 import defaults
 from models import *
+import re
+from django.utils.translation import ugettext as _
+from django.newforms import widgets
+from django.contrib.auth.models import User
+import helpers
+import random
 
 class NewTopic(forms.Form):
     "Create a new topic."
@@ -94,10 +100,7 @@ class AddTag(forms.Form):
         
     def save(self):
         return LinkTagUser.objects.tag_link(tag_text = self.cleaned_data['tag'], link = self.link, user=self.user)
-
-
-from django.newforms import widgets
-from django.contrib.auth.models import User    
+  
 class LoginForm(forms.Form):
     """Login form for users."""
     username = forms.RegexField(r'^[a-zA-Z0-9_]{1,30}$',
@@ -122,8 +125,138 @@ class LoginForm(forms.Form):
             raise forms.ValidationError('Invalid password, please try again.')
         
         return self.cleaned_data
+    
+class UserCreationForm(forms.Form):
+    """A form that creates a user, with no privileges, from the given username and password."""
+    username = forms.CharField(max_length = 30, required = True)
+    password1 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    password2 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    email = forms.EmailField(required = False)
+    
+    def clean_username (self):
+        alnum_re = re.compile(r'^\w+$')
+        if not alnum_re.search(self.cleaned_data['username']):
+            raise ValidationError("This value must contain only letters, numbers and underscores.")
+        self.isValidUsername()
+        return self.cleaned_data['username']
+
+    def clean (self):
+        if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+            raise ValidationError(_("The two password fields didn't match."))
+        return super(forms.Form, self).clean()
+        
+    def isValidUsername(self):
+        try:
+            User.objects.get(username=self.cleaned_data['username'])
+        except User.DoesNotExist:
+            return
+        raise ValidationError(_('A user with that username already exists.'))
+    
+    def clean_email(self):
+        if not self.cleaned_data['email']:
+            return self.cleaned_data['email']
+        try:
+            User.objects.get(email=self.cleaned_data['email'])
+        except User.DoesNotExist:
+            return self.cleaned_data['email']
+        raise ValidationError(_('A user with this email already exists.'))
+    
+    def save(self):
+        if self.cleaned_data['email']:
+            email = self.cleaned_data['email']
+        else:
+            email = ''
+        user = UserProfile.objects.create_user(user_name = self.cleaned_data['username'], email=email, password=self.cleaned_data['password1'])
+        if self.cleaned_data['email']:
+            #generate random key
+            keyfrom = 'abcdefghikjlmnopqrstuvwxyz1234567890'
+            key = "".join([random.choice(keyfrom) for i in xrange(50)])
+            EmailActivationKey.objects.save_key(user, key)
+            helpers.send_mail_test(user=user, message = key)
                 
     
+class PasswordChangeForm(forms.Form):
+    old_password = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    password1 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    password2 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        
+    def clean_old_password(self):
+        if not self.user.check_password(self.cleaned_data['old_password']):
+            raise forms.ValidationError('Invalid password, please try again.')
+        return self.cleaned_data['old_password']
+    
+    def clean(self):
+        try:
+            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+                raise ValidationError(_("The two password fields didn't match."))
+        except KeyError, e:
+            pass
+        return super(PasswordChangeForm, self).clean()
+    
+    def save(self):
+        self.user.set_password(self.cleaned_data['password1'])
+        self.user.save()
+        return self.user
+    
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField()
+    
+    def clean_email(self):
+        try:
+            user = User.objects.get(email = self.cleaned_data['email'])
+            self.user = user
+        except User.DoesNotExist:
+            raise ValidationError(_('There is no user with this email.'))
+        return self.cleaned_data['email']
+    
+    def save(self):
+        keyfrom = 'abcdefghikjlmnopqrstuvwxyz1234567890'
+        key = "".join([random.choice(keyfrom) for i in xrange(50)])
+        PasswordResetKey.objects.save_key(user = self.user, key = key)
+        helpers.send_mail_test(user=self.user, message = key)
+        
+            
+    
+class InviteUserForm(forms.Form):
+    username = forms.CharField(max_length = 100)
+    invite_text = forms.CharField(max_length = 1000, widget = forms.Textarea, required = False)
+    
+    
+    def __init__(self, topic, *args, **kwargs):
+        self.topic = topic
+        super(InviteUserForm, self).__init__(*args, **kwargs)
+        
+    def clean_username(self):
+        try:
+            user = User.objects.get(username = self.cleaned_data['username'])
+        except User.DoesNotExist:
+            raise ValidationError(_('There is no user with username %s.' % self.cleaned_data['username']))
+        try:
+            invite = Invite.objects.get(user = user, topic = self.topic)
+        except Invite.DoesNotExist:
+            pass
+        else:
+            raise ValidationError(_('User %s has already been invited.' % self.cleaned_data['username']))
+        try:
+            invite = SubscribedUser.objects.get(user = user, topic = self.topic)
+        except SubscribedUser.DoesNotExist:
+            pass
+        else:
+            raise ValidationError(_('User %s is already subscribed to %s.' % (self.cleaned_data['username'], self.topic.name)))
+        return self.cleaned_data['username']
+    
+    
+    
+    def save(self):
+        user = User.objects.get(username = self.cleaned_data['username'])
+        invite = Invite.objects.invite_user(user = user, topic = self.topic, text = self.cleaned_data['invite_text'])
+        return invite
+        
+        
         
         
         

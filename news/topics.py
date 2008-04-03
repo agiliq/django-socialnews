@@ -12,13 +12,16 @@ def main(request, order_by=None):
     if request.user.is_authenticated():
         subs = SubscribedUser.objects.filter(user = request.user)
         topics = [sub.topic for sub in subs]
-        links = Link.objects.get_query_set_with_user(request.user).filter(topic__in = topics).select_related()
+        if topics:
+            links = Link.objects.get_query_set_with_user(request.user).filter(topic__in = topics).select_related()
+        else:
+            links = Link.objects.get_query_set_with_user(request.user).select_related()
     else:
         links = Link.objects.all().select_related()
     if order_by == 'new':
         links = links.order_by('-created_on')
     links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
-    tags = Tag.objects.filter(topic__isnull = True).select_related().order_by()
+    tags = Tag.objects.filter(topic__isnull = True).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
     if request.user.is_authenticated():
         subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
     else:
@@ -35,7 +38,7 @@ def topic_main(request, topic_name, order_by = None):
     except exceptions.NoSuchTopic, e:
         url = '/createtopic/'#reverse('createtopic');
         return HttpResponseRedirect('%s?topic_name=%s' % (url, topic_name))
-    tags = Tag.objects.filter(topic = topic).select_related()
+    tags = Tag.objects.filter(topic = topic).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
     if request.user.is_authenticated():
         links = Link.objects.get_query_set_with_user(request.user).filter(topic = topic).select_related()
     else:
@@ -96,6 +99,7 @@ def topic_manage(request, topic_name):
     except SubscribedUser.DoesNotExist:
         return HttpResponseForbidden("%s is not a moderator for %s. You can't access this page." % (request.user.username, topic.full_name))
     subs = SubscribedUser.objects.select_related().filter(topic = topic)
+    inviteform = bforms.InviteUserForm(topic = topic)
     if request.method=='POST':
         username = request.POST['username']
         user = User.objects.get(username = username)
@@ -104,8 +108,13 @@ def topic_manage(request, topic_name):
             sub.set_group('Moderator')
         if request.POST.has_key('demote'):
             sub = SubscribedUser.objects.get(user = user, topic = topic)
-            sub.set_group('Member')        
-    payload = {'topic':topic, 'subs':subs }
+            sub.set_group('Member')
+        if request.POST.has_key('Invite'):
+            inviteform = bforms.InviteUserForm(topic = topic, data = request.POST)
+            if inviteform.is_valid():
+                inviteform.save()
+                return HttpResponseRedirect('.')
+    payload = {'topic':topic, 'subs':subs, 'inviteform':inviteform}
     return render(request, payload, 'news/manage_topic.html')
 
 def topic_about(request, topic_name):

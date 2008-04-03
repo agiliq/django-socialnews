@@ -4,6 +4,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 import exceptions
 from django.core.paginator import ObjectPaginator, InvalidPage
+import random
 
 def get_topic(request, topic_name):
     try:
@@ -64,4 +65,19 @@ def check_permissions(topic, user):
             SubscribedUser.objects.get(user = user, topic = topic)
         except SubscribedUser.DoesNotExist:
             raise exceptions.PrivateTopicNoAccess
+        
+
+def generate_random_key(length = None):
+    if not length:
+        length = random.randint(6, 10)
+    keychars = 'abcdefghikjlmnopqrstuvwxyz1234567890'
+    key = "".join([random.choice(keychars) for i in xrange(length)])
+    return key
+    
+#Helper email functions. REmove with real email functions in prod
+def send_mail_test(message, user):
+    user = User.objects.get(username = user)
+    mail = Email(text = message, user = user)
+    mail.save()
+    
     

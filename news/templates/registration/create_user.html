@@ -1,0 +1,36 @@
+{% extends 'registration/base.html' %}
+
+{% block contents %}
+<div class="post">
+<div class="registerdiv">
+
+<form action="." method="post">
+<fieldset>
+<legend>
+Register
+</legend>
+<div class="form">
+{{form.as_p}}
+<input type="submit" name="register" value="register" />
+</div>
+</fieldset>
+</form>
+</div>
+
+<div class="registerdiv">
+
+<form action="." method="post">
+<fieldset>
+<legend>
+Login
+</legend>
+<div class="form">
+{{loginform.as_p}}
+<input type="submit" name="register" value="register" />
+</div>
+</fieldset>
+</form>
+</div>
+</div>
+
+{% endblock %}

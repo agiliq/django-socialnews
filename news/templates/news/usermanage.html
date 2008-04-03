@@ -7,7 +7,7 @@
 
 {% block contents %}
 <div class="post">
-    
+    {% if subs %}
     <table>
     <tbody>
     {% for sub in subs %}
@@ -29,6 +29,35 @@
     
     </tbody>
     </table>
+		{% else %}
+		<div class="message">
+		You are not subscribied to any topics. <a href="{% url topic_list %}">Wanna see some topics?</a> 
+		</div>
+		{% endif %}
+		
+		<form action="." method="post">
+		<fieldset>
+		<legend>
+		Change password
+		</legend>
+		{{form.as_p}}
+		<input type="submit" name="changepassword" value="Change Password" />
+		</fieldset>
+		</form>
+		
+		<table>
+		{% for invite in invites %}
+		<tr>
+		    <td>
+				  {{invite.topic.name}}
+				</td>
+				<td>
+				  <a href="{{invite.topic.subscribe_url}}" class="subscribe">Subscribe</a>
+				</td>
+		</tr>
+		{% endfor %}
+		</table>
+		
 </div>
 {% endblock %}
 

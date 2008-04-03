@@ -2,12 +2,18 @@
 
 	 		<div class="box others">
 				<h3>Subscribed Topic </h3> 
-				
+				{% if subscriptions %}
 				<ul>
 				{% for subs in subscriptions %}
 					<li><a href="{{subs.topic.get_absolute_url}}">{{subs.topic.full_name}}</a></li>
 				{% endfor %}
 				</ul>
+				{% else %}
+				<div class="message">
+				   You are not subscribed to any topic.<a href="{% url topic_list %}"> See some?</a>
+				</div>
+				{% endif %}
+				
 				<div class="clear"></div>
 				<div class="sub_edit">
 				<a href="{% url user_manage %}"><img src="/site_media/images/application_edit.png" alt="" /></a>

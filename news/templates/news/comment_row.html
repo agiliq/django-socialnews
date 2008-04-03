@@ -1,3 +1,4 @@
+{% load markup %}
  <div class="left">
     {% if comment.liked %}
      <a href="{{comment.upvote_url}}" class="comvote arrow upmod" id='upcomment-{{comment.id}}'></a>
@@ -11,7 +12,7 @@
     {% endif %}
     </div>
 		<a href="/user/{{comment.user.username}}/" class="title">{{comment.user.username}}</a> on {{comment.humanized_time}} <span id="compoints-{{comment.id}}">{{comment.points}}</span> points
-    <p>{{comment.comment_text}}</p>
+    <p>{{comment.comment_text|textile}}</p>
 		<p class="links"><a href="#" class="reply">reply</a></p>
     <form action="./?ajax=1" method="post" class="commentreply">
     {{comment.get_subcomment_form.as_p}}

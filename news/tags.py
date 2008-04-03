@@ -15,6 +15,8 @@ def topic_tag(request, topic_name, tag_text):
         linktags = LinkTag.objects.get_query_set_with_user(user = request.user).filter(tag = tag)
     else:
         linktags = LinkTag.objects.filter(tag = tag).select_related(depth = 1)
+    import pdb
+    #pdb.set_trace()
     linktags, page_data = get_paged_objects(linktags, request, defaults.LINKS_PER_PAGE)
     payload = dict(topic=topic, tag=tag, linktags=linktags, page_data=page_data)
     return render(request, payload, 'news/tag.html')

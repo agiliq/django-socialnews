@@ -103,7 +103,9 @@ var access = false;
 				<a href="/register/">want to join?</a> register in seconds 
 				{% endif %}
 				| <a href="{% url createtopic %}">create</a>
-				| <a href="{{topic.submit_url}}">submit</a> 
+				{% if topic %}
+				| <a href="{{topic.submit_url}}">submit</a>
+				{% endif %} 
 				| <a href="/help/">help</a> | <a href="/blog/">blog</a>
 			</p>
 		{% endblock %}
@@ -121,103 +123,6 @@ var access = false;
 		<div class="center"><div class="incenter">
 		
 		{% block contents %}			
-			<ul class="hot">
-				<li>
-					<div class="left">
-						<a href="#" class="up"></a>
-						<a href="#" class="down"></a>
-					</div>
-					<a href="#" class="title">The Pope has a pretty badass background [PIC]</a>
-					<p class="tags">[pics] (ectomo.com)</p>
-					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
-					<div class="clear"></div>
-				</li>
-				<li>
-					<div class="left">
-						<a href="#" class="up"></a>
-						<a href="#" class="down"></a>
-					</div>
-					<a href="#" class="title">Uncomfortable Questions: Was the Death Star Attack an Inside Job?</a>
-					<p class="tags">[funny] (websurdity.com)</p>
-					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
-					<div class="clear"></div>
-				</li>
-				<li>
-					<div class="left">
-						<a href="#" class="up"></a>
-						<a href="#" class="down"></a>
-					</div>
-					<a href="#" class="title">Every SOUTH PARK episode - uncensored, free, and totally legit! Thank you, Trey and Matt.</a>
-					<p class="tags">[pics] (ectomo.com)</p>
-					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
-					<div class="clear"></div>
-				</li>
-				<li>
-					<div class="left">
-						<a href="#" class="up"></a>
-						<a href="#" class="down"></a>
-					</div>
-					<a href="#" class="title">The Pope has a pretty badass background [PIC]</a>
-					<p class="tags">[pics] (ectomo.com)</p>
-					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
-					<div class="clear"></div>
-				</li>		
-				<li>
-					<div class="left">
-						<a href="#" class="up"></a>
-						<a href="#" class="down"></a>
-					</div>
-					<a href="#" class="title">The Pope has a pretty badass background [PIC]</a>
-					<p class="tags">[pics] (ectomo.com)</p>
-					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
-					<div class="clear"></div>
-				</li>
-				<li>
-					<div class="left">
-						<a href="#" class="up"></a>
-						<a href="#" class="down"></a>
-					</div>
-					<a href="#" class="title">Uncomfortable Questions: Was the Death Star Attack an Inside Job?</a>
-					<p class="tags">[funny] (websurdity.com)</p>
-					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
-					<div class="clear"></div>
-				</li>
-				<li>
-					<div class="left">
-						<a href="#" class="up"></a>
-						<a href="#" class="down"></a>
-					</div>
-					<a href="#" class="title">Every SOUTH PARK episode - uncensored, free, and totally legit! Thank you, Trey and Matt.</a>
-					<p class="tags">[pics] (ectomo.com)</p>
-					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
-					<div class="clear"></div>
-				</li>
-				<li>
-					<div class="left">
-						<a href="#" class="up"></a>
-						<a href="#" class="down"></a>
-					</div>
-					<a href="#" class="title">The Pope has a pretty badass background [PIC]</a>
-					<p class="tags">[pics] (ectomo.com)</p>
-					<p class="details">226 points posted 7 hours ago by jpzanettie 161 comments</p>
-					<div class="clear"></div>
-				</li>				
-			</ul>
-
-			<div class="pagination">
-				<p class="more">view more :</p>
-				<a href="#">1</a>
-				<a href="#">2</a>
-				<a href="#">3</a>
-				<a href="#">4</a>
-				<a href="#">5</a>
-				<a href="#">6</a>
-				<a href="#">7</a>
-				<a href="#">8</a>
-				<p>...</p>
-				<a href="#">200</a>
-				<a href="#">next &gt;&gt;</a>
-			</div>		
 		{% endblock %}
 		</div></div> <!-- end center div -->
 
