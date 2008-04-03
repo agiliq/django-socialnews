@@ -1,0 +1,8 @@
+Hi {{user.username}}
+
+You have registered an account at 42topics.com. To validate your email please click on the link below.
+www.42topics.com/user/activate/{{user.username}}/?key={{key}}
+
+We are excited to have you use 42topics, and work hard to find you new things to read. Happy reading.
+
+Team 42topics.com

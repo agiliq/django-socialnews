@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from helpers import *
 import bforms
 import logging
-import simplejson
+from django.utils import simplejson
 from django.template.loader import get_template
 from django.template import Context
 

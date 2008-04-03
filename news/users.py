@@ -9,6 +9,8 @@ from django.contrib import auth
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.urlresolvers import reverse
 import helpers
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 def user_main(request, username):
     user = User.objects.get(username = username)
@@ -105,8 +107,6 @@ def reset_password_sent(request):
             
 
 def reset_password_done(request, username):
-    import pdb
-    pdb.set_trace()
     user = User.objects.get(username=username)
     try:
         key = PasswordResetKey.objects.get(user = user)
@@ -116,7 +116,9 @@ def reset_password_done(request, username):
     if request_key == key.key:
         password = helpers.generate_random_key()
         user.set_password(password)
-        helpers.send_mail_test(user = user, message=password)
+        #helpers.send_mail_test(user = user, message=password)
+	mail_text = render_to_string('registration/password_reset_done.txt', dict(user=user, password=password))
+	send_mail('Password reset', mail_text, 'hello@42topics.com', [user.email])
         key.delete()
         payload = {}
         return render(request, payload, 'registration/reset_password_done.html')

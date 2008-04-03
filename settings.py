@@ -18,12 +18,21 @@ DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 """
+"""
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'tapiks'             # Or path to database file if using sqlite3.
 DATABASE_USER = 'root'             # Not used with sqlite3.
 DATABASE_PASSWORD = '081084'         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+"""
+DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_NAME = 'shabda_42topics'             # Or path to database file if using sqlite3.
+DATABASE_USER = 'shabda_42topics'             # Not used with sqlite3.
+DATABASE_PASSWORD = '067550e9'         # Not used with sqlite3.
+DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -100,3 +109,17 @@ AUTH_PROFILE_MODULE = 'news.UserProfile'
 PERSISTENT_SESSION_KEY = 'PERS_SESSION'
 LOGIN_REDIRECT_URL = '/recommended/'
 LOGIN_URL = '/login/'
+
+
+
+EMAIL_HOST = 'mail4.webfaction.com'
+EMAIL_HOST_USER= 'shabda'
+EMAIL_FROM = "shabda@dashbard.com"
+EMAIL_HOST_PASSWORD= 'sa081084'
+EMAIL_PORT= '25'
+SEND_BROKEN_LINK_EMAILS = True
+DEFAULT_FROM_EMAIL = "shabda@dashbard.com"
+SERVER_MAIL= "shabda@dashbard.com"
+
+
+

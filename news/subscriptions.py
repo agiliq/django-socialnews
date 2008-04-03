@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from helpers import *
 import bforms
 import logging
-import simplejson
+from django.utils import simplejson
 
 @login_required
 def subscribe(request, topic_name):
