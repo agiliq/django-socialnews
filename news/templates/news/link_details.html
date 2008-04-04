@@ -2,6 +2,10 @@
 
 {% load mptt_tags %}
 
+{% block title %}
+{{link.text}} _ {{block.super}}
+{% endblock %}
+
 {% block jqueryarea %}
 <script language="JavaScript" type="text/javascript" src="/site_media/js/voting.js">
 <!--
@@ -58,17 +62,18 @@ There are no comments on this story, yet.
 {% endif %}
 </div>
 </div>
-</div>
 {% endblock %}
 
 {% block sidebar %}
 	 		{{ block.super }}
 	 		<div class="box others">
+			
 				<h3>Tags</h3>
         <form action="." method="post" id="tagform">
         {{tag_form.as_p}}
         <input type="submit" name="taglink" value="taglink" />
         </form>			
+				{% if tags %}
         <ul id="tags">
         {% for tag in link.linktag_set.get_topic_tags %}
         <li>
@@ -76,6 +81,7 @@ There are no comments on this story, yet.
         </li>
         {% endfor %}
         </ul>
+				{% endif %}
 			</div>
 
 						

@@ -1,5 +1,9 @@
 {% extends 'news/base.html' %}
 
+{% block title %}
+Recommended - {{user.username}} - {{block.super}}
+{% endblock %}
+
 {% block contents %}
 <ul class="hot">
 {% for rlink in recommended %}

@@ -355,7 +355,20 @@ class SavedLinkManager(models.Manager):
         return savedl
     
     def get_user_data(self):
-        return self.get_query_set().extra({'liked':'SELECT direction FROM news_linkvote WHERE news_linkvote.link_id = news_savedlink.link_id AND news_linkvote.user_id = news_savedlink.user_id', 'disliked':'SELECT NOT direction FROM news_linkvote WHERE news_linkvote.link_id = news_savedlink.link_id AND news_linkvote.user_id = news_savedlink.user_id', 'saved':'SELECT 1', })
+        can_vote_sql = """
+        SELECT 1 FROM news_topic, news_link
+        WHERE news_link.topic_id = news_topic.id
+        AND news_link.id = news_savedlink.link_id
+        AND news_topic.permissions ='Public'
+        UNION
+        SELECT 1 from news_topic, news_subscribeduser, news_link
+        WHERE news_link.topic_id = news_topic.id
+        AND news_link.id = news_savedlink.link_id
+        AND news_subscribeduser.topic_id = news_topic.id
+        AND news_subscribeduser.user_id = news_savedlink.user_id
+        AND NOT news_topic.permissions ='Public'
+        """
+        return self.get_query_set().extra({'liked':'SELECT direction FROM news_linkvote WHERE news_linkvote.link_id = news_savedlink.link_id AND news_linkvote.user_id = news_savedlink.user_id', 'disliked':'SELECT NOT direction FROM news_linkvote WHERE news_linkvote.link_id = news_savedlink.link_id AND news_linkvote.user_id = news_savedlink.user_id', 'saved':'SELECT 1', 'can_vote':can_vote_sql})
     
         
 class SavedLink(models.Model):
@@ -404,7 +417,20 @@ class LinkVoteManager(VoteManager):
         return super(LinkVoteManager, self).do_vote(user = user, object = link, direction = direction, voted_class = LinkVote, )
     
     def get_user_data(self):
-        return self.get_query_set().extra({'liked':'direction', 'disliked':'NOT direction', 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_linkvote.link_id AND news_savedlink.user_id = news_linkvote.user_id'})
+        can_vote_sql = """
+        SELECT 1 FROM news_topic, news_link
+        WHERE news_link.topic_id = news_topic.id
+        AND news_link.id = news_linkvote.link_id
+        AND news_topic.permissions ='Public'
+        UNION
+        SELECT 1 from news_topic, news_subscribeduser, news_link
+        WHERE news_link.topic_id = news_topic.id
+        AND news_link.id = news_linkvote.link_id
+        AND news_subscribeduser.topic_id = news_topic.id
+        AND news_subscribeduser.user_id = news_linkvote.user_id
+        AND NOT news_topic.permissions ='Public'
+        """
+        return self.get_query_set().extra({'liked':'direction', 'disliked':'NOT direction', 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_linkvote.link_id AND news_savedlink.user_id = news_linkvote.user_id', 'can_vote':can_vote_sql})
         
         
 class LinkVote(models.Model):
@@ -463,7 +489,20 @@ class RelatedLink(models.Model):
 class RecommendedLinkManager(models.Manager):
     "Manager"
     def get_query_set(self):
-        qs = super(RecommendedLinkManager, self).get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_recommendedlink.link_id AND news_linkvote.user_id = news_recommendedlink.user_id', 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_recommendedlink.link_id AND news_linkvote.user_id = news_recommendedlink.user_id', 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_recommendedlink.link_id AND news_savedlink.user_id=news_recommendedlink.user_id'})      
+        can_vote_sql = """
+        SELECT 1 FROM news_topic, news_link
+        WHERE news_link.topic_id = news_topic.id
+        AND news_link.id = news_recommendedlink.link_id
+        AND news_topic.permissions ='Public'
+        UNION
+        SELECT 1 from news_topic, news_subscribeduser, news_link
+        WHERE news_link.topic_id = news_topic.id
+        AND news_link.id = news_recommendedlink.link_id
+        AND news_subscribeduser.topic_id = news_topic.id
+        AND news_subscribeduser.user_id = news_recommendedlink.user_id
+        AND NOT news_topic.permissions ='Public'
+        """
+        qs = super(RecommendedLinkManager, self).get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_recommendedlink.link_id AND news_linkvote.user_id = news_recommendedlink.user_id', 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_recommendedlink.link_id AND news_linkvote.user_id = news_recommendedlink.user_id', 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_recommendedlink.link_id AND news_savedlink.user_id=news_recommendedlink.user_id', 'can_vote':can_vote_sql})      
         return qs
     
 class RecommendedLink(models.Model):
@@ -511,7 +550,7 @@ class Comment(models.Model):
     
     def get_subcomment_form(self):
         from bforms import DoThreadedComment
-        form = DoThreadedComment(user = self.user, link = self.link, parent=self)
+        form = DoThreadedComment(user = self.user, link = self.link, parent=self, prefix = self.id)
         return form
     
     def __str__(self):
@@ -810,14 +849,6 @@ def humanized_time(time):
         elif delta < 60 * 60 * 24:
             return '%s hours ago' % (delta/(60 * 60))
         
-
-        
-#Def testing models for email, remove in prod.
-
-class Email(models.Model):
-    user = models.ForeignKey(User, related_name="TEst")
-    text = models.TextField()
-    created_on = models.DateTimeField(auto_now_add = 1)
     
 
     

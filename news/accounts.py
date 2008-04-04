@@ -18,8 +18,8 @@ def create_user(request):
             login(request, user)
             return HttpResponseRedirect('/')
     if request.method == 'GET':
-        form = bforms.UserCreationForm()
-        loginform = bforms.LoginForm()
+        form = bforms.UserCreationForm(prefix = 'register')
+        loginform = bforms.LoginForm(prefix = 'login')
     payload = {'form':form, 'loginform':loginform}
     return render(request, payload, 'registration/create_user.html', )
 

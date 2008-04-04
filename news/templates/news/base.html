@@ -5,6 +5,7 @@
 <head>
 <title>
 {% block title %}
+42topics.com
 {% endblock %}
 </title>
 <script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.js">
@@ -51,7 +52,7 @@ var access = false;
 
 {% endblock %}
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
 <link rel="stylesheet" type="text/css" href="/site_media/style.css" />
 <!--[if lt IE 7]>
 <link rel="stylesheet" type="text/css" href="/site_media/ie-style.css" />
@@ -111,8 +112,8 @@ var access = false;
 		{% endblock %}
 		</div>
 		
-		<form action="#">
-			<input type="text" />
+		<form action="/search/" method="get">
+			<input type="text" name="q" />
 			<input type="submit" class="submit" value="Search" />
 		</form>
 		
@@ -164,7 +165,7 @@ var access = false;
 		<ul class="nav">
 			<li><a href="#">feedback</a>|</li>
 			<li><a href="#">bookmarklets</a>|</li>
-			<li><a href="#">buttons</a>|</li>
+			<li><a href="#">buttons</a></li>
 		</ul>
 	</div>
 

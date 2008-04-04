@@ -116,7 +116,6 @@ def reset_password_done(request, username):
     if request_key == key.key:
         password = helpers.generate_random_key()
         user.set_password(password)
-        #helpers.send_mail_test(user = user, message=password)
         mail_text = render_to_string('registration/password_reset_done.txt', dict(user=user, password=password))
         send_mail('Password reset', mail_text, 'hello@42topics.com', [user.email])
         key.delete()

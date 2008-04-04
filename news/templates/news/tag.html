@@ -1,6 +1,9 @@
 {% extends 'news/base.html' %}
 
 {% block title %}
+{{tag.text}} - 
+{% if topic %} {{topic.name}} - {% endif %}
+{% block.super %}
 {% endblock %}
 
 

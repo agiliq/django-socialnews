@@ -95,8 +95,6 @@ def link_related(request, topic_name, link_id):
     else:
         link = Link.objects.get(id = link_id)
         related = RelatedLink.objects.filter(link = link)
-    import pdb
-    pdb.set_trace()
     payload = dict(topic=topic, link=link, related=related)
     return render(request, payload, 'news/link_related.html')
 

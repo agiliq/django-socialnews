@@ -66,7 +66,6 @@ def check_permissions(topic, user):
         except SubscribedUser.DoesNotExist:
             raise exceptions.PrivateTopicNoAccess
         
-
 def generate_random_key(length = None):
     if not length:
         length = random.randint(6, 10)
@@ -74,10 +73,5 @@ def generate_random_key(length = None):
     key = "".join([random.choice(keychars) for i in xrange(length)])
     return key
     
-#Helper email functions. REmove with real email functions in prod
-def send_mail_test(message, user):
-    user = User.objects.get(username = user)
-    mail = Email(text = message, user = user)
-    mail.save()
     
     

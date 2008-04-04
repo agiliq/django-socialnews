@@ -29,6 +29,10 @@ urlpatterns += patterns('news.subscriptions',
     
 )
 
+urlpatterns += patterns('news.search',
+    url(r'^search/$', 'search', name='search'),
+)
+
 urlpatterns +=patterns('news.users',
     url(r'^user/reset_password/$', 'reset_password', name='reset_password'),
     url(r'^user/reset_password/sent/$', 'reset_password_sent', name='reset_password_sent'),

@@ -1,6 +1,10 @@
 {% extends "registration/base.html" %}
 
 {% block contents %}
+Logout - {{block.super}}
+{% endblock %}
+
+{% block contents %}
 <div class="post">
    <h3>You have been logged out.</h3>
 	 <a href="{% url login %}">Login agaian?</a> 

@@ -5,6 +5,10 @@
 
 {% endblock %}
 
+{% block title %}
+{{topic.name}} - {{block.super}}
+{% endblock %}
+
 {% block tabs %}
 <ul class="tabs">
 <li>
