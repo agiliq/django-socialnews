@@ -11,7 +11,7 @@
 {% if user.is_authenticated %}
 <div class="message">
 <h3>
-    You are already logged in. <a href="/accounts/logout/">Logout?</a>
+    You are already logged in. <a href="{% url logout %}">Logout?</a>
 </h3>
 </div>
 {% else %}

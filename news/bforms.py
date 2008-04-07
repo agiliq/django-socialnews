@@ -27,6 +27,17 @@ class MarkedField(forms.CharField):
             if not kwargs.has_key('widget'):
                 kwargs.update({'widget' : forms.TextInput(attrs={'class':'textfield input'})})
         super(MarkedField, self).__init__(*args, **kwargs)
+        
+class MarkedEmailField(forms.EmailField):
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('required', True):
+            if not kwargs.has_key('widget'):
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'emailfield required input'})})
+        else:
+            if not kwargs.has_key('widget'):
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'emailfield input'})})
+        super(MarkedEmailField, self).__init__(*args, **kwargs)
+    
 
 
 class NewTopic(MarkedForm):
@@ -126,31 +137,34 @@ class LoginForm(forms.Form):
                                 max_length = 30,
                                 min_length = 1,
                                 widget = widgets.TextInput(attrs={'class':'input'}),
-                                error_message = 'Must be 1-30 alphanumeric characters or underscores.')
+                                error_message = 'Must be 1-30 alphanumeric characters or underscores.',
+                                required = True)
     password = MarkedField(min_length = 1, 
                                max_length = 128, 
                                widget = widgets.PasswordInput(attrs={'class':'input'}),
-                               label = 'Password')
+                               label = 'Password',
+                               required = True)
     remember_user = forms.BooleanField(required = False, 
                                        label = 'Remember Me')
     
     def clean(self):
         try:
-            user = User.objects.get(username__iexact = self.cleaned_data['username'])
+            if self.cleaned_data.has_key('username') :
+                user = User.objects.get(username__iexact = self.cleaned_data['username'])
         except User.DoesNotExist, KeyError:
             raise forms.ValidationError('Invalid username, please try again.')
         
-        if not user.check_password(self.cleaned_data['password']):
+        if self.cleaned_data.has_key('password') and not user.check_password(self.cleaned_data['password']):
             raise forms.ValidationError('Invalid password, please try again.')
         
         return self.cleaned_data
     
-class UserCreationForm(forms.Form):
+class UserCreationForm(MarkedForm):
     """A form that creates a user, with no privileges, from the given username and password."""
-    username = MarkedField(max_length = 30, required = True)
-    password1 = MarkedField(max_length = 30, required = True, widget = widgets.PasswordInput(attrs={'class':'input'}))
-    password2 = MarkedField(max_length = 30, required = True, widget = widgets.PasswordInput(attrs={'class':'input'}))
-    email = forms.EmailField(required = False)
+    username = MarkedField(max_length = 30, required = True, help_text='The username you want.')
+    password1 = MarkedField(max_length = 30, required = True, widget = widgets.PasswordInput(attrs={'class':'input'}), label='Password')
+    password2 = MarkedField(max_length = 30, required = True, widget = widgets.PasswordInput(attrs={'class':'input'}), label='Repeat password', help_text='Repeat password for verification')
+    email = MarkedEmailField(required = False, help_text='Your email id. Not really required, but helput if you lose the password.')
     
     def clean_username (self):
         alnum_re = re.compile(r'^\w+$')
@@ -224,8 +238,8 @@ class PasswordChangeForm(MarkedForm):
         self.user.save()
         return self.user
     
-class PasswordResetForm(forms.Form):
-    email = forms.EmailField()
+class PasswordResetForm(MarkedForm):
+    email = MarkedEmailField(help_text = 'We will send instruction to reset on this mail id.')
     
     def clean_email(self):
         try:
@@ -240,11 +254,8 @@ class PasswordResetForm(forms.Form):
         key = "".join([random.choice(keyfrom) for i in xrange(50)])
         PasswordResetKey.objects.save_key(user = self.user, key = key)
         mail_text = render_to_string('registration/password_reset_mail.txt', dict(key=key, user=self.user))
-        #helpers.send_mail_test(user=self.user, message = key)
         send_mail('Password reset request', mail_text, 'hello@42topics.com', [self.user.email])
         
-            
-    
 class InviteUserForm(MarkedForm):
     username = MarkedField(max_length = 100, help_text="User to invite.")
     invite_text = MarkedField(max_length = 1000, widget = forms.Textarea, required = False, label="Invitation message", help_text="They will see this when they get your invite.")

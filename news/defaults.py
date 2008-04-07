@@ -26,3 +26,9 @@ TOP_LINKS = 10
 
 
 #Recommnded for users
+
+#Defaults for cron jobs
+sample_corpus_location = 'c:/corpus.db'
+calculate_recommended_timediff = 60 * 60 * 12#12 hours
+min_links_submitted = 5
+min_links_liked = 5

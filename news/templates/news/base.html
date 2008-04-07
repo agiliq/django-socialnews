@@ -8,45 +8,6 @@
 42topics.com
 {% endblock %}
 </title>
-<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.js">
-<!--
-
-//-->
-</script>
-<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.forms.js">
-<!--
-
-//-->
-</script>
-<script language="JavaScript" type="text/javascript">
-
-<!--
-{% if user.is_authenticated %}
-var logged_in = true;
-{% else %}
-var logged_in = false;
-{% endif %}
-{% if access %}
-var access = '{{access}}';
-{% else %}
-var access = false;
-{% endif %}
-//-->
-</script>
-
-{% block jqueryarea %}
-<script language="JavaScript" type="text/javascript" src="/site_media/js/voting.js">
-<!--
-//-->
-</script>
-<script language="JavaScript" type="text/javascript" src="/site_media/js/main.js">
-<!--
-//-->
-</script>
-
-
-{% endblock %}
-
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
 <link rel="stylesheet" type="text/css" href="/site_media/style.css" />
 <!--[if lt IE 7]>
@@ -168,6 +129,43 @@ var access = false;
 	</div>
 
 </div></div>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.js">
+<!--
 
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.forms.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript">
+
+<!--
+{% if user.is_authenticated %}
+var logged_in = true;
+{% else %}
+var logged_in = false;
+{% endif %}
+{% if access %}
+var access = '{{access}}';
+{% else %}
+var access = false;
+{% endif %}
+//-->
+</script>
+
+{% block jqueryarea %}
+<script language="JavaScript" type="text/javascript" src="/site_media/js/voting.js">
+<!--
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/main.js">
+<!--
+//-->
+</script>
+
+
+{% endblock %}
 </body>
 </html>

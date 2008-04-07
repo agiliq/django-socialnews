@@ -3,16 +3,23 @@ from models import *
 import re
 from urllib2 import urlparse
 import pickle
+from datetime import datetime
+import os
 
-sample_corpus_location = 'c:/corpus.db'
-calculate_recommended_timediff = 60 * 60 * 12#12 hours
-min_links_submitted = 5
-min_links_liked = 5
+sample_corpus_location = defaults.sample_corpus_location
+calculate_recommended_timediff = defaults.calculate_recommended_timediff#12 hours
+min_links_submitted = defaults.min_links_submitted
+min_links_liked = defaults.min_links_liked
+claculate_corpus_after = 1
 
 def _calculate_word_prob_all():
     links = Link.objects.all()
     try:
         corpus = file(sample_corpus_location, 'r')
+        cropus_created = os.path.getmtime(sample_corpus_location)
+        diff = datetime.now() - datetime.fromtimestamp(cropus_created)
+        if diff.days > claculate_corpus_after:
+            raise IOError
         all_corpus = pickle.load(corpus)
         corpus.close()
     except IOError:
