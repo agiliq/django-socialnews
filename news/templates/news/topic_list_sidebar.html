@@ -4,7 +4,7 @@
 				
 				<ul>
 					{% for topic in top_topics %}
-					<li><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></li>
+					<li><a href="{{topic.get_absolute_url}}">{{topic.name}}</a></li>
 					{% endfor %}
 				</ul>
 				<div class="clear"></div>
@@ -18,7 +18,7 @@
 				
 				<ul>
 					{% for topic in new_topics %}
-					<li><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></li>
+					<li><a href="{{topic.get_absolute_url}}">{{topic.name}}</a></li>
 					{% endfor %}
 				</ul>
 				<div class="clear"></div>

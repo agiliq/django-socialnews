@@ -53,7 +53,7 @@ class NewTopic(MarkedForm):
     
     def clean(self):
         if self.user.get_profile().karma < defaults.KARMA_COST_NEW_TOPIC:
-            raise ValidationError('You do not have enogh karma')
+            raise ValidationError('You do not have enough karma')
         return self.cleaned_data
     
     def save(self):

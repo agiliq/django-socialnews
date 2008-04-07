@@ -5,7 +5,7 @@
 				{% if subscriptions %}
 				<ul>
 				{% for subs in subscriptions %}
-					<li><a href="{{subs.topic.get_absolute_url}}">{{subs.topic.full_name}}</a></li>
+					<li><a href="{{subs.topic.get_absolute_url}}">{{subs.topic.name}}</a></li>
 				{% endfor %}
 				</ul>
 				{% else %}
