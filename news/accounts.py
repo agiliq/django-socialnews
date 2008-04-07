@@ -26,7 +26,7 @@ def create_user(request):
             return HttpResponseRedirect('/')
     if request.method == 'GET':
         form = bforms.UserCreationForm(prefix = 'register')
-        loginform = bforms.LoginForm(prefix = 'login')
+        loginform = bforms.LoginForm()
     payload = {'form':form, 'loginform':loginform}
     return render(request, payload, 'registration/create_user.html', )
 
@@ -36,6 +36,8 @@ def login(request):
     Actions avialable:
     Login: Anyone"""
     """Display and processs the login form."""
+    import pdb
+    pdb.set_trace()
     no_cookies = False
     account_disabled = False
     invalid_login = False

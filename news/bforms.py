@@ -148,8 +148,8 @@ class LoginForm(forms.Form):
 class UserCreationForm(forms.Form):
     """A form that creates a user, with no privileges, from the given username and password."""
     username = MarkedField(max_length = 30, required = True)
-    password1 = MarkedField(max_length = 30, required = True, widget = forms.PasswordInput)
-    password2 = MarkedField(max_length = 30, required = True, widget = forms.PasswordInput)
+    password1 = MarkedField(max_length = 30, required = True, widget = widgets.PasswordInput(attrs={'class':'input'}))
+    password2 = MarkedField(max_length = 30, required = True, widget = widgets.PasswordInput(attrs={'class':'input'}))
     email = forms.EmailField(required = False)
     
     def clean_username (self):
