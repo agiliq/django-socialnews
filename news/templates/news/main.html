@@ -19,7 +19,6 @@
 
 {% block sidebar %}
 	 		{{ block.super }}
-			{% include 'news/subscribed_topics.html' %}
 	 		<div class="box others">
 				<h3>Tags</h3>
 				
@@ -29,7 +28,4 @@
 					{% endfor %}
 				</ul>
 			</div>
-			
-			{% include 'news/topic_list_sidebar.html' %}
-			
 {% endblock %}

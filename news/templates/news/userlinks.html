@@ -17,10 +17,11 @@
 {% endblock %}
 
 {% block sidebar %}
+    {{block.super}}
 	 	<div class="box singlecol">
 				<h3>Actions</h3>
         <ul>
-        <li><a href="/user/{{username}}/"></a>  Links</li>
+        <li><a href="/user/{{username}}/">Links</a></li>
 				<li><a href="/user/{{pageuser.username}}/comments/">Comments</a></li>
 				{% ifequal user pageuser %}
 				<li><a href="{% url liked_links %}">Liked</a>  </li>

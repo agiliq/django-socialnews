@@ -10,7 +10,7 @@ import exceptions
 def main(request, order_by=None):
     "Sitewide main page"
     if request.user.is_authenticated():
-        subs = SubscribedUser.objects.filter(user = request.user)
+        subs = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
         topics = [sub.topic for sub in subs]
         if topics:
             links = Link.objects.get_query_set_with_user(request.user).filter(topic__in = topics).select_related()
@@ -23,7 +23,7 @@ def main(request, order_by=None):
     links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
     tags = Tag.objects.filter(topic__isnull = True).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
     if request.user.is_authenticated():
-        subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
+        subscriptions = SubscribedUser.objects.filter(user = request.user).select_related()
     else:
         subscriptions = SubscribedUser.objects.get_empty_query_set()
     top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE]
@@ -48,7 +48,7 @@ def topic_main(request, topic_name, order_by = None):
     links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
     subscribed = False
     if request.user.is_authenticated():
-        subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
+        subscriptions = SubscribedUser.objects.filter(user = request.user).select_related()
         try:
             SubscribedUser.objects.get(topic = topic, user = request.user)
             subscribed = True
@@ -63,7 +63,7 @@ def topic_main(request, topic_name, order_by = None):
 
 @login_required
 def recommended(request):
-    recommended = RecommendedLink.objects.filter(user = request.user)
+    recommended = RecommendedLink.objects.filter(user = request.user).select_related()
     payload = dict(recommended=recommended)
     return render(request, payload, 'news/recommended.html')    
 

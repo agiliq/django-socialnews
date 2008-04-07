@@ -18,11 +18,6 @@
 
 //-->
 </script>
-<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.tabs.js">
-<!--
-
-//-->
-</script>
 <script language="JavaScript" type="text/javascript">
 
 <!--
@@ -153,6 +148,9 @@ var access = false;
 				
 			</form>		
 		{% endif %}
+			{% include 'news/subscribed_topics.html' %}
+			{% include 'news/topic_list_sidebar.html' %}
+
 		{% endblock %}
 		</div></div> <!-- end right div -->
 

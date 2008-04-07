@@ -1,7 +1,7 @@
 # Django settings for implist project.
 
 DEBUG = True
-DEBUG_SQL= False
+DEBUG_SQL= True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -82,7 +82,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'news.tapicks_middleware.ExceptionHandlerMiddleware'
+    'news.tapicks_middleware.ExceptionHandlerMiddleware',
 )
 
 ROOT_URLCONF = 'tapicks.urls'

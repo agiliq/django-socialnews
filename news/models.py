@@ -17,6 +17,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, unique = True)
     email_validated = models.BooleanField(default = False)
     karma = models.IntegerField(default = defaults.DEFAULT_PROFILE_KARMA)
+    recommended_calc = models.DateTimeField()#when was the recommended links calculated?
     
     objects = UserProfileManager()
     
@@ -209,6 +210,8 @@ class Link(models.Model):
     liked_by_count = models.IntegerField(default = 0)
     disliked_by_count = models.IntegerField(default = 0)
     points = models.DecimalField(default = 0, max_digits=7, decimal_places=2)
+    #
+    related_links_calculated = models.BooleanField(default = False)
     
     objects = LinkManager()
     
@@ -550,7 +553,7 @@ class Comment(models.Model):
     
     def get_subcomment_form(self):
         from bforms import DoThreadedComment
-        form = DoThreadedComment(user = self.user, link = self.link, parent=self, prefix = self.id)
+        form = DoThreadedComment(user = self.user, link = self.link, parent=self)#prefix = self.id
         return form
     
     def __str__(self):
@@ -821,6 +824,7 @@ class PasswordResetKeyManager(models.Manager):
         act_key = PasswordResetKey(user = user, key = key)
         act_key.save()
         return act_key
+        
     
     
 class PasswordResetKey(models.Model):

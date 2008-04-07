@@ -37,12 +37,8 @@ Howdy {{user.username}}
 
 {% block sidebar %}
 	 		{{ block.super }}
-	 		{% include 'news/subscribed_topics.html' %}
 
 	 		{% include 'news/tags.html' %}
-			
-			{% include 'news/topic_list_sidebar.html' %}			
-
 	 		<div class="box singlecol">
 				<h3>Meta</h3>
 			<ul>

@@ -20,9 +20,6 @@
 {% endblock %}
 
 
-{% block title %}
-{% endblock %}
-
 
 {% block contents %}
 <div class="post">
@@ -73,7 +70,6 @@ There are no comments on this story, yet.
         {{tag_form.as_p}}
         <input type="submit" name="taglink" value="taglink" />
         </form>			
-				{% if tags %}
         <ul id="tags">
         {% for tag in link.linktag_set.get_topic_tags %}
         <li>
@@ -81,10 +77,9 @@ There are no comments on this story, yet.
         </li>
         {% endfor %}
         </ul>
-				{% endif %}
 			</div>
 
-						
+
 			{% if topic %}
 			<div class="box hot">
 			<h3>{{topic.name}}</h3>

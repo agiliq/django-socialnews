@@ -1,5 +1,5 @@
 
-
+			{% if user.is_authenticated %}
 	 		<div class="box others">
 				<h3>Subscribed Topic </h3> 
 				{% if subscriptions %}
@@ -19,3 +19,4 @@
 				<a href="{% url user_manage %}"><img src="/site_media/images/application_edit.png" alt="" /></a>
 				</div>
 			</div>
+			{% endif %}

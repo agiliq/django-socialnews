@@ -33,6 +33,21 @@ def render(request, payload, template):
             pass
         except KeyError:
             pass
+    if not payload.has_key('top_topics'):
+        top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE]
+        payload['top_topics'] = top_topics
+    if not payload.has_key('new_topics'):
+        new_topics = Topic.objects.all().order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE]
+        payload['new_topics'] = new_topics
+    if not payload.has_key('subscriptions'):
+        if request.user.is_authenticated():
+            subscriptions = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
+        else:
+            subscriptions = SubscribedUser.objects.get_empty_query_set()
+        payload['subscriptions'] = subscriptions
+    if not request.user.is_authenticated():
+        if not request.session.test_cookie_worked():
+            request.session.set_test_cookie()
     return render_to_response(template, payload, RequestContext(request))
 
 def get_pagination_data(obj_page, page_num):

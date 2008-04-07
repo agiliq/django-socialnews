@@ -91,10 +91,10 @@ def link_related(request, topic_name, link_id):
     topic = get_topic(request, topic_name)
     if request.user.is_authenticated():
         link = Link.objects.get_query_set_with_user(request.user).get(id = link_id)
-        related = RelatedLink.objects.get_query_set_with_user(request.user).filter(link = link)
+        related = RelatedLink.objects.get_query_set_with_user(request.user).filter(link = link).select_related()
     else:
         link = Link.objects.get(id = link_id)
-        related = RelatedLink.objects.filter(link = link)
+        related = RelatedLink.objects.filter(link = link).select_related()
     payload = dict(topic=topic, link=link, related=related)
     return render(request, payload, 'news/link_related.html')
 
