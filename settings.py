@@ -1,7 +1,7 @@
 # Django settings for implist project.
 
 DEBUG = True
-DEBUG_SQL= True
+DEBUG_SQL= False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

@@ -174,3 +174,23 @@ table.link-info td{
 .registerdiv .form{
     margin: 15px 10px 5px 10px;
 }
+.help_text{
+    display: block;
+    font-size: 85%;
+    color: #777;
+    display: block;
+}
+form p{
+    padding-bottom: 5px;
+}
+
+.input {
+border:1px solid #666;
+height:23px;
+background:url(images/inputbg.gif) repeat-x;
+width:254px;
+font-size:13px;
+font-family:"trebuchet ms";
+padding:2px 0px 0px 2px;
+}
+.focusfield{ background:url(images/inputselect.gif)}

@@ -45,6 +45,7 @@ Manage your account
 		</fieldset>
 		</form>
 		
+		<h3>You have been invited.</h3>
 		<table>
 		{% for invite in invites %}
 		<tr>
@@ -53,6 +54,9 @@ Manage your account
 				</td>
 				<td>
 				  <a href="{{invite.topic.subscribe_url}}" class="subscribe">Subscribe</a>
+				</td>
+				<td>
+				  {{invite.invite_text}}
 				</td>
 		</tr>
 		{% endfor %}

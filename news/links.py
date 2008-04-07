@@ -98,6 +98,14 @@ def link_related(request, topic_name, link_id):
     payload = dict(topic=topic, link=link, related=related)
     return render(request, payload, 'news/link_related.html')
 
+def comment_detail(request, topic_name,  comment_id):
+    topic = Topic.objects.get(name = topic_name)
+    comment = Comment.objects.get(id = comment_id)
+    comments = comment.get_descendants(include_self = True).select_related()
+    #comment = Comment.objects.append_user_data(Comment.tree.all().select_related(), request.user).get(id = comment_id)
+    payload = dict(topic = topic, comments=comments)
+    return render(request, payload, 'news/comment_detail.html')
+
 @login_required
 def upvote_link(request, link_id):
     if not request.method == 'POST':
@@ -149,8 +157,8 @@ def save_link(request, link_id):
 def upvote_comment(request, comment_id):
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')
-    check_permissions(link.topic, request.user)
     comment = Comment.objects.get(id = comment_id)
+    check_permissions(comment.link.topic, request.user)
     try:
         comment_vote = CommentVote.objects.get(comment = comment, user = request.user)
         if comment_vote.direction:
@@ -170,7 +178,7 @@ def downvote_comment(request, comment_id):
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')
     comment = Comment.objects.get(id = comment_id)
-    check_permissions(link.topic, request.user)
+    check_permissions(comment.link.topic, request.user)
     try:
         comment_vote = CommentVote.objects.get(comment = comment, user = request.user)
         if not comment_vote.direction:
@@ -184,7 +192,7 @@ def downvote_comment(request, comment_id):
         return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(comment.link.get_absolute_url())
 
-def find_related_link(request, link_id):
+def find_related_link(request, ink_id):
     link = Link.objects.get(id = link_id)
     cursor = connection.cursor()
     stmt = """SELECT main_link.link_id, peer.link_id, count( peer.user_id ) count, count( peer.user_id ) / (

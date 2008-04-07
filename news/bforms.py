@@ -12,13 +12,30 @@ import random
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-class NewTopic(forms.Form):
-    "Create a new topic."
-    topic_name = forms.CharField(max_length = 100)
-    topic_fullname = forms.CharField(max_length = 100)
-    permission = forms.ChoiceField(choices = topic_permissions)
+class MarkedForm(forms.Form):
+    """A form with a little more markup."""
+    def as_p(self):
+        "Returns this form rendered as HTML <p>s."
+        return self._html_output(u'<p>%(label)s %(field)s<span class="help_text">%(help_text)s</span></p>', u'%s', '</p>', u' %s', True)
     
-    about = forms.CharField(widget = forms.Textarea)
+class MarkedField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('required', True):
+            if not kwargs.has_key('widget'):
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'textfield required input'})})
+        else:
+            if not kwargs.has_key('widget'):
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'textfield input'})})
+        super(MarkedField, self).__init__(*args, **kwargs)
+
+
+class NewTopic(MarkedForm):
+    "Create a new topic."
+    topic_name = MarkedField(max_length = 100, help_text="Name of the new topic. No Spaces. Eg. wiki.")
+    topic_fullname = MarkedField(max_length = 100, help_text="Full name. Eg. Cool links from wikipedia. ")
+    permission = forms.ChoiceField(choices = topic_permissions, help_text="Who can access this?")
+    
+    about = MarkedField(widget = forms.Textarea, help_text="Something about this topic.")
     
     def __init__(self, user, topic_name=None, *args, **kwargs):
         super(NewTopic, self).__init__(*args, **kwargs)
@@ -43,9 +60,9 @@ class NewTopic(forms.Form):
         return Topic.objects.create_new_topic(user = self.user, full_name=self.cleaned_data['topic_fullname'], topic_name=self.cleaned_data['topic_name'], about = self.cleaned_data['about'], permissions = self.cleaned_data['permission'])
     
     
-class NewLink(forms.Form):
-    url = forms.URLField()
-    text = forms.CharField(widget = forms.Textarea)
+class NewLink(MarkedForm):
+    url = forms.URLField(help_text='Url to the cool page.')
+    text = MarkedField(widget = forms.Textarea, help_text="A little description.")
     
     def __init__(self, topic, user, *args, **kwargs):
         super(NewLink, self).__init__(*args, **kwargs)
@@ -61,14 +78,14 @@ class NewLink(forms.Form):
     
     def clean(self):
         if self.user.get_profile().karma < defaults.KARMA_COST_NEW_LINK:
-            raise ValidationError('You do not have enogh karma')
+            raise ValidationError('You do not have enough karma')
         return self.cleaned_data
     
     def save(self):
         return Link.objects.create_link(url = self.cleaned_data['url'], text = self.cleaned_data['text'], user = self.user, topic = self.topic)
     
 class DoComment(forms.Form):
-    text = forms.CharField(widget = forms.Textarea)
+    text = MarkedField(widget = forms.Textarea)
     
     def __init__(self, user, link, *args, **kwargs):
         super(DoComment, self).__init__(*args, **kwargs)
@@ -79,8 +96,8 @@ class DoComment(forms.Form):
         return Comment.objects.create_comment(link = self.link, user = self.user, comment_text = self.cleaned_data['text'])
     
 class DoThreadedComment(forms.Form):
-    text = forms.CharField(widget = forms.Textarea)
-    parent_id = forms.CharField(widget = forms.HiddenInput)
+    text = MarkedField(widget = forms.Textarea)
+    parent_id = MarkedField(widget = forms.HiddenInput)
     
     def __init__(self, user, link, parent, *args, **kwargs):
         super(DoThreadedComment, self).__init__( *args, **kwargs)
@@ -93,7 +110,7 @@ class DoThreadedComment(forms.Form):
         return Comment.objects.create_comment(link = self.link, user = self.user, comment_text = self.cleaned_data['text'], parent = self.parent)
     
 class AddTag(forms.Form):
-    tag = forms.CharField(max_length = 100)
+    tag = MarkedField(max_length = 100)
     
     def __init__(self, user, link, *args, **kwargs):
         super(AddTag, self).__init__(*args, **kwargs)
@@ -110,7 +127,7 @@ class LoginForm(forms.Form):
                                 min_length = 1,
                                 widget = widgets.TextInput(attrs={'class':'input'}),
                                 error_message = 'Must be 1-30 alphanumeric characters or underscores.')
-    password = forms.CharField(min_length = 1, 
+    password = MarkedField(min_length = 1, 
                                max_length = 128, 
                                widget = widgets.PasswordInput(attrs={'class':'input'}),
                                label = 'Password')
@@ -130,9 +147,9 @@ class LoginForm(forms.Form):
     
 class UserCreationForm(forms.Form):
     """A form that creates a user, with no privileges, from the given username and password."""
-    username = forms.CharField(max_length = 30, required = True)
-    password1 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
-    password2 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    username = MarkedField(max_length = 30, required = True)
+    password1 = MarkedField(max_length = 30, required = True, widget = forms.PasswordInput)
+    password2 = MarkedField(max_length = 30, required = True, widget = forms.PasswordInput)
     email = forms.EmailField(required = False)
     
     def clean_username (self):
@@ -180,10 +197,10 @@ class UserCreationForm(forms.Form):
             send_mail('Your account was created.', mail_text, 'hello@42topics.com', [user.email])
                 
     
-class PasswordChangeForm(forms.Form):
-    old_password = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
-    password1 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
-    password2 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+class PasswordChangeForm(MarkedForm):
+    old_password = MarkedField(max_length = 30, required = True, widget = forms.PasswordInput, label="Old Password", help_text="For verification")
+    password1 = MarkedField(max_length = 30, required = True, widget = forms.PasswordInput, label="New password", help_text="Your new password.")
+    password2 = MarkedField(max_length = 30, required = True, widget = forms.PasswordInput, label="Repeat the password", help_text="To verify")
     
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -228,9 +245,9 @@ class PasswordResetForm(forms.Form):
         
             
     
-class InviteUserForm(forms.Form):
-    username = forms.CharField(max_length = 100)
-    invite_text = forms.CharField(max_length = 1000, widget = forms.Textarea, required = False)
+class InviteUserForm(MarkedForm):
+    username = MarkedField(max_length = 100, help_text="User to invite.")
+    invite_text = MarkedField(max_length = 1000, widget = forms.Textarea, required = False, label="Invitation message", help_text="They will see this when they get your invite.")
     
     
     def __init__(self, topic, *args, **kwargs):
@@ -262,12 +279,4 @@ class InviteUserForm(forms.Form):
         user = User.objects.get(username = self.cleaned_data['username'])
         invite = Invite.objects.invite_user(user = user, topic = self.topic, text = self.cleaned_data['invite_text'])
         return invite
-        
-        
-        
-        
-        
-        
-        
-        
-        
+    
