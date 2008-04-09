@@ -98,8 +98,6 @@ def _find_improbable_words(user_corpus, sample_corpus):
     return probs
 
 def calculate_recommendeds():
-    import pdb
-    pdb.set_trace()
     from django.db import connection
     crsr = connection.cursor()
     
