@@ -210,6 +210,7 @@ class Link(models.Model):
     liked_by_count = models.IntegerField(default = 0)
     disliked_by_count = models.IntegerField(default = 0)
     points = models.DecimalField(default = 0, max_digits=7, decimal_places=2)
+    recommended_done = models.BooleanField(default = False)
     #
     related_links_calculated = models.BooleanField(default = False)
     

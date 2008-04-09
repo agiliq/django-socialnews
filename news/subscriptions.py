@@ -5,6 +5,7 @@ from helpers import *
 import bforms
 import logging
 from django.utils import simplejson
+import exceptions
 
 @login_required
 def subscribe(request, topic_name):
@@ -28,6 +29,10 @@ def unsubscribe(request, topic_name):
         subs.delete()        
     except SubscribedUser.DoesNotExist:
         pass
+    except CanNotUnsubscribe:
+        dom ='<em>Ouch. You created this topic. You can not unsubscribe from this.</em>'
+        payload = dict(dom=dom)
+        return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     if request.REQUEST.has_key('ajax'):
         dom = '<a href="%s" class="subscribe">subscribe</a>' % topic.subscribe_url()
         payload = dict(action='subscribe', topic=topic.name, id=topic.id, dom=dom)

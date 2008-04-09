@@ -5,20 +5,42 @@ from urllib2 import urlparse
 import pickle
 from datetime import datetime
 import os
+import logging
 
 sample_corpus_location = defaults.sample_corpus_location
 calculate_recommended_timediff = defaults.calculate_recommended_timediff#12 hours
 min_links_submitted = defaults.min_links_submitted
 min_links_liked = defaults.min_links_liked
-claculate_corpus_after = 1
+calculate_corpus_after = 1
+max_links_in_corpus = defaults.max_links_in_corpus
+log_file = 'C:/log1.log'
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename=log_file,
+                    filemode='a',
+                    )
+
+def _merge_prob_dicts(dict1, dict2):
+    merged_dict = {}
+    for k,v in dict1.items():
+        if k in dict2:
+            merged_dict[k] = v + dict2[k]
+        else:
+            merged_dict[k] = v
+    for k, v in dict2.items():
+        if k in dict1:
+            pass
+        else:
+            merged_dict[k] = v
+    return merged_dict
 
 def _calculate_word_prob_all():
-    links = Link.objects.all()
+    links = Link.objects.all().order_by('-created_on')[:max_links_in_corpus]
     try:
         corpus = file(sample_corpus_location, 'r')
-        cropus_created = os.path.getmtime(sample_corpus_location)
-        diff = datetime.now() - datetime.fromtimestamp(cropus_created)
-        if diff.days > claculate_corpus_after:
+        corpus_created = os.path.getmtime(sample_corpus_location)
+        diff = datetime.now() - datetime.fromtimestamp(corpus_created)
+        if diff.days > calculate_corpus_after:
             raise IOError
         all_corpus = pickle.load(corpus)
         corpus.close()
@@ -76,6 +98,13 @@ def _find_improbable_words(user_corpus, sample_corpus):
     return probs
 
 def calculate_recommendeds():
+    import pdb
+    pdb.set_trace()
+    from django.db import connection
+    crsr = connection.cursor()
+    
+    _prime_linksearch_tbl()
+    
     users_sql = """
     SELECT username
     FROM auth_user, news_userprofile
@@ -85,34 +114,36 @@ def calculate_recommendeds():
     AND auth_user.id = news_userprofile.user_id
     AND (now() - news_userprofile.recommended_calc) > %s
     """ % (min_links_submitted, min_links_liked, calculate_recommended_timediff)
-    users_sql1 = """
-    SELECT username FROM auth_user, news_userprofile
-    WHERE auth_user.id = news_userprofile.user_id
-    AND (now() - news_userprofile.recommended_calc) > %s
-    """ % calculate_recommended_timediff
-    from django.db import connection
-    crsr = connection.cursor()
     crsr.execute(users_sql)
     users = crsr.fetchall()
+    
     for user in users:
         user = user[0]
         try:
             populate_recommended_link(user)
         except:
-            pass
+            raise
+    links_update_sql = """
+    UPDATE news_link
+    SET recommended_done = 1
+    WHERE recommended_done = 0
+    """
+    crsr.execute(links_update_sql)
+    crsr.close()
         
 def calculate_relateds():
+    _prime_linksearch_tbl(include_recommended_done = True)
     links = Link.objects.filter(related_links_calculated = False)
     for link in links:
-        link.related_links_calculated = True
-        link.save()
         try:
             populate_related_link(link.id)
         except:
             raise
+        link.related_links_calculated = True
+        link.save()
             
 def find_keyword_for_user(username):
-    user_corpus = _calculate_word_prob_submitted(username) #+ _calculate_word_prob_liked(username)
+    user_corpus = _merge_prob_dicts(_calculate_word_prob_submitted(username),  _calculate_word_prob_liked(username))
     words = _find_improbable_words(user_corpus, sample_corpus)
     return words[:len(words)/2]
 
@@ -137,7 +168,7 @@ def find_related_for_link_id(link_id):
     AND not news_linksearch.text = (SELECT text from news_link where id = %s)
     limit 0, 10
     """ % (" ".join([keyword[0] for keyword in keywords]), link_id)
-    print sql
+    logging.debug(sql)
     from django.db import connection
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -154,7 +185,7 @@ def find_recommeneded_for_username(username):
     limit 0, 10
     """ % (" ".join([keyword[0] for keyword in keywords]).replace("'", "*"), username)
     try:
-        print sql
+        logging.debug(sql)
     except:
         pass
     from django.db import connection
@@ -164,7 +195,7 @@ def find_recommeneded_for_username(username):
 
 def populate_related_link(link_id):
     relateds = find_related_for_link_id(link_id)
-    ids = [str(related[0]) for related in relateds]
+    ids = ['-1']+[str(related[0]) for related in relateds]
     sql = """
     INSERT INTO news_relatedlink
     SELECT null, %s, id, .5
@@ -174,13 +205,14 @@ def populate_related_link(link_id):
     from django.db import connection
     cursor = connection.cursor()
     cursor.execute("set AUTOCOMMIT = 1")
-    #cursor.execute(sql)
+    logging.debug(sql)
+    cursor.execute(sql)
     return cursor.fetchall()
 
 def populate_recommended_link(username):
     relateds = find_recommeneded_for_username(username)
     user = User.objects.get(username= username)
-    ids = [str(related[0]) for related in relateds]
+    ids = [str(-1)]+[str(related[0]) for related in relateds]
     sql = """
     INSERT INTO news_recommendedlink
     SELECT null, id, %s, .5
@@ -192,6 +224,58 @@ def populate_recommended_link(username):
     cursor.execute("set AUTOCOMMIT = 1")
     cursor.execute(sql)
     return cursor.fetchall()
+
+def _prime_linksearch_tbl(include_recommended_done = False):
+    #Prime news_linksearch
+    #To do this
+    #Drop, and recreate the previous table.
+    #Insert those liks which have not been recommended.
+    #Mark those links as recommended
+    from django.db import connection
+    crsr = connection.cursor()
+    
+    commit_sql = 'set autocommit = 1'
+    
+    drop_sql = 'drop table if exists news_linksearch'
+    crsr.execute(drop_sql)
+    
+    create_sql ="""
+    create table news_linksearch
+    like
+    news_link"""
+    crsr.execute(create_sql)
+    
+    alter_sql = """
+    alter table news_linksearch
+    engine=MyIsam"""
+    crsr.execute(alter_sql)
+    
+    
+    if include_recommended_done:
+        insert_sql ="""
+        insert into news_linksearch
+        select * from news_link
+        """
+    else:
+        insert_sql ="""
+        insert into news_linksearch
+        select * from news_link
+        where news_link.recommended_done = 0"""
+        
+    crsr.execute(insert_sql)
+        
+    index_sql = """
+    create fulltext index recommender
+    on news_linksearch(url, text);    
+    """
+    crsr.execute(index_sql)
+
+    update_sql="""
+    update news_link
+    set recommended_done = 1"""
+    crsr.execute(update_sql)
+    #Priming the news_linksearch table done    
+    
     
 
     
