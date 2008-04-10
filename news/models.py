@@ -17,7 +17,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, unique = True)
     email_validated = models.BooleanField(default = False)
     karma = models.IntegerField(default = defaults.DEFAULT_PROFILE_KARMA)
-    recommended_calc = models.DateTimeField()#when was the recommended links calculated?
+    recommended_calc = models.DateTimeField(auto_now_add = 1)#when was the recommended links calculated?
     
     objects = UserProfileManager()
     
