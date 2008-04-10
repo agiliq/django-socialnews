@@ -7,7 +7,7 @@ import exceptions
 
 
 
-def main(request, order_by=None):
+def main(request, order_by=None, override=None):
     "Sitewide main page"
     if request.user.is_authenticated():
         subs = SubscribedUser.objects.filter(user = request.user).select_related(depth = 1)
@@ -15,6 +15,8 @@ def main(request, order_by=None):
         if topics:
             links = Link.objects.get_query_set_with_user(request.user).filter(topic__in = topics).select_related()
         else:
+            links = Link.objects.get_query_set_with_user(request.user).select_related()
+        if override == 'all':
             links = Link.objects.get_query_set_with_user(request.user).select_related()
     else:
         links = Link.objects.all().select_related()

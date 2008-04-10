@@ -37,9 +37,17 @@ class MarkedEmailField(forms.EmailField):
             if not kwargs.has_key('widget'):
                 kwargs.update({'widget' : forms.TextInput(attrs={'class':'emailfield input'})})
         super(MarkedEmailField, self).__init__(*args, **kwargs)
+        
+class MarkedURLField(forms.URLField):
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('required', True):
+            if not kwargs.has_key('widget'):
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'urlfield required input'})})
+        else:
+            if not kwargs.has_key('widget'):
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'urlfield input'})})
+        super(MarkedURLField, self).__init__(*args, **kwargs)
     
-
-
 class NewTopic(MarkedForm):
     "Create a new topic."
     topic_name = MarkedField(max_length = 100, help_text="Name of the new topic. No Spaces. Eg. wiki.")
@@ -72,7 +80,7 @@ class NewTopic(MarkedForm):
     
     
 class NewLink(MarkedForm):
-    url = forms.URLField(help_text='Url to the cool page.')
+    url = MarkedURLField(help_text='Url to the cool page.')
     text = MarkedField(widget = forms.Textarea, help_text="A little description.")
     
     def __init__(self, topic, user, *args, **kwargs):

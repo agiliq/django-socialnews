@@ -14,9 +14,13 @@
 {% include 'news/link_details_menu.html' %}
 
 <ul class="hot">
+{% if related %}
 {% for obj in related %}
 {% include 'news/link_row_related.html' %}
 {% endfor %}
+{% else %}
+We have not yet found anything related to this story. Might be if you checked back later?
+{% endif %}
 </ul>
 
 </div>
