@@ -28,6 +28,7 @@ def user_comments(request, username):
         comments = Comment.objects.get_query_set_with_user(request.user).filter(user = user).select_related()
     else:
         comments = Comment.objects.filter(user = user).select_related()
+    comments = comments.order_by('-created_on')
     payload = dict(pageuser=user, comments=comments)
     return render(request, payload, 'news/usercomments.html')
 
@@ -48,6 +49,7 @@ def saved_links(request):
     
 
 def _user_links(request, queryset):
+    queryset = queryset.order_by('-created_on')
     queryset, page_data = get_paged_objects(queryset, request, defaults.LINKS_PER_PAGE)
     payload = dict(objects = queryset, page_data=page_data)
     return render(request, payload, 'news/mylinks.html')

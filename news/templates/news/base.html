@@ -2,6 +2,15 @@
 "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+{% block rss %}
+{% if topic %}
+<link rel="alternate" type="application/rss+xml" title="{{topic}} RSS Feed" href="/feeds/topics/{{topic.name}}/" />
+{% else %}
+<link rel="alternate" type="application/rss+xml" title="Latest RSS Feed" href="/feeds/latest/" />
+{% endif %}
+{% endblock %}
+
 <head>
 <title>
 {% block title %}

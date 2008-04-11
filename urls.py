@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 from django.contrib.auth import views
 from django.views.generic import simple
 from django.views.generic.simple import direct_to_template
+from news.rss import LatestEntriesByTopic, LatestEntries
 
 urlpatterns = patterns('',
     # Example:
@@ -66,7 +67,16 @@ urlpatterns += patterns('news.tags',
     url(r'^tag/(?P<tag_text>[^\.^/]+)/$', 'sitewide_tag', name='sitewide_tag'),
 )
 
-urlpatterns += patterns('news.links',
+feeds = {
+    'latest': LatestEntries,
+    'topics': LatestEntriesByTopic,
+}
+
+urlpatterns += patterns('',
+    url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
+)
+
+urlpatterns += patterns('news.links',    
     url(r'^(?P<topic_name>[^\.^/]+)/submit/$', 'link_submit', name='link_submit'),
     url(r'^up/(?P<link_id>\d+)/$', 'upvote_link', name='upvote_link'),
     url(r'^down/(?P<link_id>\d+)/$', 'downvote_link', name='downvote_link'),
