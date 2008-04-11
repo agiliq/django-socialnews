@@ -18,6 +18,7 @@ class UserProfile(models.Model):
     email_validated = models.BooleanField(default = False)
     karma = models.IntegerField(default = defaults.DEFAULT_PROFILE_KARMA)
     recommended_calc = models.DateTimeField(auto_now_add = 1)#when was the recommended links calculated?
+    is_recommended_calc = models.BooleanField(default = False)
     
     objects = UserProfileManager()
     

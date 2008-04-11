@@ -121,6 +121,12 @@ def calculate_recommendeds():
             populate_recommended_link(user)
         except:
             raise
+    user_update_sql = """
+    UPDATE news_userprofile
+    SET recommended_calc = now()            
+    """
+    crsr.execute(user_update_sql)
+    
     links_update_sql = """
     UPDATE news_link
     SET recommended_done = 1
@@ -128,6 +134,27 @@ def calculate_recommendeds():
     """
     crsr.execute(links_update_sql)
     crsr.close()
+    
+def calculate_recommendeds_first():
+    "Calculate recommended links for new users, who never had a recommended calculation done."
+    from django.db import connection
+    crsr = connection.cursor()
+    
+    _prime_linksearch_tbl(include_recommended_done = True)
+    users = UserProfile.objects.filter(is_recommended_calc = False)
+    
+    for user in users:
+        try:
+            populate_recommended_link(user.user.username)
+        except:
+            raise
+    
+        user.recommended_calc = datetime.now()
+        user.is_recommended_calc = True
+        user.save()
+        
+    
+    
         
 def calculate_relateds():
     _prime_linksearch_tbl(include_recommended_done = True)
