@@ -855,6 +855,20 @@ def humanized_time(time):
         elif delta < 60 * 60 * 24:
             return '%s hours ago' % (delta/(60 * 60))
         
+#Tables where we store scraped Data.
+
+class DiggLinkRecent(models.Model):
+    "Links scraped from digg."
+    url = models.URLField()
+    description = models.TextField()
+    title = models.TextField()
+    username = models.CharField(max_length = 100)
+    submitted_on = models.DateTimeField()
+    is_in_main = models.BooleanField(default = False)# Is this scraped link moved to main tables yet?
+    
+    class Admin:
+        pass    
+        
     
 
     
