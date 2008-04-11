@@ -151,6 +151,7 @@ def calculate_recommendeds_first():
             can_calculate_recs = True
         if not can_calculate_recs:
             continue
+        
         try:
             populate_recommended_link(user.user.username)
         except:
