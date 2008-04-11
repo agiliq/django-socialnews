@@ -6,7 +6,7 @@ Recommended - {{user.username}} - {{block.super}}
 
 {% block contents %}
 <ul class="hot">
-{% if rlink %}
+{% if recommended %}
 {% for rlink in recommended %}
 {% with rlink as obj %}
 {% include 'news/link_row_wrapped.html' %}

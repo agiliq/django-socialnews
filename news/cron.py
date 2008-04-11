@@ -257,8 +257,8 @@ def _prime_linksearch_tbl(include_recommended_done = False):
     else:
         insert_sql ="""
         insert into news_linksearch
-        select * from news_link"""
-        #where news_link.recommended_done = 0
+        select * from news_link
+        where news_link.recommended_done = 0"""
         
     crsr.execute(insert_sql)
         
