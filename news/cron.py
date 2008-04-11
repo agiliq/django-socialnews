@@ -144,6 +144,13 @@ def calculate_recommendeds_first():
     users = UserProfile.objects.filter(is_recommended_calc = False)
     
     for user in users:
+        can_calculate_recs = False
+        if LinkVote.objects.filter(user = user).count() > 5:
+            can_calculate_recs = True
+        if Link.objects.filter(user = user).count() > 5:
+            can_calculate_recs = True
+        if not can_calculate_recs:
+            continue
         try:
             populate_recommended_link(user.user.username)
         except:
