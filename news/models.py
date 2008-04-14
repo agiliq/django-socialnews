@@ -14,8 +14,6 @@ class SiteSetting(models.Model):
 class UserProfileManager(models.Manager):
     def create_user(self, user_name, email, password):
         "Create user and associate a profile with it."
-        import pdb
-        pdb.set_trace()
         user = User.objects.create_user(user_name, email, password)
         profile = UserProfile(user = user)
         settings = SiteSetting.objects.all()[0]#There can be only one SiteSettings

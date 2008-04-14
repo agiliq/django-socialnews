@@ -136,8 +136,6 @@ def calculate_recommendeds():
     crsr.close()
     
 def calculate_recommendeds_first():
-    import pdb
-    pdb.set_trace()
     "Calculate recommended links for new users, who never had a recommended calculation done."
     from django.db import connection
     crsr = connection.cursor()
