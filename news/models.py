@@ -69,7 +69,7 @@ class TopicManager(models.Manager):
     def create_new_topic(self, user, full_name, topic_name, permissions = topic_permissions_flat[0], about=None, karma_factor = True):
         "Create topic and subscribe user to the given topic."
         profile = user.get_profile()
-        if profile.karma > defaults.KARMA_COST_NEW_TOPIC or not karma_factor:
+        if profile.karma >= defaults.KARMA_COST_NEW_TOPIC or not karma_factor:
             if not about:
                 about = 'About %s' % topic_name
             if karma_factor:

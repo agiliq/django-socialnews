@@ -72,6 +72,8 @@ def recommended(request):
 
 @login_required    
 def create(request, topic_name=None):
+    import pdb
+    pdb.set_trace()
     if request.method == 'GET':
         if not topic_name:
             topic_name = request.GET.get('topic_name', '')
