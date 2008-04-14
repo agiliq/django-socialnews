@@ -5,11 +5,20 @@ from django.core.urlresolvers import reverse
 from urllib2 import urlparse
 from datetime import datetime
 
+class SiteSetting(models.Model):
+    default_topic = models.ForeignKey('Topic')
+    
+    class Admin:
+        pass
+
 class UserProfileManager(models.Manager):
     def create_user(self, user_name, email, password):
         "Create user and associate a profile with it."
         user = User.objects.create_user(user_name, email, password)
         profile = UserProfile(user = user)
+        settings = SiteSetting.objects.all()[0]#There can be only one SiteSettings
+        SubscribedUser.objects.subscribe_user(user = user, topic = settings.default_topic)
+        default_topic = settings.default_topic
         profile.save()
         return user
     
@@ -19,6 +28,7 @@ class UserProfile(models.Model):
     karma = models.IntegerField(default = defaults.DEFAULT_PROFILE_KARMA)
     recommended_calc = models.DateTimeField(auto_now_add = 1)#when was the recommended links calculated?
     is_recommended_calc = models.BooleanField(default = False)
+    default_topic = models.ForeignKey('Topic', null = True, blank = True)
     
     objects = UserProfileManager()
     
@@ -641,7 +651,7 @@ VALID_GROUPS_FLAT = [grp[1] for grp in VALID_GROUPS]
 
 class SubscribedUserManager(models.Manager):
     "Manager for SubscribedUser"
-    def subscribe_user(self, user, topic, group):
+    def subscribe_user(self, user, topic, group='Member'):
         if not group in VALID_GROUPS_FLAT:
             raise InvalidGroup('%s is not a valid group' % group)
         subs = SubscribedUser(user = user, topic = topic, group = group)

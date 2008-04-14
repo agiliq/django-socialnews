@@ -12,8 +12,8 @@ user = User.objects.get(id = digg_user_id)
 topic = Topic.objects.get(id = digg_topic_id)
 
 def get_stories_new():
-    for i in xrange(5):
-        stories = simplejson.load(_get_stories_recent(offset = i*100 + 4000))
+    for i in xrange(1):
+        stories = simplejson.load(_get_stories_recent(offset = i*100))
         stories = stories['stories']
         for story in stories:
             try:
@@ -29,10 +29,10 @@ def digg_to_main():
     links = DiggLinkRecent.objects.filter(is_in_main=False)
     for link in links:
         try:
-            main_link = Link.objects.create_link(url = link.url, text=link.title, user = user, topic=topic)
-            main_link.save()
             link.is_in_main = True
             link.save()
+            main_link = Link.objects.create_link(url = link.url, text=link.title, user = user, topic=topic)
+            main_link.save()
         except Exception, e:
             print e
             pass
@@ -43,7 +43,8 @@ def scrape_digg():
         
         
 def _get_stories_recent(count = 100, offset = 100):            
-    url = 'http://services.digg.com/stories?count=%s&offset=%s&appkey=http://example.com/appli&type=json' % (count, offset)
+    url = 'http://services.digg.com/stories/popular?count=%s&offset=%s&appkey=http://example.com/appli&type=json&sort=promote_date-desc' % (count, offset)
+    print url
     stories =  urllib.urlopen(url)
     x = stories.read()
     return StringIO.StringIO(x)

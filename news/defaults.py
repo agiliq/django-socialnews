@@ -18,6 +18,7 @@ MAX_RELATED_LINKS = 10
 MIN_VOTES_IN_RELATED = 5
 
 LINKS_PER_PAGE = 15
+UNALLOWED_TOPIC_NAMES = ['my', 'new', 'about', 'aboutus', 'help', 'up', 'down', 'user', 'admin', 'foo', 'logout', 'register', 'site_media', 'dummy', 'subscribe', 'unsubscribe', 'search', 'buttons', 'recommended', 'createtopics', 'topics', 'tag', 'feeds', 'save', 'upcomment', 'downcomment']
 
 #For Stats Page
 TOP_TOPICS = 10

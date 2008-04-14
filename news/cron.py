@@ -136,33 +136,31 @@ def calculate_recommendeds():
     crsr.close()
     
 def calculate_recommendeds_first():
+    import pdb
+    pdb.set_trace()
     "Calculate recommended links for new users, who never had a recommended calculation done."
     from django.db import connection
     crsr = connection.cursor()
     
     _prime_linksearch_tbl(include_recommended_done = True)
-    users = UserProfile.objects.filter(is_recommended_calc = False)
+    profiles = UserProfile.objects.filter(is_recommended_calc = False)
     
-    for user in users:
+    for profile in profiles:
         can_calculate_recs = False
-        if LinkVote.objects.filter(user = user).count() > 5:
+        if LinkVote.objects.filter(user = profile.user).count() > 5:
             can_calculate_recs = True
-        if Link.objects.filter(user = user).count() > 5:
+        if Link.objects.filter(user = profile.user).count() > 5:
             can_calculate_recs = True
         if not can_calculate_recs:
             continue
-        
         try:
-            populate_recommended_link(user.user.username)
+            populate_recommended_link(profile.user.username)
         except:
             raise
     
-        user.recommended_calc = datetime.now()
-        user.is_recommended_calc = True
-        user.save()
-        
-    
-    
+        profile.recommended_calc = datetime.now()
+        profile.is_recommended_calc = True
+        profile.save()
         
 def calculate_relateds():
     _prime_linksearch_tbl(include_recommended_done = True)
@@ -215,8 +213,9 @@ def find_recommeneded_for_username(username):
     match (url, text)
     against ('%s')
     AND NOT news_linksearch.id in (SELECT news_link.id FROM news_link, auth_user WHERE auth_user.username = '%s' AND news_link.user_id = auth_user.id)
+    AND NOT news_linksearch.id in (SELECT news_linkvote.link_id FROM news_linkvote, auth_user WHERE auth_user.username = '%s' AND news_linkvote.user_id = auth_user.id)
     limit 0, 10
-    """ % (" ".join([keyword[0] for keyword in keywords]).replace("'", "*"), username)
+    """ % (" ".join([keyword[0] for keyword in keywords]).replace("'", "*"), username, username)
     try:
         logging.debug(sql)
     except:

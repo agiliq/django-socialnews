@@ -67,6 +67,8 @@ class NewTopic(MarkedForm):
             name = self.cleaned_data['topic_name']
             Topic.objects.get(name = name)
         except Topic.DoesNotExist, e:
+            if name in defaults.UNALLOWED_TOPIC_NAMES:
+                raise ValidationError('This topic name is not allowed.')
             return name
         raise ValidationError('The name %s is already taken. Try something else?' % name)
     
@@ -200,8 +202,7 @@ class UserCreationForm(MarkedForm):
             User.objects.get(email=self.cleaned_data['email'])
         except User.DoesNotExist:
             return self.cleaned_data['email']
-        #raise ValidationError(_('A user with this email already exists.'))
-        pass
+        raise ValidationError(_('A user with this email already exists.'))
     
     def save(self):
         if self.cleaned_data['email']:

@@ -47,6 +47,13 @@ urlpatterns +=patterns('news.users',
     url(r'^my/saved/$', 'saved_links', name='saved_links'),
 )
 
+urlpatterns += patterns('news.static',
+    url(r'^aboutus/$', 'aboutus', name='aboutus'),
+    url(r'^help/$', 'help', name='help'),
+    url(r'^help/$', 'help', name='help'),
+    url(r'^buttons/$', 'buttons', name='buttons'),
+)  
+
 urlpatterns += patterns('news.topics',
     url(r'^$', 'main', name='main'),
     url(r'^new/$', 'main', {'order_by':'new'}, name='new'),
@@ -60,7 +67,7 @@ urlpatterns += patterns('news.topics',
     url(r'^(?P<topic_name>[^\.^/]+)/new/$', 'topic_main', {'order_by':'new'}, name='topic_new', ),
     url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'topic_manage', name='topic_manage'),
     url(r'^(?P<topic_name>[^\.^/]+)/about/$', 'topic_about', name='topic_about'),
-)
+)                      
 
 urlpatterns += patterns('news.tags',
     url(r'^(?P<topic_name>[^\.^/]+)/tag/(?P<tag_text>[^\.^/]+)/$', 'topic_tag', name='topic_tag'),

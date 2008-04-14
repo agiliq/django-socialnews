@@ -50,7 +50,7 @@
 			<li><a href="/">hot</a></li>
 			<li><a href="/new/">new</a></li>			
 			{% endif %}
-			<li><a href="/recommended/">recommended</a></li>
+			<li><a href="/recommended/">recommended</a></li>			
 			{% if topic %}
 			<li><a href="{{topic.about_url}}">about</a></li>
 			{% else %}
@@ -72,6 +72,7 @@
 				{% if topic %}
 				| <a href="{{topic.submit_url}}">submit</a>
 				{% endif %} 
+				| <a href="/my/">settings</a>
 				| <a href="/help/">help</a> | <a href="/blog/">blog</a>
 			</p>
 		{% endblock %}
@@ -131,9 +132,9 @@
 	<div class="footer">
 		
 		<ul class="nav">
-			<li><a href="#">feedback</a>|</li>
-			<li><a href="#">bookmarklets</a>|</li>
-			<li><a href="#">buttons</a></li>
+			<li><a href="http://www.42topics.com/forum/topic/2">Feedback</a>|</li>
+			<li><a href="http://www.42topics.com/forum">Forum</a>|</li>
+			<li><a href="/buttons/">Buttons</a></li>
 		</ul>
 	</div>
 
