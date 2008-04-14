@@ -52,21 +52,6 @@ urlpatterns += patterns('news.static',
     url(r'^help/$', 'help', name='help'),
     url(r'^help/$', 'help', name='help'),
     url(r'^buttons/$', 'buttons', name='buttons'),
-)  
-
-urlpatterns += patterns('news.topics',
-    url(r'^$', 'main', name='main'),
-    url(r'^new/$', 'main', {'order_by':'new'}, name='new'),
-    url(r'^all/$', 'main', {'order_by':'new', 'override':'all'}, name='new'),
-    url(r'^recommended/$', 'recommended',  name='recommended'),                        
-    url(r'^createtopic/', 'create', name='createtopic'),
-    url(r'^about/$', 'site_about', name='site_about'),
-    url(r'^topics/$', 'topic_list', name='topic_list'),
-    
-    url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
-    url(r'^(?P<topic_name>[^\.^/]+)/new/$', 'topic_main', {'order_by':'new'}, name='topic_new', ),
-    url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'topic_manage', name='topic_manage'),
-    url(r'^(?P<topic_name>[^\.^/]+)/about/$', 'topic_about', name='topic_about'),
 )                      
 
 urlpatterns += patterns('news.tags',
@@ -83,7 +68,8 @@ urlpatterns += patterns('',
     url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
 )
 
-urlpatterns += patterns('news.links',    
+urlpatterns += patterns('news.links',
+    url(r'^submit/$', 'link_submit', name='link_submit_def'),                        
     url(r'^(?P<topic_name>[^\.^/]+)/submit/$', 'link_submit', name='link_submit'),
     url(r'^up/(?P<link_id>\d+)/$', 'upvote_link', name='upvote_link'),
     url(r'^down/(?P<link_id>\d+)/$', 'downvote_link', name='downvote_link'),
@@ -95,3 +81,18 @@ urlpatterns += patterns('news.links',
     url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/info/$', 'link_info', name='link_info'),
     url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/related/$', 'link_related', name='link_related'),
 )
+
+urlpatterns += patterns('news.topics',
+    url(r'^$', 'main', name='main'),
+    url(r'^new/$', 'main', {'order_by':'new'}, name='new'),
+    url(r'^all/$', 'main', {'order_by':'new', 'override':'all'}, name='new'),
+    url(r'^recommended/$', 'recommended',  name='recommended'),                        
+    url(r'^createtopic/', 'create', name='createtopic'),
+    url(r'^about/$', 'site_about', name='site_about'),
+    url(r'^topics/$', 'topic_list', name='topic_list'),
+    
+    url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
+    url(r'^(?P<topic_name>[^\.^/]+)/new/$', 'topic_main', {'order_by':'new'}, name='topic_new', ),
+    url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'topic_manage', name='topic_manage'),
+    url(r'^(?P<topic_name>[^\.^/]+)/about/$', 'topic_about', name='topic_about'),
+)  

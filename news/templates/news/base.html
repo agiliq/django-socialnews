@@ -48,7 +48,8 @@
 			<li><a href="{{topic.new_url}}">new</a></li>
 			{% else %}
 			<li><a href="/">hot</a></li>
-			<li><a href="/new/">new</a></li>			
+			<li><a href="/new/">new</a></li>
+			<li><a href="/all/">all</a></li>						
 			{% endif %}
 			<li><a href="/recommended/">recommended</a></li>			
 			{% if topic %}
@@ -71,6 +72,8 @@
 				| <a href="{% url createtopic %}">create</a>
 				{% if topic %}
 				| <a href="{{topic.submit_url}}">submit</a>
+				{% else %}
+				| <a href="/submit/">submit</a>
 				{% endif %} 
 				| <a href="/my/">settings</a>
 				| <a href="/help/">help</a> | <a href="/blog/">blog</a>

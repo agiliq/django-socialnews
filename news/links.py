@@ -9,8 +9,12 @@ from django.template.loader import get_template
 from django.template import Context
 
 @login_required
-def link_submit(request, topic_name):
-    topic = get_topic(request, topic_name)
+def link_submit(request, topic_name=None):
+    if topic_name:
+        topic = get_topic(request, topic_name)
+    else:
+        profile = request.user.get_profile()
+        topic = profile.default_topic
     if request.method == 'GET':
         form = bforms.NewLink(user = request.user, topic = topic)
     if request.method == 'POST':

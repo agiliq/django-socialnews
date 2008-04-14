@@ -14,11 +14,13 @@ class SiteSetting(models.Model):
 class UserProfileManager(models.Manager):
     def create_user(self, user_name, email, password):
         "Create user and associate a profile with it."
+        import pdb
+        pdb.set_trace()
         user = User.objects.create_user(user_name, email, password)
         profile = UserProfile(user = user)
         settings = SiteSetting.objects.all()[0]#There can be only one SiteSettings
         SubscribedUser.objects.subscribe_user(user = user, topic = settings.default_topic)
-        default_topic = settings.default_topic
+        profile.default_topic = settings.default_topic
         profile.save()
         return user
     
@@ -28,7 +30,7 @@ class UserProfile(models.Model):
     karma = models.IntegerField(default = defaults.DEFAULT_PROFILE_KARMA)
     recommended_calc = models.DateTimeField(auto_now_add = 1)#when was the recommended links calculated?
     is_recommended_calc = models.BooleanField(default = False)
-    default_topic = models.ForeignKey('Topic', null = True, blank = True)
+    default_topic = models.ForeignKey('Topic')
     
     objects = UserProfileManager()
     
