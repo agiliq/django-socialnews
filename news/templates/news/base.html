@@ -3,6 +3,8 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
+<head>
+
 {% block rss %}
 {% if topic %}
 <link rel="alternate" type="application/rss+xml" title="{{topic}} RSS Feed" href="/feeds/topics/{{topic.name}}/" />
@@ -10,8 +12,6 @@
 <link rel="alternate" type="application/rss+xml" title="Latest RSS Feed" href="/feeds/latest/" />
 {% endif %}
 {% endblock %}
-
-<head>
 <title>
 {% block title %}
 42topics.com
@@ -76,7 +76,6 @@
 				| <a href="/submit/">submit</a>
 				{% endif %} 
 				| <a href="/my/">settings</a>
-				| <a href="/help/">help</a> | <a href="/blog/">blog</a>
 			</p>
 		{% endblock %}
 		</div>
@@ -137,7 +136,9 @@
 		<ul class="nav">
 			<li><a href="http://www.42topics.com/forum/topic/2">Feedback</a>|</li>
 			<li><a href="http://www.42topics.com/forum">Forum</a>|</li>
+			<li><a href="http://www.42topics.com/blog">Blog</a>|</li>
 			<li><a href="/buttons/">Buttons</a></li>
+			
 		</ul>
 	</div>
 
