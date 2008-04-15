@@ -31,9 +31,10 @@ def digg_to_main():
         try:
             link.is_in_main = True
             link.save()
-            main_link = Link.objects.create_link(url = link.url, text=link.title, user = user, topic=topic)
+            main_link = Link.objects.create_link(url = link.url, text=link.title, user = user, topic=topic, karma_factor=False)
             main_link.save()
         except Exception, e:
+            print 'Exception'
             print e
             pass
         
