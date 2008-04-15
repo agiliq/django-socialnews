@@ -36,6 +36,11 @@ Manage your account
 		{% endif %}
 		
 		<form action="." method="post">
+		{{def_topic_form.as_p}}
+		<input type="submit" name="setdef" value="change default topic" />
+		</form>
+		
+		<form action="." method="post">
 		<fieldset>
 		<legend>
 		Change password
@@ -45,6 +50,7 @@ Manage your account
 		</fieldset>
 		</form>
 		
+		{% if invites %}
 		<h3>You have been invited.</h3>
 		<table>
 		{% for invite in invites %}
@@ -61,6 +67,7 @@ Manage your account
 		</tr>
 		{% endfor %}
 		</table>
+		{% endif %}
 		
 </div>
 {% endblock %}

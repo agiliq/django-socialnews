@@ -16,7 +16,9 @@ def link_submit(request, topic_name=None):
         profile = request.user.get_profile()
         topic = profile.default_topic
     if request.method == 'GET':
-        form = bforms.NewLink(user = request.user, topic = topic)
+        url = request.GET.get('url', '')
+        text = request.GET.get('text', '')
+        form = bforms.NewLink(user = request.user, topic = topic, initial=dict(url = url, text=text, ))
     if request.method == 'POST':
         form = bforms.NewLink( user = request.user, topic = topic, data = request.POST)
         if form.is_valid():

@@ -6,11 +6,17 @@
 
 
 {% block contents %}
+{% if objects %}
 <ul class="hot">
 {% for obj in objects %}
 {% include 'news/link_row_wrapped.html' %}
 {% endfor %}
 </ul>
+{% else %}
+<div class="post">
+There are no links here. Ah well! <a href="http://www.42topics.com/forum/topic/1">Can we help?</a>
+</div>
+{% endif %}
 
 {% include 'news/pagination.html' %}
 

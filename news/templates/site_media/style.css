@@ -194,3 +194,6 @@ font-family:"trebuchet ms";
 padding:2px 0px 0px 2px;
 }
 .focusfield{ background:url(images/inputselect.gif)}
+.active{
+    background-color: #dbd1b1; 
+}

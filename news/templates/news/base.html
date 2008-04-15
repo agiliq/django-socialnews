@@ -47,9 +47,9 @@
 			<li><a href="{{topic.get_absolute_url}}">hot</a></li>
 			<li><a href="{{topic.new_url}}">new</a></li>
 			{% else %}
-			<li><a href="/">hot</a></li>
-			<li><a href="/new/">new</a></li>
-			<li><a href="/all/">all</a></li>						
+			<li><a href="/" {% ifequal page 'hot' %}class="active"{% endifequal %}>hot</a></li>
+			<li><a href="/new/" {% ifequal page 'new' %}class="active"{% endifequal %}>new</a></li>
+			<li><a href="/all/" {% ifequal page 'all' %}class="active"{% endifequal %}>all</a></li>						
 			{% endif %}
 			<li><a href="/recommended/">recommended</a></li>			
 			{% if topic %}

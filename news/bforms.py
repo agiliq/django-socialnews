@@ -85,7 +85,7 @@ class NewLink(MarkedForm):
     url = MarkedURLField(help_text='Url to the cool page.')
     text = MarkedField(widget = forms.Textarea, help_text="A little description.")
     
-    def __init__(self, topic, user, *args, **kwargs):
+    def __init__(self, topic, user, url = None, text = None, *args, **kwargs):
         super(NewLink, self).__init__(*args, **kwargs)
         self.user = user
         self.topic = topic
@@ -299,4 +299,26 @@ class InviteUserForm(MarkedForm):
         user = User.objects.get(username = self.cleaned_data['username'])
         invite = Invite.objects.invite_user(user = user, topic = self.topic, text = self.cleaned_data['invite_text'])
         return invite
+    
+class SetDefaultForm(forms.Form):
+    current_default = forms.CharField(widget = forms.TextInput({'readonly':'readonly'}))
+    topics = forms.ChoiceField()
+    
+    def __init__(self, user, *args, **kwargs):
+        super(SetDefaultForm, self).__init__(*args, **kwargs)
+        self.user = user
+        subs  = SubscribedUser.objects.filter(user = user)
+        choices = [(sub.topic.name, sub.topic.name) for sub in subs]
+        self.fields['topics'].choices = choices
+        profile = user.get_profile()
+        self.fields['current_default'].initial = profile.default_topic.name
+        
+    def save(self):
+        new_topic = self.cleaned_data['topics']
+        topic = Topic.objects.get(name=new_topic)
+        profile = self.user.get_profile()
+        profile.default_topic = topic
+        profile.save()
+        return self.user
+        
     

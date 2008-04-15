@@ -22,6 +22,12 @@ def main(request, order_by=None, override=None):
         links = Link.objects.all().select_related()
     if order_by == 'new':
         links = links.order_by('-created_on')
+    if override == 'all':
+        page = 'all'
+    elif order_by == 'new':
+        page = 'new'
+    else:
+        page = 'hot'
     links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
     tags = Tag.objects.filter(topic__isnull = True).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
     if request.user.is_authenticated():
@@ -30,7 +36,7 @@ def main(request, order_by=None, override=None):
         subscriptions = SubscribedUser.objects.get_empty_query_set()
     top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE]
     new_topics = Topic.objects.all().order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE]
-    payload = {'links':links, 'tags':tags, 'subscriptions':subscriptions, 'top_topics':top_topics, 'new_topics':new_topics, 'page_data':page_data}
+    payload = {'links':links, 'tags':tags, 'subscriptions':subscriptions, 'top_topics':top_topics, 'new_topics':new_topics, 'page_data':page_data, 'page': page}
     return render(request, payload, 'news/main.html')
     
     
@@ -48,6 +54,10 @@ def topic_main(request, topic_name, order_by = None):
     if order_by == 'new':
         links = links.order_by('-created_on')
     links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
+    if order_by == 'new':
+        page = 'new'
+    else:
+        page = 'hot'
     subscribed = False
     if request.user.is_authenticated():
         subscriptions = SubscribedUser.objects.filter(user = request.user).select_related()
@@ -60,7 +70,7 @@ def topic_main(request, topic_name, order_by = None):
         subscriptions = SubscribedUser.objects.get_empty_query_set()
     top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE]
     new_topics = Topic.objects.all().order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE]
-    payload = dict(topic = topic, links = links, subscriptions=subscriptions, tags=tags, subscribed=subscribed, page_data=page_data, top_topics=top_topics, new_topics=new_topics)
+    payload = dict(topic = topic, links = links, subscriptions=subscriptions, tags=tags, subscribed=subscribed, page_data=page_data, top_topics=top_topics, new_topics=new_topics,  page= page)
     return render(request, payload, 'news/topic_main.html')
 
 @login_required
@@ -72,8 +82,6 @@ def recommended(request):
 
 @login_required    
 def create(request, topic_name=None):
-    import pdb
-    pdb.set_trace()
     if request.method == 'GET':
         if not topic_name:
             topic_name = request.GET.get('topic_name', '')
@@ -141,12 +149,13 @@ def site_about(request):
 
 def topic_list(request):
     if request.user.is_authenticated():
-        top_topics = Topic.objects.append_user_data(request.user).order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE * 3]
-        new_topics = Topic.objects.append_user_data(request.user).order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE * 3]
+        top_topics = Topic.objects.append_user_data(request.user).order_by('-num_links')#[:defaults.TOP_TOPICS_ON_MAINPAGE * 3]
+        #new_topics = Topic.objects.append_user_data(request.user).order_by('-updated_on')#[:defaults.NEW_TOPICS_ON_MAINPAGE * 3]
     else:
         top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE * 3]
-        new_topics = Topic.objects.all().order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE * 3]
-    payload = dict(top_topics = top_topics, new_topics = new_topics)
+        #new_topics = Topic.objects.all().order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE * 3]
+    top_topics, page_data, = get_paged_objects(top_topics, request, 10)
+    payload = dict(top_topics = top_topics, page_data=page_data)
     return render(request, payload, 'news/topic_list.html')
     
 

@@ -85,6 +85,7 @@ def user_manage(request):
     subs = SubscribedUser.objects.filter(user = request.user).select_related()
     passwordchangeform = bforms.PasswordChangeForm(request.user)
     invites = Invite.objects.filter(user = request.user)
+    def_topic_form = bforms.SetDefaultForm(request.user)
     if request.method=='POST':
         if request.POST.has_key('remove'):
             topic_name = request.POST['topic']
@@ -96,7 +97,12 @@ def user_manage(request):
             if passwordchangeform.is_valid():
                 passwordchangeform.save()
                 return HttpResponseRedirect('.')
-    payload = dict(subs=subs, form=passwordchangeform, invites=invites)
+        if request.POST.has_key('setdef'):
+            def_topic_form = bforms.SetDefaultForm(request.user, request.POST)
+            if def_topic_form.is_valid():
+                def_topic_form.save()
+                return HttpResponseRedirect('.')
+    payload = dict(subs=subs, form=passwordchangeform, invites=invites, def_topic_form=def_topic_form)
     return render(request, payload, 'news/usermanage.html')
 
 def activate_user(request, username):

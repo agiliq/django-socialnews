@@ -6,11 +6,17 @@
 
 
 {% block contents %}
+{% if links %}
 <ul class="hot">
 {% for link in links %}
 {% include 'news/link_row.html' %}
 {% endfor %}
 </ul>
+{% else %}
+<div class="post">
+There are no links here. Ah well!
+</div>
+{% endif %}
 
 {% include 'news/pagination.html' %}
 
