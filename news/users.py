@@ -35,22 +35,25 @@ def user_comments(request, username):
 @login_required
 def liked_links(request):
     votes = LinkVote.objects.get_user_data().filter(user = request.user, direction = True).select_related()
-    return _user_links(request, votes)
+    page = 'liked'
+    return _user_links(request, votes, page)
 
 @login_required
 def disliked_links(request):
     votes = LinkVote.objects.get_user_data().filter(user = request.user, direction = False).select_related()
-    return _user_links(request, votes)
+    page = 'disliked'
+    return _user_links(request, votes, page)
 
 @login_required
 def saved_links(request):
     saved = SavedLink.objects.get_user_data().filter(user = request.user).select_related()
-    return _user_links(request, saved)
+    page = 'saved'
+    return _user_links(request, saved, page)
     
 
-def _user_links(request, queryset):
+def _user_links(request, queryset, page):
     queryset = queryset.order_by('-created_on')
     queryset, page_data = get_paged_objects(queryset, request, defaults.LINKS_PER_PAGE)
-    payload = dict(objects = queryset, page_data=page_data)
+    payload = dict(objects = queryset, page_data=page_data, page = page)
     return render(request, payload, 'news/mylinks.html')
 

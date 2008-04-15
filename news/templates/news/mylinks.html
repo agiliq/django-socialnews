@@ -23,14 +23,27 @@ There are no links here. Ah well! <a href="http://www.42topics.com/forum/topic/1
 {% endblock %}
 
 {% block sidebar %}
+    {{ block.super }}
 	 	<div class="box singlecol">
 				<h3>Actions</h3>
         <ul>
-        <li><a href="/user/{{username}}/"></a>  Links</li>
+        <li><a href="/user/{{user.username}}/">Links</a></li>
 				<li><a href="/user/{{user.username}}/comments/">Comments</a></li>
+				{% ifequal page 'liked' %}
+				<li>Liked</li>
+				{% else %}
 				<li><a href="{% url liked_links %}">Liked</a>  </li>
+				{% endifequal %}
+				{% ifequal page 'disliked' %}
+				<li>Disliked</li>
+				{% else %}
 				<li><a href="{% url disliked_links %}">Disliked</a>  </li>
-				<li><a href="{% url saved_links %}">Saved</a>  </li>	
+				{% endifequal %}
+				{% ifequal page 'saved' %}
+				<li>Saved</li>
+				{% else %}
+				<li><a href="{% url saved_links %}">Saved</a>  </li>					
+				{% endifequal %}				
         </ul>
 			</div>
 			

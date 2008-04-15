@@ -75,8 +75,9 @@ def topic_main(request, topic_name, order_by = None):
 
 @login_required
 def recommended(request):
+    page = 'recommended'
     recommended = RecommendedLink.objects.filter(user = request.user).select_related()
-    payload = dict(recommended=recommended)
+    payload = dict(recommended=recommended, page=page)
     return render(request, payload, 'news/recommended.html')    
 
 
@@ -130,21 +131,21 @@ def topic_manage(request, topic_name):
     return render(request, payload, 'news/manage_topic.html')
 
 def topic_about(request, topic_name):
+    page = 'about'
     topic = get_topic(request, topic_name)
     count = SubscribedUser.objects.filter(topic = topic).count()
-    payload = {'topic':topic, 'count':count}
+    payload = {'topic':topic, 'count':count, 'page':page}
     return render(request, payload, 'news/topic_about.html')
 
 
 def site_about(request):
+    page = 'about'
     user_count = User.objects.count()
     topic_count = Topic.objects.count()
-    
     top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS]
     top_users = UserProfile.objects.all().select_related(depth = 1).order_by('-karma')[:defaults.TOP_USERS]
     top_links = Link.objects.all().order_by('-liked_by_count')[:defaults.TOP_LINKS]
-    
-    payload = dict(user_count=user_count, topic_count=topic_count, top_topics=top_topics, top_users=top_users, top_links=top_links)
+    payload = dict(user_count=user_count, topic_count=topic_count, top_topics=top_topics, top_users=top_users, top_links=top_links, page=page)
     return render(request, payload, 'news/site_about.html')
 
 def topic_list(request):
