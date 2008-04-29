@@ -536,3 +536,36 @@ a:hover{
 td a{
 	color: #79ac37;
 }
+.topmessagebox{
+	background-color:#CDE2B2;
+	width: 95%;
+	margin: 10px;
+	text-align: center;
+	padding: 2px 5px 2px 5px;
+	border: 1px solid #092e20;
+}
+.topmessagebox a{
+	color: #092e20;
+	font-weight: bold;
+	text-decoration: underline;
+}
+.registerdiv{
+	width: 50%;
+	float: left
+}
+.logindiv{
+	width: 50%;
+	float: left
+}
+.emptysidebar{
+	background: #fff url('/site_media/images/left_bgr.jpg') top repeat-x;
+	height: 10px;
+}
+.box_border_collapsed
+{
+	border:1px solid #ccc;
+	margin: 0px 0px 10px 10px;
+}
+.box_content_collapsed{
+	padding: 5px 5px 3px 10px;
+}

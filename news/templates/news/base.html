@@ -67,6 +67,13 @@
 	</div>
 	<div id="wrapper">
 		<div id="content">
+		  {% block message %}
+		  {% if not user.is_authenticated  %}
+			<div class="topmessagebox">
+			<a href="http://42topics.com/blog/what-is-42topics/">42topics</a> is place to find interesting things to read. When you <a href="/register/">join</a>, 42topics learns your interests, and finds stories which YOU will love. <a href="/register/">Join Now</a>. <a href="http://42topics.com/blog/why-join-42topics/">Why join?</a>. <a href="http://42topics.com/blog/how-42topics-works/">How this works</a>. <a href="http://www.42topics.com/forum/">Get help</a>. 
+			</div>
+			{% endif %}
+			{% endblock %}
 		  {% block contents %}
 			{% endblock %}
 			
@@ -74,7 +81,7 @@
 	</div>
 
 	
-
+  {% block sidebarwrap %}
 	<div id="sidebar">		
 		<div id="sidebartop"></div>
 				{% block sidebar %}		
@@ -99,6 +106,7 @@
 			<div class="clear"></div>
 		{% endblock %}
 	</div>
+	{% endblock %}
 
 	<div id="footer">
 		<div id="footerline"></div>

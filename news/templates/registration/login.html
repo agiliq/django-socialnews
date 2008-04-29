@@ -16,12 +16,13 @@
 </div>
 {% else %}
 
-{% if form.has_errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
 <div class="password">
-			<h3>Login</h3>
+    <div class="box_border_collapsed">
+      <div class="box_header">
+    		Login
+      </div>	
+    <div class="box_content_collapsed">
+			
 			<div class="createcontent">
 				<form method="post" action=".">
 
@@ -30,10 +31,10 @@
    			  <input type="submit" name="Login" value="login" />
  				</form>
 			</div>
-      <p style="padding-left:110px; margin-top:30px;"><span style="font-size:15px;">Don't have a Account yet ?</span><br />
-      <span style="font-size:13px;">Signing up is easy.</span></p>
-      <p style="font-size:14px; text-align:right; padding-right:10px"><a href="/register/">Sign Up</a></p>
-			<p style="font-size:14px; text-align:right; padding-right:10px"><a href="{% url reset_password %}">Forgot password</a></p>
+			<a href="/register/">Sign Up</a>
+			<a href="{% url reset_password %}">Forgot password</a>
+		</div>
+		</div>
 </div>					
 {% endif %}
 </div>
