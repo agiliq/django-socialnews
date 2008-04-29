@@ -7,11 +7,9 @@
 
 {% block contents %}
 
-<ul class="hot">
 {% for link in links %}
 {% include 'news/link_row.html' %}
 {% endfor %}
-</ul>
 
 {% include 'news/pagination.html' %}
 
@@ -19,13 +17,4 @@
 
 {% block sidebar %}
 	 		{{ block.super }}
-	 		<div class="box others">
-				<h3>Tags</h3>
-				
-				<ul>
-					{% for tag in tags %}
-					<li><a href="{{tag.get_absolute_url}}">{{tag.text}}</a></li>
-					{% endfor %}
-				</ul>
-			</div>
 {% endblock %}

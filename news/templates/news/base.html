@@ -1,8 +1,5 @@
-<!DOCTYPE html PUBLIC
-"-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
 {% block rss %}
@@ -12,137 +9,112 @@
 <link rel="alternate" type="application/rss+xml" title="Latest RSS Feed" href="/feeds/latest/" />
 {% endif %}
 {% endblock %}
+
 <title>
 {% block title %}
 42topics.com
 {% endblock %}
 </title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
-<link rel="stylesheet" type="text/css" href="/site_media/style.css" />
-<!--[if lt IE 7]>
-<link rel="stylesheet" type="text/css" href="/site_media/ie-style.css" />
-<![endif]-->
-<!--[if lt IE 8]><style>
-.outer, .wide, h2, .wrapper, .minwidth {
-	_height: 0;
-	zoom: 1;
-}
-/* rimuove complicazione per Gecko 1.7- */
-.right {
-	margin-right: 0;
-}
-</style><![endif]-->
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="generator" content="HAPedit 3.1" />
+<link rel="stylesheet" type="text/css" href="/site_media/base.css" />
 </head>
 <body>
-
-<div class="minwidth"><div class="wrapper">
-
-	<div class="header">
-		
-		<a href="/" class="logo"><img src="/site_media/images/logo.jpg" alt="" height="128" width="273" /></a>
-		
-		{% block nav %}
-		<ul class="nav">
-		  {% if topic %}
-			<li><a href="{{topic.get_absolute_url}}" {% ifequal page 'hot' %}class="active"{% endifequal %}>hot</a></li>
-			<li><a href="{{topic.new_url}}" {% ifequal page 'new' %}class="active"{% endifequal %}>new</a></li>
-			{% else %}
-			<li><a href="/" {% ifequal page 'hot' %}class="active"{% endifequal %}>hot</a></li>
-			<li><a href="/new/" {% ifequal page 'new' %}class="active"{% endifequal %}>new</a></li>						
-			{% endif %}
-			<li><a href="/all/" {% ifequal page 'all' %}class="active"{% endifequal %}>all</a></li>
-			<li><a href="/recommended/">recommended</a></li>			
-			{% if topic %}
-			<li><a href="{{topic.about_url}}">about</a></li>
-			{% else %}
-			<li><a href="/about/">about</a></li>
-			{% endif %}
-		</ul>
-		{% endblock %}
-		
-		<div class="top-right">
-		{% block topbar %}
-			<p>
-				{% if user.is_authenticated %}
-				Howdy <a href="/user/{{user.username}}/">{{user.username}}</a>
-				| <a href="/logout/">logout</a>
-				{% else %}
-				<a href="/register/">want to join?</a> register in seconds 
-				{% endif %}
-				| <a href="{% url createtopic %}">create</a>
-				{% if topic %}
-				| <a href="{{topic.submit_url}}">submit</a>
-				{% else %}
-				| <a href="/submit/">submit</a>
-				{% endif %} 
-				| <a href="/my/">settings</a>
-			</p>
-		{% endblock %}
+<div id="container">
+	<div id="header">
+		<div id="register">
+				{% block topbar %}
+				<p>
+  				{% if user.is_authenticated %}
+  				Howdy <a href="/user/{{user.username}}/" class="white">{{user.username}}</a>
+  				| <a href="/logout/" class="white">logout</a>
+  				{% else %}
+  				<a href="/register/" class="white">want to join?</a> register in seconds 
+  				{% endif %}
+  				| <a href="{% url createtopic %}" class="white">create</a>
+  				{% if topic %}
+  				| <a href="{{topic.submit_url}}" class="white">submit</a>
+  				{% else %}
+  				| <a href="/submit/" class="white">submit</a>
+  				{% endif %} 
+  				| <a href="/my/" class="white">settings</a>
+  			</p>
+				{% endblock %}
 		</div>
-		
-		<form action="/search/" method="get">
-			<input type="text" name="q" />
-			<input type="submit" class="submit" value="Search" />
-		</form>
-		
+		<div id="logodiv"><a href="/"><img src="/site_media/images/logo.jpg" alt="Logo" /></a></div>
+		<div id="hornavi">
+			<div id="navi">
+			{% block nav %}
+  			<p>
+  		  {% if topic %}
+  			<a href="{{topic.get_absolute_url}}" {% ifequal page 'hot' %}class="active"{% else %}class="commonbgr"{% endifequal %}>hot</a>
+  			<a href="{{topic.new_url}}" {% ifequal page 'new' %}class="active"{% else %}class="commonbgr"{% endifequal %}>new</a>
+  			{% else %}
+  			<a href="/" {% ifequal page 'hot' %}class="active"{% else %}class="commonbgr"{% endifequal %}>hot</a>
+  			<a href="/new/" {% ifequal page 'new' %}class="active"{% else %}class="commonbgr"{% endifequal %}>new</a>						
+  			{% endif %}
+  			<a href="/all/" {% ifequal page 'all' %}class="active"{% else %}class="commonbgr"{% endifequal %}>all</a>
+  			<a href="/recommended/" {% ifequal page 'recommended' %}class="recactive"{% else %}class="recommendedbgr"{% endifequal %}>recommended</a>			
+  			{% if topic %}
+  			<a href="{{topic.about_url}}" {% ifequal page 'about' %}class="active"{% else %}class="commonbgr"{% endifequal %}>about</a>
+  			{% else %}
+  			<a href="/about/" {% ifequal page 'about' %}class="active"{% else %}class="commonbgr"{% endifequal %}>about</a>
+  			{% endif %}
+  			</p>
+			{% endblock %}			
+			</div>
+		</div>
+	</div>
+	<div id="wrapper">
+		<div id="content">
+		  {% block contents %}
+			{% endblock %}
+			
+		</div>
 	</div>
 
-	<div class="outer">
+	
 
-		<div class="center"><div class="incenter">
-		
-		{% block contents %}			
-		{% endblock %}
-		</div></div> <!-- end center div -->
-
-		<div class="right"><div class="inright">
-		
-		{% block sidebar %}
+	<div id="sidebar">		
+		<div id="sidebartop"></div>
+				{% block sidebar %}		
 		{% if not user.is_authenticated %}
-		<form class="login" method="post" action="/login/">
-			
-				<!--[if lte IE 7]>
-				<br />
-				<![endif]-->
-			
-				<label>Username</label>
-				<label>Password</label>
-				
-				<input type="text" name="username" />
-				<input type="password" name="password" />
-
-				
-				<div class="clear"></div>
-				
-				<input type="submit" class="submit" value="login" />
+		<form  method="post" action="/login/">
+		<div id="loginbox" class="box">
+			<p>
+				<label>User:</label>
+				<label>Password:</label>
+				<input type="text" value="" name="username" />
+				<input type="password" value="" name="password" />
 				<input type="hidden" name="next" value="" />
-				
-				<div class="clear"></div>
-				
-			</form>		
+			</p>
+			<div class="clear"></div>
+			<p style="margin-top:13px; "><input type="checkbox" name="remember" /> Remember Me | <a href="#" class="white">Forgot Password</a> | <a href="#" class="white">Sign Up</a> 				<input type="submit" id="logintext" class="submit" value="login" /></p>
+		
+		</div>
+    </form>
 		{% endif %}
 			{% include 'news/subscribed_topics.html' %}
 			{% include 'news/topic_list_sidebar.html' %}
-
+			<div class="clear"></div>
 		{% endblock %}
-		</div></div> <!-- end right div -->
-
-		<br class="clear" />
-		<!--[if IE 8]><div class="clear"></div><![endif]-->
-	</div> <!-- end outer div -->
-
-	<div class="footer">
-		
-		<ul class="nav">
-			<li><a href="http://www.42topics.com/forum/topic/2">Feedback</a>|</li>
-			<li><a href="http://www.42topics.com/forum">Forum</a>|</li>
-			<li><a href="http://www.42topics.com/blog">Blog</a>|</li>
-			<li><a href="/buttons/">Buttons</a></li>
-			
-		</ul>
 	</div>
 
-</div></div>
+	<div id="footer">
+		<div id="footerline"></div>
+		<div id="copyrightbox">
+			<p>
+			<a href="http://www.42topics.com/forum/topic/2" class="white">Feedback</a>|
+			<a href="http://www.42topics.com/forum" class="white">Forum</a>|
+			<a href="http://www.42topics.com/blog" class="white">Blog</a>|
+			<a href="/buttons/" class="white">Buttons</a>
+			<br/>
+			Copyright (c) 2008 42topics, Inc. All rights reserved
+			</p>
+		</div>
+	</div>
+</div>
+
 <script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.js">
 <!--
 
@@ -181,5 +153,6 @@ var access = false;
 
 
 {% endblock %}
+
 </body>
 </html>

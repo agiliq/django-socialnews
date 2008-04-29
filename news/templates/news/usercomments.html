@@ -20,7 +20,9 @@ No comments! Aargh.
 
 {% block sidebar %}
     {{block.super}}
-	 	<div class="box singlecol">
+		
+		<div class="clear"></div>
+	 	<div class="box others actions">
 				<h3>Actions</h3>
         <ul>
         <li><a href="/user/{{username}}/">Links</a></li>
@@ -32,11 +34,4 @@ No comments! Aargh.
 				{% endifequal %}
         </ul>
 			</div>
-			
-			<div class="box hot">
-			<h3>
-			{{pageuser.username}}
-			</h3>
-			</div>
-			
 {% endblock %}

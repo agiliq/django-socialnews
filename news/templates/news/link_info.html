@@ -7,9 +7,7 @@
 
 {% block contents %}
 <div class="post">
-<ul class="hot">
 {% include 'news/link_row.html' %}
-</ul>
 
 {% include 'news/link_details_menu.html' %}
 				<div>
@@ -58,30 +56,17 @@
 
 {% block sidebar %}
 	 		{{ block.super }}
-			{% include 'news/subscribed_topics.html' %}
+			<div class="clear"></div>
 	 		<div class="box others">
-			
+
 				<h3>Tags</h3>
-        <form action="." method="post" id="tagform">
-        {{tag_form.as_p}}
-        <input type="submit" name="taglink" value="taglink" />
-        </form>			
-				{% if tags %}
-        <ul id="tags">
+				<ul id="tags">
         {% for tag in link.linktag_set.get_topic_tags %}
         <li>
-        <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>
+        <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>, 
         </li>
         {% endfor %}
-        </ul>
-				{% endif %}
+        </ul>				
 			</div>
-
-			{% include 'news/topic_list_sidebar.html' %}
-			{% if topic %}
-			<div class="box hot">
-			<h3>{{topic.name}}</h3>
-			</div>
-			{% endif %}
-			
+						
 {% endblock %}

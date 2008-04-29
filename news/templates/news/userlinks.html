@@ -7,11 +7,11 @@
 
 {% block contents %}
 {% if links %}
-<ul class="hot">
+
 {% for link in links %}
 {% include 'news/link_row.html' %}
 {% endfor %}
-</ul>
+
 {% else %}
 <div class="post">
 There are no links here. Ah well!
@@ -24,7 +24,10 @@ There are no links here. Ah well!
 
 {% block sidebar %}
     {{block.super}}
-	 	<div class="box singlecol">
+		<div class="clear"></div>
+
+<div class="actions row">		
+	 	<div class="box others">
 				<h3>Actions</h3>
         <ul>
         <li>Links</li>
@@ -36,11 +39,5 @@ There are no links here. Ah well!
 				{% endifequal %}
         </ul>
 			</div>
-			
-			<div class="box hot">
-			<h3>
-			{{pageuser.username}}
-			</h3>
-			</div>
-			
+</div>			
 {% endblock %}

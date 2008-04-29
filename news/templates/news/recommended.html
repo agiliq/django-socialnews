@@ -5,7 +5,6 @@ Recommended - {{user.username}} - {{block.super}}
 {% endblock %}
 
 {% block contents %}
-<ul class="hot">
 {% if recommended %}
 {% for rlink in recommended %}
 {% with rlink as obj %}
@@ -15,5 +14,4 @@ Recommended - {{user.username}} - {{block.super}}
 {% else %}
 We have not yet found any recommnded links for you. We can only find what you like once you submit, like or dislike a story. So use the site and we will try to find something to your interests.
 {% endif %}
-</ul>
 {% endblock %}

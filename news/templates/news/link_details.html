@@ -3,7 +3,7 @@
 {% load mptt_tags %}
 
 {% block title %}
-{{link.text}} _ {{block.super}}
+{{link.text}} - {{block.super}}
 {% endblock %}
 
 {% block jqueryarea %}
@@ -22,13 +22,12 @@
 
 
 {% block contents %}
-<div class="post">
-<ul class="hot">
 {% include 'news/link_row.html' %}
-</ul>
 
-		 {% include 'news/link_details_menu.html' %}
+<div class="post">
+<div id="comment_border">
 
+		 		 {% include 'news/link_details_menu.html' %}
       {% if user.is_authenticated %}
       <div class="commentform">
       <form action="." method="post" id="commentform" class="new-comment">
@@ -39,6 +38,11 @@
       </form>
       </div>
 			{% endif %}
+</div>
+
+
+
+
 <a name="comments"></a>
 
 <div id="comments">				
@@ -61,29 +65,29 @@ There are no comments on this story, yet.
 </div>
 {% endblock %}
 
+			{% block tags %}
+			{% endblock %}
+
 {% block sidebar %}
 	 		{{ block.super }}
+			<div class="clear"></div>
 	 		<div class="box others">
-			
+
 				<h3>Tags</h3>
+				<ul id="tags">
+        {% for tag in link.linktag_set.get_topic_tags %}
+        <li>
+        <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>, 
+        </li>
+        {% endfor %}
+        </ul>		
+				
         <form action="." method="post" id="tagform">
         {{tag_form.as_p}}
         <input type="submit" name="taglink" value="taglink" />
-        </form>			
-        <ul id="tags">
-        {% for tag in link.linktag_set.get_topic_tags %}
-        <li>
-        <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>
-        </li>
-        {% endfor %}
-        </ul>
+        </form>
+				
+		
+							
 			</div>
-
-
-			{% if topic %}
-			<div class="box hot">
-			<h3>{{topic.name}}</h3>
-			</div>
-			{% endif %}
-			
 {% endblock %}

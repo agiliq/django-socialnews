@@ -80,7 +80,8 @@ def link_details(request, topic_name, link_id):
                 payload = dict(object='comment', action='reply', id=comment.id, text=comment.comment_text, parent_id=comment.parent.id, dom=dom)
                 return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
             return HttpResponseRedirect('.')
-    payload = {'topic':topic, 'link':link, 'comments':comments, 'form':form, 'tag_form':tag_form}
+    page = 'details'
+    payload = {'topic':topic, 'link':link, 'comments':comments, 'form':form, 'tag_form':tag_form, 'page':page}
     return render(request, payload, 'news/link_details.html')
 
 def link_info(request, topic_name, link_id):
@@ -89,7 +90,8 @@ def link_info(request, topic_name, link_id):
         link = Link.objects.get_query_set_with_user(request.user).get(id = link_id)
     else:
         link = Link.objects.get(id = link_id)
-    payload = dict(topic=topic, link=link)
+    page = 'info'
+    payload = dict(topic=topic, link=link, page=page)
     return render(request, payload, 'news/link_info.html')
 
 
@@ -101,7 +103,8 @@ def link_related(request, topic_name, link_id):
     else:
         link = Link.objects.get(id = link_id)
         related = RelatedLink.objects.filter(link = link).select_related()
-    payload = dict(topic=topic, link=link, related=related)
+    page = 'related'
+    payload = dict(topic=topic, link=link, related=related, page=page)
     return render(request, payload, 'news/link_related.html')
 
 def comment_detail(request, topic_name,  comment_id):

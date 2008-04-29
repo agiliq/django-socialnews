@@ -9,13 +9,12 @@
 
 {% block contents %}
 
-<ul class="hot">
 {% for linktag in linktags %}
 {% with linktag as obj %}
 {% include 'news/link_row_wrapped.html' %}
 {% endwith %}
 {% endfor %}
-</ul>
+
 
 {% include 'news/pagination.html' %}
 

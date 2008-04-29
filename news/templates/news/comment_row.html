@@ -1,5 +1,6 @@
 {% load markup %}
- <div class="left">
+<div class="story">
+ <div class="ratings">
     {% if comment.liked %}
      <a href="{{comment.upvote_url}}" class="comvote arrow upmod" id='upcomment-{{comment.id}}'></a>
     {% else %}
@@ -10,7 +11,9 @@
     {% else %}
      <a href="{{comment.downvote_url}}" class="comvote arrow down" id='downcomment-{{comment.id}}'></a>
     {% endif %}
-    </div>
+ </div>
+
+ 
 		<a href="/user/{{comment.user.username}}/" class="title">{{comment.user.username}}</a> on {{comment.humanized_time}} <span id="compoints-{{comment.id}}">{{comment.points}}</span> points <a href="#" class="collapse">{% if not comment.is_leaf_node %}[+]{% endif %}</a>
     {{comment.comment_text|textile}}
 		<p class="links">
@@ -26,3 +29,4 @@
     </form>		
 		<div id="child-{{comment.id}}"></div>
 		<div class="clear"></div>
+</div>		

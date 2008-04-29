@@ -7,7 +7,15 @@ Manage your account
 
 {% block contents %}
 <div class="post">
-    {% if subs %}
+	<div class="box_border">
+  <div class="box_header">
+  Subscribed topics
+  </div>
+
+  <div class="box_content_holder">		
+	<div class="subs_topic">
+	  
+	{% if subs %}
     <table>
     <tbody>
     {% for sub in subs %}
@@ -34,24 +42,32 @@ Manage your account
 		You are not subscribied to any topics. <a href="{% url topic_list %}">Wanna see some topics?</a> 
 		</div>
 		{% endif %}
-		
+		</div>
+		<div class="def_topic">
 		<form action="." method="post">
 		{{def_topic_form.as_p}}
 		<input type="submit" name="setdef" value="change default topic" />
 		</form>
+		</div>
+		</div>
+		</div>
 		
-		<form action="." method="post">
-		<fieldset>
-		<legend>
+
+	<div class="box_border">
+  <div class="box_header">
 		Change password
-		</legend>
+  </div>		
+		<form action="." method="post">
 		{{form.as_p}}
 		<input type="submit" name="changepassword" value="Change Password" />
-		</fieldset>
 		</form>
-		
+  </div>
+			
 		{% if invites %}
-		<h3>You have been invited.</h3>
+	<div class="box_border">
+  <div class="box_header">
+			 You have been invited.
+  </div>		
 		<table>
 		{% for invite in invites %}
 		<tr>
@@ -67,16 +83,11 @@ Manage your account
 		</tr>
 		{% endfor %}
 		</table>
+	</div>
 		{% endif %}
 		
 </div>
 {% endblock %}
 
 {% block sidebar %}
-	 <div class="oneblock">
-			<div class="box hot">
-				<h3>Subscribed topics</h3>
-		</div>
-
-		</div>	
 {% endblock %}

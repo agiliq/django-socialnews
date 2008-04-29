@@ -1,5 +1,5 @@
-				<li>
-					<div class="left" id="vote-{{link.id}}">
+					<div class="story" >
+					<div class="ratings" id="vote-{{link.id}}">
 					  {% if link.can_vote or not user.is_authenticated %}
             {% if link.liked %}
              <a href="/up/{{link.id}}/" class="vote arrow upmod" id='up-{{link.id}}'></a>
@@ -13,14 +13,13 @@
             {% endif %}
 						{% endif %}
 					</div>
-					<a href="{{link.url}}" class="title">{{link.text}}</a>
-					<p class="tags">
+					<p><a href="{{link.url}}" class="title">{{link.text}}</a>
 					{% if not topic %}
-					<span class="topic">[<a href="{{link.topic.get_absolute_url}}">{{link.topic.name}}</a>]</span>
+					<span class="topic tags">[<a href="{{link.topic.get_absolute_url}}">{{link.topic.name}}</a>]</span>
 					{% endif %}
 					[{{link.site}}]
 					</p>
-					<p class="details">
+					<p class="details postinfo">
 					<span id="points-{{link.id}}">
   					{{link.visible_points}}</span> points posted  {{link.humanized_time}}. <a href="{{link.get_absolute_url}}">{{link.comment_count}} Comments.</a> By <a href="/user/{{link.user}}/">{{link.user}}</a>.
             {% if link.saved %}
@@ -29,5 +28,5 @@
             <a href="{{link.save_url}}" class="saved">save</a>
             {% endif %}
 					</p>
-					<div class="clear"></div>
-				</li>
+					</div>
+					<div class="clear"></div>	

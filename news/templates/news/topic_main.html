@@ -26,11 +26,9 @@ Howdy {{user.username}}
 
 {% block contents %}
 
-<ul class="hot">
 {% for link in links %}
 {% include 'news/link_row.html' %}
 {% endfor %}
-</ul>
 
 {% include 'news/pagination.html' %}
 
@@ -38,9 +36,7 @@ Howdy {{user.username}}
 
 {% block sidebar %}
 	 		{{ block.super }}
-
-	 		{% include 'news/tags.html' %}
-	 		<div class="box singlecol">
+	 		<div class="box singlecol meta block">
 				<h3>Meta</h3>
 			<ul>
       <li>
@@ -55,15 +51,5 @@ Howdy {{user.username}}
 			</li>
 			</ul>
 			</div>
-			
-		  <div class="box hot">
-			
-			</div>
-			
-			{% if topic %}
-			<div class="box hot">
-				<a><span>{{ topic.name }}</span></a>
-			</div>
-			{% endif %}
 
 {% endblock %}

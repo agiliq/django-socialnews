@@ -1,27 +1,56 @@
-		{% if top_topics %}
-		<div class="box others">
-				<h3>Top topics</h3>
-				
-				<ul>
-					{% for topic in top_topics %}
-					<li><a href="{{topic.get_absolute_url}}">{{topic.name}}</a></li>
-					{% endfor %}
-				</ul>
-				<div class="clear"></div>
-				<a href="{%url topic_list %}"><img src="/site_media/images/add.png" alt="" /></a>
-			</div>
-		{% endif %}
-			
-		{% if new_topics %}
-			<div class="box others">
-				<h3>Updated topics</h3>
-				
-				<ul>
-					{% for topic in new_topics %}
-					<li><a href="{{topic.get_absolute_url}}">{{topic.name}}</a></li>
-					{% endfor %}
-				</ul>
-				<div class="clear"></div>
-				<a href="{% url topic_list %}"><img src="/site_media/images/add.png" alt="" /></a>
-			</div>
-		{% endif %}
+<div class="block">
+
+<div class="topicsbox">
+
+  <div class="newtopics row">
+  		{% if top_topics %}
+  		<div class="box others">
+  				<h3>Top</h3>
+  				
+  				<ul>
+  					{% for topic in top_topics %}
+  					<li><a href="{{topic.get_absolute_url}}">{{topic.name}}</a></li>
+  					{% endfor %}
+  				</ul>
+  				<div class="clear"></div>
+  				<a href="{%url topic_list %}" class="more_action">More</a>
+  			</div>
+  		{% endif %}
+  </div>
+	
+	
+  <div class="ristopics row">
+  		{% if new_topics %}
+  			<div class="box others">
+  				<h3>Recent</h3>
+  				
+  				<ul>
+  					{% for topic in new_topics %}
+  					<li><a href="{{topic.get_absolute_url}}">{{topic.name}}</a></li>
+  					{% endfor %}
+  				</ul>
+  				<div class="clear"></div>
+  				<a href="{% url topic_list %}" class="more_action">More</a>
+  			</div>
+  		{% endif %}
+  </div>
+  
+  <div class="tags row">
+	   {% block tags %}			
+  			{% if tags %}
+  	 		<div class="box others">
+  				<h3>Tags</h3>
+  				
+  				<ul>
+  					{% for tag in tags %}
+  					<li><a href="{{tag.get_absolute_url}}">{{tag.text}}</a></li>
+  					{% endfor %}
+  				</ul>
+					<div class="clear"></div>
+  			</div>
+  			{% endif %}
+		{% endblock %}
+  </div>			
+
+</div>
+</div>

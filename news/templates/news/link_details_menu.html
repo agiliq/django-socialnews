@@ -1,6 +1,8 @@
+		 <div id="comment_header">
 				<ul class="menu">
-					<li><a href="{{link.get_absolute_url}}">details</a></li>
+					<li><a href="{{link.get_absolute_url}}" {% ifequal page 'details' %}class="menuactive"{% endifequal %}>details</a></li>
 					<li><a href="{{link.get_absolute_url}}#comments">comments</a></li>
-					<li><a href="{{link.related_url}}">related</a></li>
-					<li><a href="{{link.info_url}}">info</a></li>
+					<li><a href="{{link.related_url}}" {% ifequal page 'related' %}class="menuactive"{% endifequal %}>related</a></li>
+					<li><a href="{{link.info_url}}" {% ifequal page 'info' %}class="menuactive"{% endifequal %}>info</a></li>
 				</ul>
+		</div>

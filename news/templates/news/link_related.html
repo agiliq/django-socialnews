@@ -7,13 +7,10 @@
 
 {% block contents %}
 <div class="post">
-<ul class="hot">
 {% include 'news/link_row.html' %}
-</ul>
 
 {% include 'news/link_details_menu.html' %}
 
-<ul class="hot">
 {% if related %}
 {% for obj in related %}
 {% include 'news/link_row_related.html' %}
@@ -21,7 +18,23 @@
 {% else %}
 We have not yet found anything related to this story. Might be if you checked back later?
 {% endif %}
-</ul>
 
 </div>
+{% endblock %}
+
+{% block sidebar %}
+	 		{{ block.super }}
+			<div class="clear"></div>
+	 		<div class="box others">
+
+				<h3>Tags</h3>
+				<ul id="tags">
+        {% for tag in link.linktag_set.get_topic_tags %}
+        <li>
+        <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>, 
+        </li>
+        {% endfor %}
+        </ul>				
+			</div>
+						
 {% endblock %}

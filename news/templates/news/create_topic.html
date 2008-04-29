@@ -6,7 +6,12 @@ Create a new topic - {{block.super}}
 
 
 {% block contents %}
-<div class="post">
+<div class="box_border">
+<div class="box_header">
+Create a new topic
+</div>
+
+<div class="box_content_holder">
 <form action="." method="post" class="new-topic">
         <div class="contactform">
         {{form.as_p}}
@@ -14,15 +19,9 @@ Create a new topic - {{block.super}}
         </div>    
 			</form>     
 </div>
-
+</div>
  
 {% endblock %}
 
-{% block sidebar %}
-	 <div class="oneblock">
-			<div class="box hot">
-				<h3>Create a topic</h3>
-		</div>
-
-		</div>			
+{% block sidebar %}		
 {% endblock %}
