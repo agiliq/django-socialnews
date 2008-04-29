@@ -1,6 +1,9 @@
 /*------------------------------common styles--------------------------------------*/
 html,body {margin:0;padding:0}
 a {text-decoration: none;}
+a {
+   color: #79ac37;
+}
 img{border: 0px none;}
 body,div,p {font-family: "Trebuchet MS"; font-size: 12px;}
 p{margin : 0px; line-height: 18px;}
