@@ -47,7 +47,7 @@ def indipad_to_main():
     ip_topic_name = 'india'
     ipx_user = User.objects.get(username = ip_user_name)
     ipx_topic = Topic.objects.get(name = ip_topic_name)
-    base = 'c:\stories'
+    base = '/home/shabda/webapps/com_42topic/scraped/indiapad'
     files = [os.path.join(base, f) for f in os.listdir(base)]
     for file_name in files:
         stories = pickle.load(file(file_name))
