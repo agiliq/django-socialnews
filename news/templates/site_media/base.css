@@ -541,17 +541,27 @@ td a{
 a {
    color: #79ac37;
 }
-.green{color: #79ac37;}
-.green:hover{color: #fff;}
-.white{color: #fff;}
-.white:hover{color: #79ac37;}
-div#header{background:#092e20;}
+.green{
+	color: #79ac37;
+	}
+.green:hover{
+	color: #fff;
+	}
+.white{
+	color: #fff;
+	}
+.white:hover{
+	color: #79ac37;
+	}
+div#header{
+	background:#092e20;
+	}
 #register
 {
 	color: #fff;
 }
 div#hornavi{
-	border-bottom: #629926;
+	border-bottom: 1px solid #629926;
 	}
 #navi a
 {
@@ -559,7 +569,7 @@ div#hornavi{
 }
 #footernavigation p a
 {
-	border: #e2e2e2;
+	border: 1px solid #e2e2e2;
 	color: #092e20;
 }
 #footernavigation p a:hover
@@ -578,7 +588,7 @@ div#hornavi{
 	color: #fff;
 }
 div#container{
-	border: #092e20;
+	border: 1px solid #092e20;
 	}
 
 div#extra{
@@ -593,7 +603,7 @@ div#hornavi{
 	}
 
 div#container{
-	border: #092e20;
+	border: 1px solid #092e20;
 	}	
 div#extra{
 	background:#FF8539
@@ -633,7 +643,7 @@ div#extra{
 	}
 #logintext
 {
-	border-bottom:#79ac37;
+	border-bottom: 1px solid #79ac37;
 }
 .activestory .title
 {
@@ -671,11 +681,11 @@ div#extra{
 }
 
 #sidebar .topicsbox{
-	border-bottom: #336033;
+	border-bottom: 1px solid #336033;
 }
 #comment_border
 {
- 	border: #ccc;
+ 	border: 1px solid #ccc;
 }
 #comment_header ul li a
 {
@@ -723,7 +733,7 @@ ul#tags li a{
 }
 
 .input {
-border: #666;
+border: 1px solid #666;
 }
 .active{
     background-color: #dbd1b1; 
@@ -736,7 +746,7 @@ a.more_action{
 }
 
 .block{
-	border-bottom: #336033;
+	border-bottom: 1px solid #336033;
 }
 .postinfo a{
 	color: #79ac37;
@@ -747,14 +757,14 @@ td a{
 }
 .topmessagebox{
 	background-color:#CDE2B2;
-	border: #092e20;
+	border: 1px solid #092e20;
 }
 .topmessagebox a{
 	color: #092e20;
 }
 .box_border_collapsed
 {
-	border: #ccc;
+	border: 1px solid #ccc;
 }
 	
 /*Backgrounds*/

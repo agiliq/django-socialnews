@@ -166,7 +166,6 @@ class LinkManager(models.Manager):
             profile.karma -= defaults.KARMA_COST_NEW_LINK
             profile.save()
             link = Link(user = user, text = text, topic = topic, url=url)
-            link.points = user.get_profile().karma
             link.save()
             link.upvote(user)
             link.topic.num_links += 1
