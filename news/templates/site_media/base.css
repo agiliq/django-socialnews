@@ -307,22 +307,20 @@ div#sidebar
 }
 
 /*Changes*/
-.tags a{
-	color: #393c3a;	
-}
 
 #sidebar h3{
     text-transform: uppercase;
-    color: #79ac37;
 }
 .box ul{
 	list-style: none;
 }
-.subscribed ul li {float: left;width: 120px;color: #b22222;margin: 0 0 0 1px;}
+.subscribed ul li {
+	float: left;
+	width: 120px;
+	margin: 0 0 0 1px;}
 .subscribed .unselected{
 	font-size: 15px;
 	font-weight: bold;
-	color: white;
 }
 .topicsbox .row{
 	float: left;
@@ -330,34 +328,16 @@ div#sidebar
 }
 .topicsbox li a, .meta li a, .actions li a{
 	font-size: 12px;
-	color: white;
-}
-.topicsbox li a:hover, .meta li a, .actions li a:hover{
-	color: #79ac37;
-}
-
-#sidebar .topicsbox{
-	border-bottom: 1px solid #336033;
-}
-#comment_border
-{
- 	border:1px solid #ccc;
 }
 #comment_header
 {
 	height:27px;
-	background:url('images/comment_bgr_1.gif') repeat-x;
 	padding-top:5px;
 }
 #comment_header ul li a
 {
 	padding: 0px 30px;
 	font-size: 14px;
-	color: #fff;
-}
-#comment_header ul li a:hover
-{
-	background: url('images/page_2_menu_bgr.gif') center no-repeat;
 }
 #comment_header ul{
 	list-style: none;
@@ -372,18 +352,13 @@ ul .comments{
 #comments ul{
 	list-style:none;
 }
-a.collapse{
-	color: #79ac37;
-}
 ul#tags li{
 	display: inline;
-	color: #fff;
 	margin: 0 0 0 1px;
 }
 ul#tags li a{
 	padding: 0px 0px;
 	font-size: 14px;
-	color: #fff;
 }
 
 .box_header
@@ -391,11 +366,9 @@ ul#tags li a{
 	height:27px; background:url('images/comment_bgr_1.gif') repeat-x; padding-top:5px;
 	padding-left: 10px;
 	font-size: 14px;
-	color: #fff;
 }
 .box_border
 {
-	border:1px solid #ccc;
 	width: 600px;
 	margin: 0px 0px 10px 10px;
 }
@@ -414,30 +387,16 @@ ul#tags li a{
 }
 .pg4_p
 {
-	color: #234f32;
 	font-size: 14px;
 	padding-top: 5px;
 }
 
 .pg4_submit_btn
 {
-	text-align:right; margin:5px 5px 0px 0px; font-size:18px;
-	padding-left:20px; background: url('images/arrow_2.gif') bottom left no-repeat;
-	color: #092e20;
-}
-
-.pg4_green
-{
-	color:#79ac37;
-}
-
-.pg4_own
-{
-	color: #393c3a;
-}
-#pg4_topbgr
-{
-	background:url('images/left_bgr.jpg') top left repeat-x; height:20px;
+	text-align:right;
+	margin:5px 5px 0px 0px;
+	font-size:18px;
+	padding-left:20px;
 }
 .pg4_note
 {
@@ -449,65 +408,38 @@ ul#tags li a{
 ul.comments{
 	list-style: none;
 	margin: 0px 0px 0px 0px;
-	/*padding: 0px 0px 0px 0px;*/
 }
 .input {
-border:1px solid #666;
 height:23px;
-background:url(images/inputbg.gif) repeat-x;
 width:254px;
 font-size:13px;
 font-family:"trebuchet ms";
 padding:2px 0px 0px 2px;
 }
-.focusfield{ background:url(images/inputselect.gif)}
-.active{
-    background-color: #dbd1b1; 
-}
 a.edit_action{
-	color: #79ac37;
 	font-size: 14px;
 	font-weight: bold;
 	text-decoration: underline;
 }
 a.more_action{
-	color: #79ac37;
 	text-decoration: underline;
 }
 
-.block{
-	border-bottom: 1px solid #336033;
-}
 
 .block ul,.actions ul{
 	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
 }
-
-a.menuactive
-{
-	background: url('images/page_2_menu_bgr.gif') center no-repeat;
-}
 a:hover{
 	text-decoration: underline;
 }
-.postinfo a{
-	color: #79ac37;
-	
-}
-td a{
-	color: #79ac37;
-}
 .topmessagebox{
-	background-color:#CDE2B2;
 	width: 95%;
 	margin: 10px;
 	text-align: center;
 	padding: 2px 5px 2px 5px;
-	border: 1px solid #092e20;
 }
 .topmessagebox a{
-	color: #092e20;
 	font-weight: bold;
 	text-decoration: underline;
 }
@@ -520,7 +452,6 @@ td a{
 	float: left
 }
 .emptysidebar{
-	background: #fff url('/site_media/images/left_bgr.jpg') top repeat-x;
 	height: 10px;
 }
 .box_border_collapsed
@@ -768,20 +699,11 @@ td a{
 }
 	
 /*Backgrounds*/
-#navi .commonbgr:hover
+#navi .commonbgr:hover, #navi .active
 {
 	background: url('/site_media/images/bgr_common.gif') center no-repeat;
 }
-#navi .active
-{
-	background: url('/site_media/images/bgr_common.gif') center no-repeat;
-}
-
-#navi .recactive
-{
-	background: url('/site_media/images/bgr_recommended.gif') center no-repeat;
-}
-#navi .recommendedbgr:hover
+#navi .recactive, #navi .recommendedbgr:hover
 {
 	background: url('/site_media/images/bgr_recommended.gif') center no-repeat;
 }
@@ -807,21 +729,13 @@ td a{
 {
 	background: url('/site_media/images/downmod.jpg') no-repeat;
 }
-#content
-{
-	background: url('/site_media/images/left_bgr.jpg') top repeat-x;
-}
 #mytopicsbox .selected
 {
 	background: url('/site_media/images/selected.jpg') left no-repeat;
 }
-div#sidebar
+div#sidebar, #sidebartop
 {
 	background: #234f32 url('/site_media/images/sidebar_bgr.jpg') top repeat-x; 
-}
-#sidebartop
-{
-	background:url('/site_media/images/sidebar_bgr.jpg') top repeat-x; 	
 }
 #comment_header
 {
