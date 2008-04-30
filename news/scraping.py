@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 import datetime
 import os
 import pickle
+from libs import redditstories
 
 digg_user_id = 1
 digg_topic_id = 1
@@ -41,8 +42,6 @@ def digg_to_main():
             pass
         
 def indipad_to_main():
-    import pdb
-    pdb.set_trace()
     ip_user_name = 'indiguy'
     ip_topic_name = 'india'
     ipx_user = User.objects.get(username = ip_user_name)
@@ -57,7 +56,26 @@ def indipad_to_main():
                     Link.objects.create_link(url = story[0], text=story[1], user = ipx_user, topic=ipx_topic, karma_factor=False)
                 except Exception, e:
                     print e
-            
+                    
+def get_redditpics():
+    get_reddit_stories('picslover', 'pics', 'pics')
+    
+def get_redditprog():
+    get_reddit_stories('codemonkey', 'programming', 'programming')
+    
+def get_redditfunny():
+    get_reddit_stories('chandler', 'humor', 'funny')    
+                    
+def get_reddit_stories(username, topicname, subreddit):
+    user = User.objects.get(username = username)
+    topic = Topic.objects.get(name = topicname)
+    stories = redditstories.get_stories(subreddit)
+    for story in stories:
+        if story['url'].startswith('http'):
+            try:
+                Link.objects.create_link(url = story['url'], text=story['title'], user = user, topic=topic, karma_factor=False)
+            except Exception, e:
+                print e
         
     
         
