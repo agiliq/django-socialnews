@@ -4,12 +4,14 @@ import StringIO
 from models import DiggLinkRecent, Link, Topic
 from django.contrib.auth.models import User
 import datetime
+import os
+import pickle
 
 digg_user_id = 1
 digg_topic_id = 1
 
-user = User.objects.get(id = digg_user_id)
-topic = Topic.objects.get(id = digg_topic_id)
+digg_user = User.objects.get(id = digg_user_id)
+digg_topic = Topic.objects.get(id = digg_topic_id)
 
 def get_stories_new():
     for i in xrange(1):
@@ -31,12 +33,33 @@ def digg_to_main():
         try:
             link.is_in_main = True
             link.save()
-            main_link = Link.objects.create_link(url = link.url, text=link.title, user = user, topic=topic, karma_factor=False)
+            main_link = Link.objects.create_link(url = link.url, text=link.title, user = digg_user, topic=digg_topic, karma_factor=False)
             main_link.save()
         except Exception, e:
             print 'Exception'
             print e
             pass
+        
+def indipad_to_main():
+    import pdb
+    pdb.set_trace()
+    ip_user_name = 'indiguy'
+    ip_topic_name = 'india'
+    ipx_user = User.objects.get(username = ip_user_name)
+    ipx_topic = Topic.objects.get(name = ip_topic_name)
+    base = 'c:\stories'
+    files = [os.path.join(base, f) for f in os.listdir(base)]
+    for file_name in files:
+        stories = pickle.load(file(file_name))
+        for story in stories:
+            if story[0].startswith('http'):
+                try:
+                    Link.objects.create_link(url = story[0], text=story[1], user = ipx_user, topic=ipx_topic, karma_factor=False)
+                except Exception, e:
+                    print e
+            
+        
+    
         
 def scrape_digg():
     get_stories_new()
