@@ -7,6 +7,8 @@ from news.rss import LatestEntriesByTopic, LatestEntries
 urlpatterns = patterns('',
     # Example:
     # (r'^implist/', include('implist.foo.urls')),
+    
+    (r'^google42f6e952fe543f39.html$', direct_to_template, {'template':'news/test.txt', 'mimetype':'text/plain'}),
     (r'^robots.txt$', direct_to_template, {'template':'news/robots.txt', 'mimetype':'text/plain'}),
     (r'^foo/$', direct_to_template, {'template':'news/base.html'}),
     (r'^admin/', include('django.contrib.admin.urls')),
