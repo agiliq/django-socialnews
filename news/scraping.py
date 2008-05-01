@@ -80,8 +80,6 @@ def get_reddit_stories(username, topicname, subreddit):
         
     
 def scrape_news_yc():
-    import pdb
-    pdb.set_trace()
     yc_username = 'startupjunkie'
     yc_topicname = 'startups'
     user = User.objects.get(username = yc_username)
@@ -92,6 +90,21 @@ def scrape_news_yc():
     tds = soup.findAll('td', attrs={'class':'title'})
     links = [td('a')[0] for td in tds if td('a')]
     stories = [(link['href'], link.contents[0]) for link in links if link['href'].startswith('http')]
+    for story in stories:
+        try:
+            Link.objects.create_link(url = story[0], text=story[1], user = user, topic=topic, karma_factor=False)
+        except Exception, e:
+            print e
+            
+def scrape_sphinn():
+    sphinn_username = 'seoguru'
+    sphinn_topicname = 'seo'
+    user = User.objects.get(username = sphinn_username)
+    topic = Topic.objects.get(name = sphinn_topicname)
+    page = urllib.urlopen('http://sphinn.com/')
+    page_data = page.read()
+    soup = BeautifulSoup(page_data)
+    stories = zip([div.nextSibling.nextSibling['href'] for div in soup.findAll(attrs={'class':'emph'})],[div('a')[0].contents[0] for div in soup.findAll(attrs={'class':'toptitle'})],)
     for story in stories:
         try:
             Link.objects.create_link(url = story[0], text=story[1], user = user, topic=topic, karma_factor=False)
