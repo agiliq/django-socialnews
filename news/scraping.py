@@ -117,10 +117,13 @@ def scrape_ballhype():
         return [(link['href'], link.contents[0]) for link in soup.findAll('a', attrs={'class':'external'})]
     scrape_generic('sporty', 'sports', 'http://ballhype.com/', scraper)
     
+    
+def scrape_hugg():
+    def scraper(soup):
+        return [(h2('a')[0]['href'], h2('a')[0].contents[0]) for h2 in soup.findAll('h2', attrs={'class':'title'}) if h2('a')]
+    scrape_generic('greenpeace', 'environment', 'http://hugg.com/', scraper)
             
 def scrape_generic(username, topic_name, url, scraper):
-    import pdb
-    pdb.set_trace()
     user = User.objects.get(username = username)
     topic = Topic.objects.get(name = topic_name)
     page = urllib.urlopen(url)
