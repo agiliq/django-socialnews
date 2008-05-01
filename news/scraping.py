@@ -110,6 +110,29 @@ def scrape_sphinn():
             Link.objects.create_link(url = story[0], text=story[1], user = user, topic=topic, karma_factor=False)
         except Exception, e:
             print e
+
+
+def scrape_ballhype():
+    def scraper(soup):
+        return [(link['href'], link.contents[0]) for link in soup.findAll('a', attrs={'class':'external'})]
+    scrape_generic('sporty', 'sports', 'http://ballhype.com/', scraper)
+    
+            
+def scrape_generic(username, topic_name, url, scraper):
+    import pdb
+    pdb.set_trace()
+    user = User.objects.get(username = username)
+    topic = Topic.objects.get(name = topic_name)
+    page = urllib.urlopen(url)
+    page_data = page.read()
+    soup = BeautifulSoup(page_data)
+    stories = scraper(soup)
+    for story in stories:
+        try:
+            Link.objects.create_link(url = story[0], text=story[1], user = user, topic=topic, karma_factor=False)
+        except Exception, e:
+            print e    
+    
         
 def scrape_digg():
     get_stories_new()
