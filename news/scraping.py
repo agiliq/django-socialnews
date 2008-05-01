@@ -7,6 +7,7 @@ import datetime
 import os
 import pickle
 from libs import redditstories
+from BeautifulSoup import BeautifulSoup
 
 digg_user_id = 1
 digg_topic_id = 1
@@ -78,6 +79,24 @@ def get_reddit_stories(username, topicname, subreddit):
                 print e
         
     
+def scrape_news_yc():
+    import pdb
+    pdb.set_trace()
+    yc_username = 'startupjunkie'
+    yc_topicname = 'startups'
+    user = User.objects.get(username = yc_username)
+    topic = Topic.objects.get(name = yc_topicname)
+    page = urllib.urlopen('http://news.ycombinator.com/')
+    page_data = page.read()
+    soup = BeautifulSoup(page_data)
+    tds = soup.findAll('td', attrs={'class':'title'})
+    links = [td('a')[0] for td in tds if td('a')]
+    stories = [(link['href'], link.contents[0]) for link in links if link['href'].startswith('http')]
+    for story in stories:
+        try:
+            Link.objects.create_link(url = story[0], text=story[1], user = user, topic=topic, karma_factor=False)
+        except Exception, e:
+            print e
         
 def scrape_digg():
     get_stories_new()
