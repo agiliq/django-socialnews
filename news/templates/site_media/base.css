@@ -541,9 +541,9 @@ td a{
 }
 .topmessagebox{
 	background-color:#CDE2B2;
-	width: 95%;
+	width: 90%;
 	margin: 10px;
-	text-align: center;
+	/*text-align: center;*/
 	padding: 2px 5px 2px 5px;
 	border: 1px solid #092e20;
 }
