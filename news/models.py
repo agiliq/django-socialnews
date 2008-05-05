@@ -5,6 +5,8 @@ from django.core.urlresolvers import reverse
 from urllib2 import urlparse
 from datetime import datetime
 
+import random
+
 class SiteSetting(models.Model):
     default_topic = models.ForeignKey('Topic')
     
@@ -16,6 +18,8 @@ class UserProfileManager(models.Manager):
         "Create user and associate a profile with it."
         user = User.objects.create_user(user_name, email, password)
         profile = UserProfile(user = user)
+        chars = 'abcdefghijklmnopqrstuvwxyz'
+        profile.secret_key = ''.join([random.choice(chars) for i in xrange(20)])
         settings = SiteSetting.objects.all()[0]#There can be only one SiteSettings
         SubscribedUser.objects.subscribe_user(user = user, topic = settings.default_topic)
         profile.default_topic = settings.default_topic
@@ -29,6 +33,7 @@ class UserProfile(models.Model):
     recommended_calc = models.DateTimeField(auto_now_add = 1)#when was the recommended links calculated?
     is_recommended_calc = models.BooleanField(default = False)
     default_topic = models.ForeignKey('Topic')
+    secret_key = models.CharField(max_length = 50)
     
     objects = UserProfileManager()
     

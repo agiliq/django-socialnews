@@ -2,6 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from helpers import *
+from django.core import serializers
+
 import bforms
 import exceptions
 from django.conf import settings as settin
@@ -37,6 +39,16 @@ def liked_links(request):
     votes = LinkVote.objects.get_user_data().filter(user = request.user, direction = True).select_related()
     page = 'liked'
     return _user_links(request, votes, page)
+
+@login_required
+def liked_links_secret(request, username, secret_key):
+    user = User.objects.get(username = username)
+    if not user.get_profile().secret_key == secret_key:
+        raise Http404
+    votes = LinkVote.objects.get_user_data().filter(user = request.user, direction = True).select_related()[:10]
+    votes_id = [vote.link_id for vote in votes]
+    links = Link.objects.filter(id__in = votes_id)
+    return HttpResponse(serializers.serialize('json', links))
 
 @login_required
 def disliked_links(request):

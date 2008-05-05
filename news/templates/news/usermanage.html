@@ -86,6 +86,18 @@ Manage your account
 	</div>
 		{% endif %}
 		
+  	<div class="box_border">		
+  <div class="box_header">
+		Other Details
+  </div>		
+		<ul>
+		<li>
+		  <a href="/user/likedlinks/{{user.username}}/{{user.get_profile.secret_key}}/">Secret liked links</a>
+		</li>
+		</ul>
+  </div>	
+	</div>	
+		
 </div>
 {% endblock %}
 
