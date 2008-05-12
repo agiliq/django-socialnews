@@ -621,6 +621,9 @@ class Comment(models.Model):
     
     def upvote_url(self):
         return reverse('upvote_comment', kwargs={'comment_id':self.id})
+		
+	class Admin:
+	    pass
     
     class Meta:
         ordering = ('-created_on', )
