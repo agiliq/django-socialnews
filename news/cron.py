@@ -6,6 +6,7 @@ import pickle
 from datetime import datetime
 import os
 import logging
+import defaults
 
 sample_corpus_location = defaults.sample_corpus_location
 calculate_recommended_timediff = defaults.calculate_recommended_timediff#12 hours
@@ -322,6 +323,17 @@ def _convert_to_text(link):
     data = data.replace("'", "*")
     data = data.replace("%", "*")
     return data
+
+def cool_yesterdays_links():
+    from django.db import connection
+    crsr = connection.cursor()
+    stmt = """UPDATE news_link
+            SET points = %s
+            WHERE points > %s
+            AND datediff(now(), created_on) > 0
+            """ % (defaults.MAX_CHANGE_PER_VOTE, defaults.MAX_CHANGE_PER_VOTE)
+    crsr.execute(stmt)
+    crsr.close()
 
 sample_corpus = _calculate_word_prob_all()
     
