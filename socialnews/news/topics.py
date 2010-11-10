@@ -1,11 +1,10 @@
+
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import login_required
-from helpers import *
-import bforms
-import exceptions
 
-
+from news.helpers import *
+from news import bforms, exceptions as news_exceptions
 
 def main(request, order_by=None, override=None):
     "Sitewide main page"
@@ -20,14 +19,17 @@ def main(request, order_by=None, override=None):
             links = Link.objects.get_query_set_with_user(request.user).select_related()
     else:
         links = Link.objects.all().select_related()
+    
     if order_by == 'new':
         links = links.order_by('-created_on')
+    
     if override == 'all':
         page = 'all'
     elif order_by == 'new':
         page = 'new'
     else:
         page = 'hot'
+    
     links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
     tags = Tag.objects.filter(topic__isnull = True).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
     if request.user.is_authenticated():
@@ -43,7 +45,7 @@ def main(request, order_by=None, override=None):
 def topic_main(request, topic_name, order_by = None):
     try:
         topic = get_topic(request, topic_name)
-    except exceptions.NoSuchTopic, e:
+    except news_exceptions.NoSuchTopic, e:
         url = '/createtopic/'#reverse('createtopic');
         return HttpResponseRedirect('%s?topic_name=%s' % (url, topic_name))
     tags = Tag.objects.filter(topic = topic).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]

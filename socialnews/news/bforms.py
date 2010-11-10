@@ -1,16 +1,16 @@
-from django import newforms as forms
-from django.contrib.auth.models import User
-from django.newforms import ValidationError
-import defaults
-from models import *
+
 import re
-from django.utils.translation import ugettext as _
-from django.newforms import widgets
-from django.contrib.auth.models import User
-import helpers
 import random
+
+from django import forms
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.forms import ValidationError, widgets
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext as _
+
+from news import defaults, helpers
+from news.models import *
 
 class MarkedForm(forms.Form):
     """A form with a little more markup."""

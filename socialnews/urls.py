@@ -1,17 +1,22 @@
+from django.conf import settings
 from django.conf.urls.defaults import *
+from django.contrib import admin
 from django.contrib.auth import views
 from django.views.generic import simple
 from django.views.generic.simple import direct_to_template
+
 from news.rss import LatestEntriesByTopic, LatestEntries
+
+admin.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
     # (r'^implist/', include('implist.foo.urls')),
     
-    (r'^google42f6e952fe543f39.html$', direct_to_template, {'template':'news/test.txt', 'mimetype':'text/plain'}),
-    (r'^robots.txt$', direct_to_template, {'template':'news/robots.txt', 'mimetype':'text/plain'}),
-    (r'^foo/$', direct_to_template, {'template':'news/base.html'}),
-    (r'^admin/', include('django.contrib.admin.urls')),
+    url(r'^google42f6e952fe543f39.html$', direct_to_template, {'template':'news/test.txt', 'mimetype':'text/plain'}),
+    url(r'^robots.txt$', direct_to_template, {'template':'news/robots.txt', 'mimetype':'text/plain'}),
+    url(r'^foo/$', direct_to_template, {'template':'news/base.html'}),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^logout/$', views.logout, {'template_name':'registration/logout.html'}, name='logout'),
     
     
@@ -27,15 +32,15 @@ urlpatterns += patterns('news.accounts',
     url(r'^my/$', 'user_manage', name='user_manage'),
 )                        
 
-urlpatterns += patterns('',
-        (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'G:/tapicks/news/templates/site_media'}),
-        (r'^dummy/', simple.direct_to_template, {'template':'news/dummy.html'})
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+        url(r'^dummy/', simple.direct_to_template, {'template':'news/dummy.html'})
     )
 
 urlpatterns += patterns('news.subscriptions',
     url(r'^subscribe/(?P<topic_name>[^\.^/]+)/$', 'subscribe', name='subscribe'),
     url(r'^unsubscribe/(?P<topic_name>[^\.^/]+)/$', 'unsubscribe', name='unsubscribe'),
-    
 )
 
 urlpatterns += patterns('news.search',

@@ -1,17 +1,17 @@
-from django.db import models
-from django.contrib.auth.models import User
-import defaults
-from django.core.urlresolvers import reverse
+
+import random
 from urllib2 import urlparse
 from datetime import datetime
 
-import random
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.db import models
+
+from news import defaults
 
 class SiteSetting(models.Model):
     default_topic = models.ForeignKey('Topic')
     
-    class Admin:
-        pass
 
 class UserProfileManager(models.Manager):
     def create_user(self, user_name, email, password):
@@ -25,7 +25,8 @@ class UserProfileManager(models.Manager):
         profile.default_topic = settings.default_topic
         profile.save()
         return user
-    
+
+
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique = True)
     email_validated = models.BooleanField(default = False)
@@ -40,31 +41,35 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return u'%s: %s' % (self.user, self.karma)
     
-    class Admin:
-        pass
 
 class TooLittleKarma(Exception):
     "Exception signifying too little karma for the action."
     pass
 
+
 class TooLittleKarmaForNewTopic(TooLittleKarma):
     "too little karma to create a topic."
     pass
+
 
 class TooLittleKarmaForNewLink(TooLittleKarma):
     "too little karma to add a link."
     pass
 
+
 class InvalidGroup(Exception):
     pass
+
 
 class CanNotUnsubscribe(Exception):
     "Can not unsubscribe out"
     pass
 
+
 class CanNotVote(Exception):
     "Can not vote. Not a member."
     pass
+
 
 topic_permissions = (('Public', 'Public'), ('Member', 'Member'), ('Private', 'Private'))
 topic_permissions_flat = [perm[0] for perm in topic_permissions]
@@ -95,8 +100,8 @@ class TopicManager(models.Manager):
         
     def append_user_data(self, user):
         return self.get_query_set().extra({'is_subscribed':'SELECT 1 FROM news_subscribeduser WHERE topic_id = news_topic.id AND user_id = %s' % user.id})
-        
-        
+
+
 class Topic(models.Model):
     """A specific topic in the website."""
     name = models.CharField(max_length = 100, unique = True)
@@ -112,9 +117,6 @@ class Topic(models.Model):
     
     def __unicode__(self):
         return u'%s' % self.name
-    
-    class Admin:
-        pass
     
     def get_absolute_url(self):
         return reverse('topic', kwargs={'topic_name':self.name})
@@ -142,7 +144,8 @@ class Topic(models.Model):
     def manage_url(self):
         url = reverse('topic_manage', kwargs={'topic_name':self.name})
         return url
-    
+
+
 class InviteManager(models.Manager):
     def invite_user(self, user, topic, text=None):
         invite= Invite(user = user, topic = topic, invite_text = text)
@@ -160,8 +163,6 @@ class Invite(models.Model):
     class Meta:
         unique_together = ('user', 'topic')
     
-    class Admin:
-        pass
     
 class LinkManager(models.Manager):
     "Manager for links"
@@ -203,7 +204,7 @@ class LinkManager(models.Manager):
         AND news_subscribeduser.user_id = %s
         AND NOT news_topic.permissions ='Public'
         """ % user.id
-        qs = self.get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_link.id AND news_savedlink.user_id=%s'%user.id, 'can_vote':can_vote_sql}, tables=['news_topic as permission_table', ], where=['permission_table.id = news_link.topic_id', "(permission_table.permissions in ('%s', '%s') OR exists (SELECT 1 FROM news_subscribeduser WHERE news_subscribeduser.user_id = %s AND news_subscribeduser.topic_id = permission_table.id AND permission_table.permissions in ('%s')))"%('Public', 'Member', user.id, 'Private')], )
+        qs = self.get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_link.id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_link.id AND news_savedlink.user_id=%s'%user.id, 'can_vote':can_vote_sql}, tables=['news_topic',], where=['news_topic.id = news_link.topic_id', "(news_topic.permissions in ('%s', '%s') OR exists (SELECT 1 FROM news_subscribeduser WHERE news_subscribeduser.user_id = %s AND news_subscribeduser.topic_id = news_topic.id AND news_topic.permissions in ('%s')))"%('Public', 'Member', user.id, 'Private')], )
         return qs
     
     def dampen_points(self, topic):
@@ -331,8 +332,6 @@ class Link(models.Model):
     def humanized_time(self):
         return humanized_time(self.created_on)
     
-    
-        
     def get_absolute_url(self):
         url = reverse('link_detail', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
         return url
@@ -356,13 +355,11 @@ class Link(models.Model):
     def __unicode__(self):
         return u'%s' % self.url
     
-    class Admin:
-        pass
-    
     class Meta:
         unique_together = ('url', 'topic')
         ordering = ('-points', '-created_on')
-        
+
+
 class SavedLinkManager(models.Manager):
     def save_link(self, link, user):
         try:
@@ -389,7 +386,7 @@ class SavedLinkManager(models.Manager):
         """
         return self.get_query_set().extra({'liked':'SELECT direction FROM news_linkvote WHERE news_linkvote.link_id = news_savedlink.link_id AND news_linkvote.user_id = news_savedlink.user_id', 'disliked':'SELECT NOT direction FROM news_linkvote WHERE news_linkvote.link_id = news_savedlink.link_id AND news_linkvote.user_id = news_savedlink.user_id', 'saved':'SELECT 1', 'can_vote':can_vote_sql})
     
-        
+
 class SavedLink(models.Model):
     link = models.ForeignKey(Link)
     user = models.ForeignKey(User)
@@ -397,13 +394,11 @@ class SavedLink(models.Model):
     
     objects = SavedLinkManager()
     
-    class Admin:
-        pass
-    
     class Meta:
         unique_together = ('link', 'user')
         ordering = ('-created_on', )
-        
+
+
 class VoteManager(models.Manager):
     "Handle voting for LinkVotes, Commentvotes"
     def do_vote(self, user, object, direction, voted_class,):
@@ -419,7 +414,8 @@ class VoteManager(models.Manager):
             if not created:
                 flipped = True
         return vote, created, flipped
-        
+
+
 class LinkVoteManager(VoteManager):
     "Manager for linkvotes"
     """def do_vote(self, user, link, direction):
@@ -450,8 +446,8 @@ class LinkVoteManager(VoteManager):
         AND NOT news_topic.permissions ='Public'
         """
         return self.get_query_set().extra({'liked':'direction', 'disliked':'NOT direction', 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_linkvote.link_id AND news_savedlink.user_id = news_linkvote.user_id', 'can_vote':can_vote_sql})
-        
-        
+
+
 class LinkVote(models.Model):
     "Vote on a specific link"
     link = models.ForeignKey(Link)
@@ -466,9 +462,7 @@ class LinkVote(models.Model):
     
     class Meta:
         unique_together = ('link', 'user')
-        
-    class Admin:
-        pass
+
     
 class RelatedLinkManager(models.Manager):
     "Manager for related links."
@@ -490,7 +484,8 @@ class RelatedLinkManager(models.Manager):
         print liked_sql
         qs = self.get_query_set().extra({'liked':liked_sql, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_relatedlink.related_link_id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_relatedlink.related_link_id AND news_savedlink.user_id=%s'%user.id, 'can_vote':can_vote_sql})      
         return qs
-    
+
+
 class RelatedLink(models.Model):
     "Links related to a specific link"
     link = models.ForeignKey(Link, related_name = 'link')
@@ -502,8 +497,6 @@ class RelatedLink(models.Model):
     class Meta:
         unique_together = ('link', 'related_link')
     
-    class Admin:
-        pass
     
 class RecommendedLinkManager(models.Manager):
     "Manager"
@@ -523,7 +516,8 @@ class RecommendedLinkManager(models.Manager):
         """
         qs = super(RecommendedLinkManager, self).get_query_set().extra({'liked':'SELECT news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_recommendedlink.link_id AND news_linkvote.user_id = news_recommendedlink.user_id', 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_recommendedlink.link_id AND news_linkvote.user_id = news_recommendedlink.user_id', 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_recommendedlink.link_id AND news_savedlink.user_id=news_recommendedlink.user_id', 'can_vote':can_vote_sql})      
         return qs
-    
+
+
 class RecommendedLink(models.Model):
     "Links recommended to an User."
     link = models.ForeignKey(Link)
@@ -534,11 +528,8 @@ class RecommendedLink(models.Model):
     
     class Meta:
         unique_together = ('link', 'user')
-        
-    class Admin:
-        pass
-        
-        
+
+
 class CommentManager(models.Manager):
     def get_query_set_with_user(self, user):
         #qs = self.get_query_set().extra({'liked':'SELECT news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id, 'disliked':'SELECT not news_commentvote.direction FROM news_commentvote WHERE news_commentvote.comment_id = news_comment.id AND news_commentvote.user_id = %s' % user.id})
@@ -555,6 +546,7 @@ class CommentManager(models.Manager):
         comment.save()
         comment.upvote(user)
         return comment
+
 
 class Comment(models.Model):
     "Comment on a link"
@@ -621,23 +613,22 @@ class Comment(models.Model):
     
     def upvote_url(self):
         return reverse('upvote_comment', kwargs={'comment_id':self.id})
-		
-	class Admin:
-	    pass
-    
+
     class Meta:
         ordering = ('-created_on', )
-        
+
+
 import mptt
 try:
     mptt.register(Comment)
 except:
     pass
-            
+
 class CommentVotesManager(VoteManager):
     def do_vote(self, comment, user, direction):
         return super(CommentVotesManager, self).do_vote(user = user, object = comment, direction = direction, voted_class = CommentVote, )    
     
+
 class CommentVote(models.Model):
     "Votes on a comment"
     comment = models.ForeignKey(Comment)
@@ -647,11 +638,9 @@ class CommentVote(models.Model):
     
     objects = CommentVotesManager()
     
-    class Admin:
-        pass
-    
     class Meta:
         unique_together = ('comment', 'user')
+
 
 VALID_GROUPS = (('Moderator', 'Moderator'), ('Member', 'Member'))
 VALID_GROUPS_FLAT = [grp[1] for grp in VALID_GROUPS]
@@ -704,12 +693,10 @@ class SubscribedUser(models.Model):
     def __unicode__(self):
         return u'%s : %s-%s' % (self.topic, self.user, self.group)
     
-    class Admin:
-        pass
-    
     class Meta:
         unique_together = ('topic', 'user')
-        
+
+
 class TagManager(models.Manager):
     def create_tag(self, tag_text, topic):
         "Create a sitwide tag if needed, and a per topic tag if needed. Return them as sitewide_tag, followed by topic_tag"
@@ -722,7 +709,8 @@ class TagManager(models.Manager):
         topic_tag, created = Tag.objects.get_or_create(text = tag_text, topic = topic)
         
         return sitewide_tag, topic_tag
-        
+
+
 class Tag(models.Model):
     """Links can be tagged as.
     There are two types of tags. If topic is not none this is a per topic tag.
@@ -740,12 +728,11 @@ class Tag(models.Model):
             return reverse('topic_tag', kwargs = {'topic_name':self.topic.name, 'tag_text':self.text})
         else:
             return reverse('sitewide_tag', kwargs = {'tag_text':self.text})
-    class Admin:
-        pass
     
     class Meta:
         unique_together = ('text', 'topic')
     
+
 class LinkTagManager(models.Manager):
     def tag_link(self, link, tag_text):
         "Tag a page"
@@ -779,7 +766,7 @@ class LinkTagManager(models.Manager):
     
     def get_sitewide_tags(self):
         return self.filter(tag__topic__isnull = True).select_related()
-        
+
     
 class LinkTag(models.Model):
     tag = models.ForeignKey(Tag)
@@ -795,31 +782,27 @@ class LinkTag(models.Model):
         self.tag.links_count += 1
         self.link.save()
         super(LinkTag, self).save()
-        
-    
-    class Admin:
-        pass
     
     class Meta:
         unique_together = ('tag', 'link')
-        
+
+
 class LinkTagUserManager(models.Manager):
     def tag_link(self, tag_text, link, user):
         site_link_tag, topic_link_tag = LinkTag.objects.tag_link(tag_text = tag_text, link = link)
         user_tag = LinkTagUser.objects.get_or_create(link_tag = topic_link_tag, user = user)
         return user_tag   
-        
+
+
 class LinkTagUser(models.Model):
     link_tag  = models.ForeignKey(LinkTag)
     user = models.ForeignKey(User)
     
     objects = LinkTagUserManager()
     
-    class Admin:
-        pass
-    
     class Meta:
         unique_together = ('link_tag', 'user')
+
 
 class EmailActivationKeyManager(models.Manager):
     def save_key(self, user, key):
@@ -827,12 +810,14 @@ class EmailActivationKeyManager(models.Manager):
         act_key.save()
         return act_key
 
+
 class EmailActivationKey(models.Model):
     user = models.ForeignKey(User, unique = True)
     key = models.CharField(max_length = 100)
     
     objects = EmailActivationKeyManager()
     
+
 class PasswordResetKeyManager(models.Manager):
     def save_key(self, user, key):
         try:
@@ -843,8 +828,7 @@ class PasswordResetKeyManager(models.Manager):
         act_key = PasswordResetKey(user = user, key = key)
         act_key.save()
         return act_key
-        
-    
+
     
 class PasswordResetKey(models.Model):
     user = models.ForeignKey(User, unique = True)
@@ -852,8 +836,7 @@ class PasswordResetKey(models.Model):
     
     objects = PasswordResetKeyManager()
     
-    
-        
+
 def humanized_time(time):
         "Time in human friendly way, like, 1 hrs ago, etc"
         now = datetime.now()
@@ -871,9 +854,9 @@ def humanized_time(time):
             return '%s minutes ago' % (delta/60)
         elif delta < 60 * 60 * 24:
             return '%s hours ago' % (delta/(60 * 60))
-        
-#Tables where we store scraped Data.
 
+
+#Tables where we store scraped Data.
 class DiggLinkRecent(models.Model):
     "Links scraped from digg."
     url = models.URLField()
@@ -882,10 +865,4 @@ class DiggLinkRecent(models.Model):
     username = models.CharField(max_length = 100)
     submitted_on = models.DateTimeField()
     is_in_main = models.BooleanField(default = False)# Is this scraped link moved to main tables yet?
-    
-    class Admin:
-        pass    
-        
-    
 
-    

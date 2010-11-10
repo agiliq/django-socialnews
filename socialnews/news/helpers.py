@@ -3,7 +3,7 @@ from django.http import Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 import exceptions
-from django.core.paginator import ObjectPaginator, InvalidPage
+from django.core.paginator import Paginator, InvalidPage
 import random
 
 def get_topic(request, topic_name):
@@ -50,16 +50,14 @@ def render(request, payload, template):
             request.session.set_test_cookie()
     return render_to_response(template, payload, RequestContext(request))
 
-def get_pagination_data(obj_page, page_num):
+def get_pagination_data(obj):
     data = {}
-    page_num = int(page_num)
-    data['has_next_page'] = obj_page.has_next_page(page_num)
-    data['next_page'] = page_num + 1
-    data['has_prev_page'] = obj_page.has_previous_page(page_num)
-    data['prev_page'] = page_num - 1
-    data['first_on_page'] = obj_page.first_on_page(page_num)
-    data['last_on_page'] = obj_page.last_on_page(page_num)
-    data['total'] = obj_page.hits
+    data['has_next_page'] = obj.has_next()
+    data['next_page'] = obj.next_page_number()
+    data['has_prev_page'] = obj.has_previous()
+    data['prev_page'] = obj.previous_page_number()
+    data['first_on_page'] = obj.start_index()
+    data['last_on_page'] = obj.end_index()
     return data
 
 def get_paged_objects(query_set, request, obj_per_page):
@@ -67,11 +65,12 @@ def get_paged_objects(query_set, request, obj_per_page):
         page = request.GET['page']
         page = int(page)
     except KeyError, e:
-        page = 0
-    object_page = ObjectPaginator(query_set, obj_per_page)
-    object = object_page.get_page(page)
-    page_data = get_pagination_data(object_page, page)
-    return object, page_data
+        page = 1
+    pagination = Paginator(query_set, obj_per_page)
+    page = pagination.page(page)
+    page_data = get_pagination_data(page)
+    page_data['total'] = pagination.count
+    return page.object_list, page_data
     
 def check_permissions(topic, user):
     "Check that the current user has permssions to acces the page or raise exception if no"

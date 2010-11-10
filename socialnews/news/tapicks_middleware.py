@@ -1,13 +1,17 @@
-from django.http import HttpResponse, HttpResponseRedirect
-import exceptions
-from django.views.generic.simple import direct_to_template
-from helpers import *
-import models
+
+from news import exceptions
+from news.helpers import *
 
 class ExceptionHandlerMiddleware:
     
     def process_exception(self, request, exptn):
+        from news import models
+        message = None
         if exptn.__class__ == exceptions.PrivateTopicNoAccess:
-            return render(request, {'message':'You tried to access a topic which is private, and you are not a mamber.'}, 'news/no_prevs.html')
+            message = 'You tried to access a topic which is private, and you are not a mamber.'
         elif exptn.__class__ == models.CanNotVote:
-            return render(request, {'message':'You tried to vote or submit to a topic to which you are not subscribed, and the topic is memebers only.'}, 'news/no_prevs.html')
+            message = 'You tried to vote or submit to a topic to which you are not subscribed, and the topic is memebers only.'
+        
+        if not message:
+            return 
+        return render(request, {'message': message}, 'news/no_prevs.html')

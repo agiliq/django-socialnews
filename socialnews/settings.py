@@ -85,7 +85,7 @@ MIDDLEWARE_CLASSES = (
     'news.tapicks_middleware.ExceptionHandlerMiddleware',
 )
 
-ROOT_URLCONF = 'tapicks.urls'
+ROOT_URLCONF = 'socialnews.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -120,5 +120,9 @@ SEND_BROKEN_LINK_EMAILS = True
 DEFAULT_FROM_EMAIL = "shabda@dashbard.com"
 SERVER_MAIL= "shabda@dashbard.com"
 
+try:
+    from localsettings import *
+except ImportError:
+    pass
 
 
