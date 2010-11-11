@@ -16,15 +16,16 @@
   </div>
   
   <p>
-    <a href="{{link.url}}" class="title">{{link.text}}</a>
+    <a href="{{ link.get_absolute_url }}" class="title">{{ link.summary }}</a>
     {% if not topic %}
       <span class="topic tags">[<a href="{{link.topic.get_absolute_url}}">{{link.topic.name}}</a>]</span>
     {% endif %}
-    [{{link.site}}]
+    [{{ link.site }}]
   </p>
   
   <p class="details postinfo">
-    <span id="points-{{link.id}}">{{link.visible_points}}</span> points posted  {{link.humanized_time}}. 
+    <span id="points-{{link.id}}">{{link.visible_points}}</span> points posted  {{link.humanized_time}}.  
+    <a href='{{ link.url }}'>more</a>
     <a href="{{link.get_absolute_url}}">{{link.comment_count}} Comments.</a> By <a href="/user/{{link.user}}/">{{link.user}}</a>.
     {% if link.saved %}
       saved

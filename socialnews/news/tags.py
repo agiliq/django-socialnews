@@ -5,8 +5,8 @@ from helpers import *
 import bforms
 import logging
 
-def topic_tag(request, topic_name, tag_text):
-    topic = get_topic(request, topic_name)
+def topic_tag(request, topic_slug, tag_text):
+    topic = get_topic(request, topic_slug)
     try:
         tag = Tag.objects.get(topic = topic, text = tag_text)
     except Tag.DoesNotExist, e:

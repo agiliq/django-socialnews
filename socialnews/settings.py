@@ -102,7 +102,10 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'news',
     'mptt',
+    'autoslug',
 )
+
+AUTOSLUG_SLUGIFY_FUNCTION = 'django.template.defaultfilters.slugify'
 
 AUTH_PROFILE_MODULE = 'news.UserProfile'
 PERSISTENT_SESSION_KEY = 'PERS_SESSION'

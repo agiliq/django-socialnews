@@ -39,8 +39,8 @@ if settings.DEBUG:
     )
 
 urlpatterns += patterns('news.subscriptions',
-    url(r'^subscribe/(?P<topic_name>[^\.^/]+)/$', 'subscribe', name='subscribe'),
-    url(r'^unsubscribe/(?P<topic_name>[^\.^/]+)/$', 'unsubscribe', name='unsubscribe'),
+    url(r'^subscribe/(?P<topic_slug>[\w-]+)/$', 'subscribe', name='subscribe'),
+    url(r'^unsubscribe/(?P<topic_slug>[\w-]+)/$', 'unsubscribe', name='unsubscribe'),
 )
 
 urlpatterns += patterns('news.search',
@@ -64,7 +64,7 @@ urlpatterns += patterns('news.static',
 )                      
 
 urlpatterns += patterns('news.tags',
-    url(r'^(?P<topic_name>[^\.^/]+)/tag/(?P<tag_text>[^\.^/]+)/$', 'topic_tag', name='topic_tag'),
+    url(r'^(?P<topic_slug>[\w-]+)/tag/(?P<tag_text>[^\.^/]+)/$', 'topic_tag', name='topic_tag'),
     url(r'^tag/(?P<tag_text>[^\.^/]+)/$', 'sitewide_tag', name='sitewide_tag'),
 )
 
@@ -76,22 +76,7 @@ feeds = {
 urlpatterns += patterns('',
     url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
 )
-
-urlpatterns += patterns('news.links',
-    url(r'^submit/$', 'link_submit', name='link_submit_def'),                        
-    url(r'^(?P<topic_name>[^\.^/]+)/submit/$', 'link_submit', name='link_submit'),
-    url(r'^up/(?P<link_id>\d+)/$', 'upvote_link', name='upvote_link'),
-    url(r'^down/(?P<link_id>\d+)/$', 'downvote_link', name='downvote_link'),
-    url(r'^save/(?P<link_id>\d+)/$', 'save_link', name='save_link'),
-    url(r'^upcomment/(?P<comment_id>\d+)/$', 'upvote_comment', name='upvote_comment'),
-    url(r'^downcomment/(?P<comment_id>\d+)/$', 'downvote_comment', name='downvote_comment'),
-    url(r'^(?P<topic_name>[^\.^/]+)/comment/(?P<comment_id>\d+)/$', 'comment_detail', name='comment_detail'),
-    url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/$', 'link_details', name='link_detail'),
-    url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/info/$', 'link_info', name='link_info'),
-    url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/related/$', 'link_related', name='link_related'),
-)
-
-urlpatterns += patterns('news.topics',
+urlpatterns += patterns('news.topics',
     url(r'^$', 'main', name='main'),
     url(r'^new/$', 'main', {'order_by':'new'}, name='new'),
     url(r'^all/$', 'main', {'order_by':'new', 'override':'all'}, name='new'),
@@ -100,8 +85,24 @@ urlpatterns += patterns('news.topics',
     url(r'^about/$', 'site_about', name='site_about'),
     url(r'^topics/$', 'topic_list', name='topic_list'),
     
-    url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
-    url(r'^(?P<topic_name>[^\.^/]+)/new/$', 'topic_main', {'order_by':'new'}, name='topic_new', ),
-    url(r'^(?P<topic_name>[^\.^/]+)/manage/$', 'topic_manage', name='topic_manage'),
-    url(r'^(?P<topic_name>[^\.^/]+)/about/$', 'topic_about', name='topic_about'),
+    # url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
+    url(r'^(?P<topic_slug>[\w-]+)/$', 'topic_main', name='topic'),
+    url(r'^(?P<topic_slug>[\w-]+)/new/$', 'topic_main', {'order_by':'new'}, name='topic_new', ),
+    url(r'^(?P<topic_slug>[\w-]+)/manage/$', 'topic_manage', name='topic_manage'),
+    url(r'^(?P<topic_slug>[\w-]+)/about/$', 'topic_about', name='topic_about'),
 )  
+
+urlpatterns += patterns('news.links',
+    url(r'^submit/$', 'link_submit', name='link_submit_def'),                        
+    url(r'^(?P<topic_slug>[\w-]+)/submit/$', 'link_submit', name='link_submit'),
+    url(r'^up/(?P<link_id>\d+)/$', 'upvote_link', name='upvote_link'),
+    url(r'^down/(?P<link_id>\d+)/$', 'downvote_link', name='downvote_link'),
+    url(r'^save/(?P<link_id>\d+)/$', 'save_link', name='save_link'),
+    url(r'^upcomment/(?P<comment_id>\d+)/$', 'upvote_comment', name='upvote_comment'),
+    url(r'^downcomment/(?P<comment_id>\d+)/$', 'downvote_comment', name='downvote_comment'),
+    url(r'^(?P<topic_name>[^\.^/]+)/comment/(?P<comment_id>\d+)/$', 'comment_detail', name='comment_detail'),
+    # url(r'^(?P<topic_name>[^\.^/]+)/(?P<link_id>\d+)/$', 'link_details', name='link_detail'),
+    url(r'^(?P<topic_slug>[\w-]+)/(?P<link_slug>[\w-]+)/$', 'link_details', name='link_detail'),
+    url(r'^(?P<topic_slug>[\w-]+)/(?P<link_slug>[\w-]+)/info/$', 'link_info', name='link_info'),
+    url(r'^(?P<topic_slug>[\w-]+)/(?P<link_slug>[\w-]+)/related/$', 'link_related', name='link_related'),
+)

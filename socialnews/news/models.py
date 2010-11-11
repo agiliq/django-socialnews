@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 
+from autoslug import AutoSlugField
 from news import defaults
 
 class SiteSetting(models.Model):
@@ -104,12 +105,13 @@ class TopicManager(models.Manager):
 
 class Topic(models.Model):
     """A specific topic in the website."""
-    name = models.CharField(max_length = 100, unique = True)
+    name = models.CharField(max_length=100, unique=True)
+    slug = AutoSlugField(populate_from='name', unique=True, max_length=100)
     full_name = models.TextField()
     created_by = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add = 1)
     updated_on = models.DateTimeField(auto_now = 1)
-    num_links = models.IntegerField(default = 0)
+    num_links = models.IntegerField(default=0)
     permissions = models.CharField(max_length = 100, choices = topic_permissions, default = topic_permissions_flat[0])
     about = models.TextField(default = '')
     
@@ -119,27 +121,25 @@ class Topic(models.Model):
         return u'%s' % self.name
     
     def get_absolute_url(self):
-        return reverse('topic', kwargs={'topic_name':self.name})
+        return reverse('topic', kwargs={'topic_slug': self.slug})
     
     def subscribe_url(self):
-        url = reverse('subscribe', kwargs={'topic_name':self.name})
+        url = reverse('subscribe', kwargs={'topic_slug': self.slug})
         return url
     
     def unsubscribe_url(self):
-        url = reverse('unsubscribe', kwargs={'topic_name':self.name})
+        url = reverse('unsubscribe', kwargs={'topic_slug': self.slug})
         return url
     
     def submit_url(self):
-        url = reverse('link_submit', kwargs={'topic_name':self.name})
+        url = reverse('link_submit', kwargs={'topic_slug': self.slug})
         return url
     
     def about_url(self):
-        url = reverse('topic_about', kwargs={'topic_name':self.name})
-        return url
+        return reverse('topic_about', kwargs={'topic_slug': self.slug})
     
     def new_url(self):
-        url = reverse('topic_new', kwargs={'topic_name':self.name})
-        return url
+        return reverse('topic_new', kwargs={'topic_slug': self.slug})
     
     def manage_url(self):
         url = reverse('topic_manage', kwargs={'topic_name':self.name})
@@ -166,12 +166,12 @@ class Invite(models.Model):
     
 class LinkManager(models.Manager):
     "Manager for links"
-    def create_link(self, url, text, user, topic, karma_factor=True):
+    def create_link(self, url, text, user, topic, summary, karma_factor=True):
         profile = user.get_profile()
         if profile.karma > defaults.KARMA_COST_NEW_LINK or not karma_factor:            
             profile.karma -= defaults.KARMA_COST_NEW_LINK
             profile.save()
-            link = Link(user = user, text = text, topic = topic, url=url)
+            link = Link(user=user, summary=summary, text=text, topic=topic, url=url)
             link.save()
             link.upvote(user)
             link.topic.num_links += 1
@@ -217,7 +217,9 @@ class LinkManager(models.Manager):
 class Link(models.Model):
     "A specific link within a topic."
     url = models.URLField()
-    text = models.TextField()
+    summary = models.CharField(max_length=255)
+    slug = AutoSlugField(populate_from='summary', unique=True, max_length=255)
+    text = models.TextField(u'Description')
     user = models.ForeignKey(User, related_name="added_links")
     topic = models.ForeignKey(Topic)
     created_on = models.DateTimeField(auto_now_add = 1)
@@ -333,19 +335,19 @@ class Link(models.Model):
         return humanized_time(self.created_on)
     
     def get_absolute_url(self):
-        url = reverse('link_detail', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
-        return url
+        # url = reverse('link_detail', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
+        return reverse('link_detail', kwargs={'topic_slug': self.topic.slug, 'link_slug': self.slug})
     
     def save_url(self):
-        url = reverse('save_link', kwargs = dict(link_id = self.id))
+        url = reverse('save_link', kwargs={'link_id': self.id})
         return url
     
     def related_url(self):
-        url = reverse('link_related', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
+        url = reverse('link_related', kwargs={'topic_slug': self.topic.slug, 'link_slug': self.slug})
         return url
     
     def info_url(self):
-        url = reverse('link_info', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
+        url = reverse('link_info', kwargs={'topic_slug': self.topic.slug, 'link_slug': self.slug})
         return url
     
     def as_text(self):
@@ -725,7 +727,7 @@ class Tag(models.Model):
     
     def get_absolute_url(self):
         if self.topic:
-            return reverse('topic_tag', kwargs = {'topic_name':self.topic.name, 'tag_text':self.text})
+            return reverse('topic_tag', kwargs = {'topic_slug':self.topic.slug, 'tag_text':self.text})
         else:
             return reverse('sitewide_tag', kwargs = {'tag_text':self.text})
     
@@ -778,7 +780,7 @@ class LinkTag(models.Model):
     def __unicode__(self):
         return u'%s - %s' % (self.link, self.tag)
     
-    def save(self):
+    def save(self, *args, **kwargs):
         self.tag.links_count += 1
         self.link.save()
         super(LinkTag, self).save()

@@ -83,6 +83,7 @@ class NewTopic(MarkedForm):
     
 class NewLink(MarkedForm):
     url = MarkedURLField(help_text='Url to the cool page.')
+    summary = MarkedField(help_text="One line summary about the URL.")
     text = MarkedField(widget = forms.Textarea, help_text="A little description.")
     
     def __init__(self, topic, user, url = None, text = None, *args, **kwargs):
@@ -103,7 +104,11 @@ class NewLink(MarkedForm):
         return self.cleaned_data
     
     def save(self):
-        return Link.objects.create_link(url = self.cleaned_data['url'], text = self.cleaned_data['text'], user = self.user, topic = self.topic)
+        return Link.objects.create_link(url=self.cleaned_data['url'], 
+                                        summary=self.cleaned_data['summary'], 
+                                        text=self.cleaned_data['text'], 
+                                        user=self.user, 
+                                        topic=self.topic)
     
 class DoComment(forms.Form):
     text = MarkedField(widget = forms.Textarea)
@@ -137,10 +142,11 @@ class AddTag(forms.Form):
         super(AddTag, self).__init__(*args, **kwargs)
         self.user = user
         self.link = link
-        
-    def save(self):
+    
+    def save(self, *args, **kwargs):
         return LinkTagUser.objects.tag_link(tag_text = self.cleaned_data['tag'], link = self.link, user=self.user)
-  
+
+
 class LoginForm(forms.Form):
     """Login form for users."""
     username = forms.RegexField(r'^[a-zA-Z0-9_]{1,30}$',

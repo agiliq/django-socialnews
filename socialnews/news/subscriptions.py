@@ -1,17 +1,19 @@
+
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import login_required
+from django.utils import simplejson
+from django.views.decorators.http import require_POST
+
 from helpers import *
 import bforms
 import logging
-from django.utils import simplejson
 import exceptions
 
+@require_POST
 @login_required
-def subscribe(request, topic_name):
-    if not request.method == 'POST':
-        return HttpResponseForbidden('Only POST allowed')
-    topic = get_topic(request, topic_name)
+def subscribe(request, topic_slug):
+    topic = get_topic(request, topic_slug)
     subs = SubscribedUser.objects.subscribe_user(user = request.user, topic = topic, group='Member')
     if request.REQUEST.has_key('ajax'):
         dom = '<a href="%s" class="unsubscribe">unsubscribe</a>' % topic.unsubscribe_url()
@@ -19,11 +21,11 @@ def subscribe(request, topic_name):
         return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(topic.get_absolute_url())
 
+@require_POST
 @login_required
-def unsubscribe(request, topic_name):
-    topic = get_topic(request, topic_name)
-    if not request.method == 'POST':
-        return HttpResponseForbidden('Only POST allowed')
+def unsubscribe(request, topic_slug):
+    topic = get_topic(request, topic_slug)
+
     try:
         subs = SubscribedUser.objects.get(user = request.user, topic = topic)
         subs.delete()        

@@ -958,7 +958,7 @@ class TestGetTopic(unittest.TestCase):
         
     def testValidTopic(self):
         "Returns a topic on get_topic, with a valid topic."
-        topic = helpers.get_topic(None, self.topic.name)
+        topic = helpers.get_topic(None, self.topic.slug)
         self.assertEquals(topic, self.topic)
         
     def testInValidTopic(self):

@@ -6,17 +6,18 @@ import exceptions
 from django.core.paginator import Paginator, InvalidPage
 import random
 
-def get_topic(request, topic_name):
+def get_topic(request, topic_slug):
     try:
-        topic = Topic.objects.get(name = topic_name)
+        topic = Topic.objects.get(slug=topic_slug)
     except Topic.DoesNotExist:
         raise exceptions.NoSuchTopic
+    
     #If this is a private topic, and you are not  a member, go away
     if topic.permissions == 'Private':
         if not request.user.is_authenticated():
             raise exceptions.PrivateTopicNoAccess
         try:
-            SubscribedUser.objects.get(user = request.user, topic = topic)
+            SubscribedUser.objects.get(user=request.user, topic=topic)
         except SubscribedUser.DoesNotExist:
             raise exceptions.PrivateTopicNoAccess
         

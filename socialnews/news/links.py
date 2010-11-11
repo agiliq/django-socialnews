@@ -9,38 +9,40 @@ from django.template.loader import get_template
 from django.template import Context
 
 @login_required
-def link_submit(request, topic_name=None):
-    if topic_name:
-        topic = get_topic(request, topic_name)
+def link_submit(request, topic_slug=None):
+    if topic_slug:
+        topic = get_topic(request, topic_slug)
     else:
         profile = request.user.get_profile()
         topic = profile.default_topic
+    
     if request.method == 'GET':
         url = request.GET.get('url', '')
         text = request.GET.get('text', '')
-        form = bforms.NewLink(user = request.user, topic = topic, initial=dict(url = url, text=text, ))
-    if request.method == 'POST':
-        form = bforms.NewLink( user = request.user, topic = topic, data = request.POST)
+        form = bforms.NewLink(user=request.user, topic=topic, initial=dict(url=url, text=text,))
+    elif request.method == 'POST':
+        form = bforms.NewLink(user=request.user, topic=topic, data=request.POST)
         if form.is_valid():
             link = form.save()
             return HttpResponseRedirect(link.get_absolute_url())
     payload = {'topic':topic,'form':form}
     return render(request, payload, 'news/create_link.html')
 
-def link_details(request, topic_name, link_id):
-    topic = get_topic(request, topic_name)
+def link_details(request, topic_slug, link_slug):
+    topic = get_topic(request, topic_slug)
     if request.user.is_authenticated():
-        link = Link.objects.get_query_set_with_user(request.user).get(topic = topic, id = link_id)
+        link = Link.objects.get_query_set_with_user(request.user).get(topic=topic, slug=link_slug)
     else:
-        link = Link.objects.get(topic = topic, id = link_id)
+        link = Link.objects.get(topic=topic, slug=link_slug)
+    
     if request.user.is_authenticated():
-        comments = Comment.objects.append_user_data(Comment.tree.filter(link = link).select_related(), request.user)
+        comments = Comment.objects.append_user_data(Comment.tree.filter(link=link).select_related(), request.user)
     else:
-        comments = Comment.tree.filter(link = link).select_related()
-    form = bforms.DoComment(user = request.user, link = link)
-    tag_form = bforms.AddTag(user = request.user, link = link)
-    if request.method == "GET":
-        pass    
+        comments = Comment.tree.filter(link=link).select_related()
+    
+    form = bforms.DoComment(user=request.user, link=link)
+    tag_form = bforms.AddTag(user=request.user, link=link)
+    
     if request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponseForbidden('Please login')
@@ -84,25 +86,25 @@ def link_details(request, topic_name, link_id):
     payload = {'topic':topic, 'link':link, 'comments':comments, 'form':form, 'tag_form':tag_form, 'page':page}
     return render(request, payload, 'news/link_details.html')
 
-def link_info(request, topic_name, link_id):
-    topic = get_topic(request, topic_name)
+def link_info(request, topic_slug, link_slug):
+    topic = get_topic(request, topic_slug)
     if request.user.is_authenticated():
-        link = Link.objects.get_query_set_with_user(request.user).get(id = link_id)
+        link = Link.objects.get_query_set_with_user(request.user).get(slug=link_slug)
     else:
-        link = Link.objects.get(id = link_id)
+        link = Link.objects.get(slug=link_slug)
     page = 'info'
     payload = dict(topic=topic, link=link, page=page)
     return render(request, payload, 'news/link_info.html')
 
 
-def link_related(request, topic_name, link_id):
-    topic = get_topic(request, topic_name)
+def link_related(request, topic_slug, link_slug):
+    topic = get_topic(request, topic_slug)
     if request.user.is_authenticated():
-        link = Link.objects.get_query_set_with_user(request.user).get(id = link_id)
-        related = RelatedLink.objects.get_query_set_with_user(request.user).filter(link = link).select_related()
+        link = Link.objects.get_query_set_with_user(request.user).get(slug=link_slug)
+        related = RelatedLink.objects.get_query_set_with_user(request.user).filter(link=link).select_related()
     else:
-        link = Link.objects.get(id = link_id)
-        related = RelatedLink.objects.filter(link = link).select_related()
+        link = Link.objects.get(slug=link_slug)
+        related = RelatedLink.objects.filter(link=link).select_related()
     page = 'related'
     payload = dict(topic=topic, link=link, related=related, page=page)
     return render(request, payload, 'news/link_related.html')

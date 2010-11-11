@@ -42,13 +42,14 @@ def main(request, order_by=None, override=None):
     return render(request, payload, 'news/main.html')
     
     
-def topic_main(request, topic_name, order_by = None):
+def topic_main(request, topic_slug, order_by = None):
     try:
-        topic = get_topic(request, topic_name)
+        topic = get_topic(request, topic_slug)
     except news_exceptions.NoSuchTopic, e:
-        url = '/createtopic/'#reverse('createtopic');
-        return HttpResponseRedirect('%s?topic_name=%s' % (url, topic_name))
-    tags = Tag.objects.filter(topic = topic).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
+        url = reverse('createtopic')
+        return HttpResponseRedirect('%s?topic_name=%s' % (url, topic_slug))
+    
+    tags = Tag.objects.filter(topic=topic).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
     if request.user.is_authenticated():
         links = Link.objects.get_query_set_with_user(request.user).filter(topic = topic).select_related()
     else:
@@ -101,11 +102,11 @@ def create(request, topic_name=None):
     return render(request, payload, 'news/create_topic.html')
 
 @login_required
-def topic_manage(request, topic_name):
+def topic_manage(request, topic_slug):
     """Allow moderators to manage a topic.
     Only moderators of the topic have access to this page.
     """
-    topic = get_topic(request, topic_name)
+    topic = get_topic(request, topic_slug)
     "if logged in user, not a moderator bail out."
     try:
         subs = SubscribedUser.objects.get(topic = topic, user = request.user)
@@ -132,9 +133,9 @@ def topic_manage(request, topic_name):
     payload = {'topic':topic, 'subs':subs, 'inviteform':inviteform}
     return render(request, payload, 'news/manage_topic.html')
 
-def topic_about(request, topic_name):
+def topic_about(request, topic_slug):
     page = 'about'
-    topic = get_topic(request, topic_name)
+    topic = get_topic(request, topic_slug)
     count = SubscribedUser.objects.filter(topic = topic).count()
     payload = {'topic':topic, 'count':count, 'page':page}
     return render(request, payload, 'news/topic_about.html')
