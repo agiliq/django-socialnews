@@ -337,7 +337,7 @@ class Link(models.Model):
         return url
     
     def save_url(self):
-        url = reverse('save_link', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
+        url = reverse('save_link', kwargs = dict(link_id = self.id))
         return url
     
     def related_url(self):
