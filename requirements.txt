@@ -1,0 +1,1 @@
+-e hg+http://bitbucket.org/neithere/django-autoslug@5e4fdf3adf45#egg=django-autoslug
