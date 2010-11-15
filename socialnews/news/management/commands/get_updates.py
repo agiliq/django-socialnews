@@ -37,16 +37,12 @@ class Command(NoArgsCommand):
             if user_decision.lower() == 'no':
                 raise CommandError('Aborting because you said so.')
         
-        import ipdb
-        ipdb.set_trace()
         profile = user.get_profile()
         topic = profile.default_topic
         
         api_data = urllib2.urlopen(settings.JSON_API_URL).read()
         
         KEYS_MAPPING = {'title': 'title', 'description': 'description', 'url': 'url'}
-        api_data = open('tmp/sample_json.txt').read()
-        KEYS_MAPPING = {'title': 'title', 'description': 'text', 'url': 'story_link'}
 
         """
         call any custom JSON serizliser/deserializer here 
@@ -68,6 +64,11 @@ class Command(NoArgsCommand):
             title = link[KEYS_MAPPING['title']]
             description = link[KEYS_MAPPING['description']]
             url = link[KEYS_MAPPING['url']]
+            
+            link_exists = Link.objects.filter(url=url).count()
+            if link_exists:
+                continue
+            
             Link.objects.create_link(url=url, 
                                      text=description, 
                                      user=user, 
