@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Komodo Project File - DO NOT EDIT -->
-<project id="0b55ba64-3098-4225-b87f-60b857e471f7" kpf_version="4" name="implist.kpf">
-<preference-set idref="0b55ba64-3098-4225-b87f-60b857e471f7">
-  <boolean id="import_live">1</boolean>
-</preference-set>
-</project>
