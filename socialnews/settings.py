@@ -92,14 +92,7 @@ LOGIN_URL = '/login/'
 
 
 
-EMAIL_HOST = 'mail4.webfaction.com'
-EMAIL_HOST_USER= 'shabda'
-EMAIL_FROM = "shabda@dashbard.com"
-EMAIL_HOST_PASSWORD= 'sa081084'
-EMAIL_PORT= '25'
-SEND_BROKEN_LINK_EMAILS = True
-DEFAULT_FROM_EMAIL = "shabda@dashbard.com"
-SERVER_MAIL= "shabda@dashbard.com"
+
 
 try:
     from localsettings import *
