@@ -6,12 +6,13 @@ import exceptions
 from django.core.paginator import Paginator, InvalidPage
 import random
 
+
 def get_topic(request, topic_slug):
     try:
         topic = Topic.objects.get(slug=topic_slug)
     except Topic.DoesNotExist:
         raise exceptions.NoSuchTopic
-    
+
     #If this is a private topic, and you are not  a member, go away
     if topic.permissions == 'Private':
         if not request.user.is_authenticated():
@@ -20,8 +21,9 @@ def get_topic(request, topic_slug):
             SubscribedUser.objects.get(user=request.user, topic=topic)
         except SubscribedUser.DoesNotExist:
             raise exceptions.PrivateTopicNoAccess
-        
+
     return topic
+
 
 def render(request, payload, template):
     "Add sitewide actions"
@@ -51,15 +53,23 @@ def render(request, payload, template):
             request.session.set_test_cookie()
     return render_to_response(template, payload, RequestContext(request))
 
+
 def get_pagination_data(obj):
     data = {}
     data['has_next_page'] = obj.has_next()
-    data['next_page'] = obj.next_page_number()
+    if obj.has_next():
+        data['next_page'] = obj.next_page_number()
+    else:
+        data['next_page'] = 1
     data['has_prev_page'] = obj.has_previous()
-    data['prev_page'] = obj.previous_page_number()
+    if obj.has_previous():
+        data['prev_page'] = obj.previous_page_number()
+    else:
+        data['prev_page'] = 1
     data['first_on_page'] = obj.start_index()
     data['last_on_page'] = obj.end_index()
     return data
+
 
 def get_paged_objects(query_set, request, obj_per_page):
     try:
@@ -72,7 +82,8 @@ def get_paged_objects(query_set, request, obj_per_page):
     page_data = get_pagination_data(page)
     page_data['total'] = pagination.count
     return page.object_list, page_data
-    
+
+
 def check_permissions(topic, user):
     "Check that the current user has permssions to acces the page or raise exception if no"
     if topic.permissions == 'Private':
@@ -80,13 +91,11 @@ def check_permissions(topic, user):
             SubscribedUser.objects.get(user = user, topic = topic)
         except SubscribedUser.DoesNotExist:
             raise exceptions.PrivateTopicNoAccess
-        
+
+
 def generate_random_key(length = None):
     if not length:
         length = random.randint(6, 10)
     keychars = 'abcdefghikjlmnopqrstuvwxyz1234567890'
     key = "".join([random.choice(keychars) for i in xrange(length)])
     return key
-    
-    
-    
