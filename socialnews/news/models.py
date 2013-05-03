@@ -322,18 +322,18 @@ class Link(models.Model):
             profile.save()
         vote.delete()
         return vote
-        
+
     def site(self):
         "Return the site where this link was posted."
         return urlparse.urlparse(self.url)[1]
-    
+
     def vis_points(self):
         vis_points = self.liked_by_count - self.disliked_by_count
         return vis_points
-    
+
     def humanized_time(self):
         return humanized_time(self.created_on)
-    
+
     def get_absolute_url(self):
         # url = reverse('link_detail', kwargs = dict(topic_name = self.topic.name, link_id = self.id))
         return reverse('link_detail', kwargs={'topic_slug': self.topic.slug, 'link_slug': self.slug})
