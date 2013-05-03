@@ -1,9 +1,9 @@
 from django.conf import settings
-from django.conf.urls.defaults import *
+from django.conf.urls import url, patterns, include
 from django.contrib import admin
 from django.contrib.auth import views
-from django.views.generic import simple
-from django.views.generic.simple import direct_to_template
+from django.views.generic.base import TemplateView
+
 
 from news.rss import LatestEntriesByTopic, LatestEntries
 
@@ -12,30 +12,28 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Example:
     # (r'^implist/', include('implist.foo.urls')),
-    
-    url(r'^google42f6e952fe543f39.html$', direct_to_template, {'template':'news/test.txt', 'mimetype':'text/plain'}),
-    url(r'^robots.txt$', direct_to_template, {'template':'news/robots.txt', 'mimetype':'text/plain'}),
-    url(r'^foo/$', direct_to_template, {'template':'news/base.html'}),
+
+    url(r'^google42f6e952fe543f39.html$', TemplateView.as_view(template_name = 'news/test.txt')),
+    url(r'^robots.txt$', TemplateView.as_view(template_name = 'news/robots.txt')),
+    url(r'^foo/$', TemplateView.as_view(template_name ='news/base.html')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^logout/$', views.logout, {'template_name':'registration/logout.html'}, name='logout'),
-    
-    
 )
 
 urlpatterns += patterns('news.accounts',
-    url(r'^register/$', 'create_user', name='register'),
-    url(r'^login/$', 'login', name='login'),
-    url(r'^user/reset_password/$', 'reset_password', name='reset_password'),
-    url(r'^user/reset_password/sent/$', 'reset_password_sent', name='reset_password_sent'),
-    url(r'^user/reset_password/done/(?P<username>[^\.^/]+)/$', 'reset_password_done', name='reset_password_done'),
-    url(r'^user/activate/(?P<username>[^\.^/]+)/$', 'activate_user', name='activate_user'),                       
-    url(r'^my/$', 'user_manage', name='user_manage'),
-)                        
+        url(r'^register/$', 'create_user', name='register'),
+        url(r'^login/$', 'login', name='login'),
+        url(r'^user/reset_password/$', 'reset_password', name='reset_password'),
+        url(r'^user/reset_password/sent/$', 'reset_password_sent', name='reset_password_sent'),
+        url(r'^user/reset_password/done/(?P<username>[^\.^/]+)/$', 'reset_password_done', name='reset_password_done'),
+        url(r'^user/activate/(?P<username>[^\.^/]+)/$', 'activate_user', name='activate_user'),                       
+        url(r'^my/$', 'user_manage', name='user_manage'),
+)
 
 if settings.DEBUG:
     urlpatterns += patterns('',
-        url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-        url(r'^dummy/', simple.direct_to_template, {'template':'news/dummy.html'})
+        #url(r'^{{ static }}/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+        url(r'^dummy/', TemplateView.as_view(template_name='news/dummy.html'))
     )
 
 urlpatterns += patterns('news.subscriptions',
@@ -61,7 +59,7 @@ urlpatterns += patterns('news.static',
     url(r'^help/$', 'help', name='help'),
     url(r'^help/$', 'help', name='help'),
     url(r'^buttons/$', 'buttons', name='buttons'),
-)                      
+)
 
 urlpatterns += patterns('news.tags',
     url(r'^(?P<topic_slug>[\w-]+)/tag/(?P<tag_text>[^\.^/]+)/$', 'topic_tag', name='topic_tag'),
@@ -74,9 +72,10 @@ feeds = {
 }
 
 urlpatterns += patterns('',
-    url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
+    url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.Feed', {'feed_dict': feeds}),
 )
-urlpatterns += patterns('news.topics',
+
+urlpatterns += patterns('news.topics',
     url(r'^$', 'main', name='main'),
     url(r'^new/$', 'main', {'order_by':'new'}, name='new'),
     url(r'^all/$', 'main', {'order_by':'new', 'override':'all'}, name='new'),
