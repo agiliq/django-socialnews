@@ -32,7 +32,7 @@ urlpatterns += patterns('news.accounts',
 
 if settings.DEBUG:
     urlpatterns += patterns('',
-        #url(r'^{{ static }}/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+        url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
         url(r'^dummy/', TemplateView.as_view(template_name='news/dummy.html'))
     )
 
