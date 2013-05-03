@@ -1,5 +1,8 @@
 {% extends 'news/base.html' %}
 
+{% load url from future %}
+
+
 {% block title %}
 {{suer.username}} - {{block.super}}
 {% endblock %}
@@ -31,17 +34,17 @@ There are no links here. Ah well! <a href="http://www.42topics.com/forum/topic/1
 				{% ifequal page 'liked' %}
 				<li>Liked</li>
 				{% else %}
-				<li><a href="{% url liked_links %}">Liked</a>  </li>
+				<li><a href="{% url 'liked_links' %}">Liked</a>  </li>
 				{% endifequal %}
 				{% ifequal page 'disliked' %}
 				<li>Disliked</li>
 				{% else %}
-				<li><a href="{% url disliked_links %}">Disliked</a>  </li>
+				<li><a href="{% url 'disliked_links' %}">Disliked</a>  </li>
 				{% endifequal %}
 				{% ifequal page 'saved' %}
 				<li>Saved</li>
 				{% else %}
-				<li><a href="{% url saved_links %}">Saved</a>  </li>					
+				<li><a href="{% url 'saved_links' %}">Saved</a>  </li>					
 				{% endifequal %}				
         </ul>
 			</div>
