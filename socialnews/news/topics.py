@@ -161,12 +161,3 @@ def topic_list(request):
     top_topics, page_data, = get_paged_objects(top_topics, request, 10)
     payload = dict(top_topics = top_topics, page_data=page_data)
     return render(request, payload, 'news/topic_list.html')
-    
-
-    
-    
-
-    
-    
-    
-    
