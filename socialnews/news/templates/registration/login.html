@@ -1,5 +1,8 @@
 {% extends "registration/base.html" %}
 
+{% load url from future %}
+
+
 {% block title %}
 {{block.super}} - Login
 {% endblock %}
@@ -11,7 +14,7 @@
 {% if user.is_authenticated %}
 <div class="message">
 <h3>
-    You are already logged in. <a href="{% url logout %}">Logout?</a>
+    You are already logged in. <a href="{% url 'logout' %}">Logout?</a>
 </h3>
 </div>
 {% else %}
@@ -32,7 +35,7 @@
  				</form>
 			</div>
 			<a href="/register/">Sign Up</a>
-			<a href="{% url reset_password %}">Forgot password</a>
+			<a href="{% url 'reset_password' %}">Forgot password</a>
 		</div>
 		</div>
 </div>					
