@@ -1,3 +1,4 @@
+{% load url from future %}
 <div class="block">
 
 <div class="topicsbox">
@@ -13,7 +14,7 @@
   					{% endfor %}
   				</ul>
   				<div class="clear"></div>
-  				<a href="{%url topic_list %}" class="more_action">More</a>
+  				<a href="{%url 'topic_list' %}" class="more_action">More</a>
   			</div>
   		{% endif %}
   </div>
@@ -30,7 +31,7 @@
   					{% endfor %}
   				</ul>
   				<div class="clear"></div>
-  				<a href="{% url topic_list %}" class="more_action">More</a>
+  				<a href="{% url 'topic_list' %}" class="more_action">More</a>
   			</div>
   		{% endif %}
   </div>
