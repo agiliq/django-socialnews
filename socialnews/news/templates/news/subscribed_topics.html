@@ -1,3 +1,4 @@
+{% load url from future %}
 			{% if user.is_authenticated %}
 	 		<div class="box others subscribed block">
 				<h3>Subscribed Topic </h3> 
@@ -9,13 +10,13 @@
 				</ul>
 				{% else %}
 				<div class="message">
-				   You are not subscribed to any topic.<a href="{% url topic_list %}"> See some?</a>
+				   You are not subscribed to any topic.<a href="{% url 'topic_list' %}"> See some?</a>
 				</div>
 				{% endif %}
 				
 				<div class="clear"></div>
 				<div class="sub_edit">
-				<a href="{% url user_manage %}" class="edit_action">Edit</a>
+				<a href="{% url 'user_manage' %}" class="edit_action">Edit</a>
 				</div>
 			</div>
 			{% endif %}
