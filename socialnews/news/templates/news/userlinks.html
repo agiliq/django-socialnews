@@ -1,5 +1,8 @@
 {% extends 'news/base.html' %}
 
+{% load url from future %}
+
+
 {% block title %}
 {{pageuser.username}} - {{block.super}}
 {% endblock %}
@@ -33,9 +36,9 @@ There are no links here. Ah well!
         <li>Links</li>
 				<li><a href="/user/{{pageuser.username}}/comments/">Comments</a></li>
 				{% ifequal user pageuser %}
-				<li><a href="{% url liked_links %}">Liked</a>  </li>
-				<li><a href="{% url disliked_links %}">Disliked</a>  </li>
-				<li><a href="{% url saved_links %}">Saved</a>  </li>				
+				<li><a href="{% url 'liked_links' %}">Liked</a>  </li>
+				<li><a href="{% url 'disliked_links' %}">Disliked</a>  </li>
+				<li><a href="{% url 'saved_links' %}">Saved</a>  </li>				
 				{% endifequal %}
         </ul>
 			</div>
