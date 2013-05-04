@@ -1,5 +1,8 @@
 {% extends 'news/base.html' %}
 
+{% load url from future %}
+
+
 {% block title %}
 {{pageuser.username}} - Comments - {{block.super}}
 {% endblock %}
@@ -28,9 +31,9 @@ No comments! Aargh.
         <li><a href="/user/{{username}}/">Links</a></li>
 				<li>Comments</li>
 				{% ifequal user pageuser %}
-				<li><a href="{% url liked_links %}">Liked</a>  </li>
-				<li><a href="{% url disliked_links %}">Disliked</a>  </li>
-				<li><a href="{% url saved_links %}">Saved</a>  </li>				
+				<li><a href="{% url 'liked_links' %}">Liked</a>  </li>
+				<li><a href="{% url 'disliked_links' %}">Disliked</a>  </li>
+				<li><a href="{% url 'saved_links' %}">Saved</a>  </li>				
 				{% endifequal %}
         </ul>
 			</div>
