@@ -6,29 +6,36 @@ from django.conf import settings as settin
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
-from django.contrib.auth.decorators import login_required
 import exceptions
 from django.core.urlresolvers import reverse
 import helpers
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.views.generic.base import View
 
-def create_user(request):
-    if request.method == 'POST':
-        form = bforms.UserCreationForm(request.POST)
+
+class FormCreateUser(View):
+    form_class = bforms.UserCreationForm
+    template_name = 'registration/create_user.html'
+    payload = {'form': 'form', 'loginform': 'loginform'}
+
+    def get(self, request, *args, **kwargs):
+        form = bforms.UserCreationForm()
         loginform = bforms.LoginForm()
+        self.payload['form'] = form
+        self.payload['loginform'] = loginform
+        return render(self.request, self.payload, 'registration/create_user.html')
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
         if form.is_valid():
             form.save()
-            from django.contrib.auth import authenticate, login
+            from django.contrib.auth import authenticate
             user = authenticate(username = form.cleaned_data['username'], password = form.cleaned_data['password1'])
             login(request, user)
             return HttpResponseRedirect('/')
-    if request.method == 'GET':
-        form = bforms.UserCreationForm()
-        loginform = bforms.LoginForm()
-    payload = {'form':form, 'loginform':loginform}
-    return render(request, payload, 'registration/create_user.html', )
+
+create_user = FormCreateUser.as_view()
 
 
 def login(request):
@@ -42,7 +49,7 @@ def login(request):
     redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
     if not redirect_to or '//' in redirect_to or ' ' in redirect_to:
         redirect_to = settin.LOGIN_REDIRECT_URL
-    
+
     if request.method == 'POST':
         if request.session.test_cookie_worked():
             request.session.delete_test_cookie()
@@ -53,7 +60,7 @@ def login(request):
                 if user:
                     if user.is_active:
                         request.session[settin.PERSISTENT_SESSION_KEY] = form.cleaned_data['remember_user']
-                        
+
                         auth.login(request, user)
                         # login successful, redirect
                         return HttpResponseRedirect(redirect_to)
@@ -66,15 +73,15 @@ def login(request):
             form = None
     else:
         form = bforms.LoginForm()
-    
-    # cookie must be successfully set/retrieved for the form to be processed    
+
+    # cookie must be successfully set/retrieved for the form to be processed
     request.session.set_test_cookie()
     payload = { 'no_cookies': no_cookies,
                                 'account_disabled': account_disabled,
                                 'invalid_login': invalid_login,
                                 'form': form,
                                 REDIRECT_FIELD_NAME: redirect_to }
-    return render_to_response('registration/login.html', 
+    return render_to_response('registration/login.html',
                               payload,
                               context_instance = RequestContext(request))
 
@@ -86,7 +93,7 @@ def user_manage(request):
     passwordchangeform = bforms.PasswordChangeForm(request.user)
     invites = Invite.objects.filter(user = request.user)
     def_topic_form = bforms.SetDefaultForm(request.user)
-    if request.method=='POST':
+    if request.method == 'POST':
         if request.POST.has_key('remove'):
             topic_name = request.POST['topic']
             topic = Topic.objects.get(name=topic_name)
@@ -121,22 +128,32 @@ def activate_user(request, username):
         return render(request, payload, 'registration/email_validated.html')
     else:
         return HttpResponseForbidden('The activation key was wrong. Your email could not be validated.')
-    
-def reset_password(request):
-    if request.method == 'GET':
+
+
+class ResetPassword(View):
+    payload = {'form': 'form'}
+
+    def get(self, request):
         form = bforms.PasswordResetForm()
-    elif request.method == 'POST':
+        self.payload['form'] = form
+        return render(request, self.payload, 'registration/reset_password.html')
+
+    def post(self, request):
         form = bforms.PasswordResetForm(request.POST)
+        self.payload['form'] = form
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('reset_password_sent'))
-    payload = {'form':form}
-    return render(request, payload, 'registration/reset_password.html')
+        return render(request, self.payload, 'registration/reset_password.html')
+
+
+reset_password = ResetPassword.as_view
+
 
 def reset_password_sent(request):
     payload = {}
     return render(request, payload, 'registration/reset_password_sent.html')
-            
+
 
 def reset_password_done(request, username):
     user = User.objects.get(username=username)
@@ -155,8 +172,3 @@ def reset_password_done(request, username):
         return render(request, payload, 'registration/reset_password_done.html')
     else:
         return HttpResponseForbidden('The key you provided was wrong. Your password could not be reset.')
-        
-        
-        
-
-
