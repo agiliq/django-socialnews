@@ -68,20 +68,20 @@ div#hornavi{height: 34px; background: #79ac37; border-bottom: 1px solid #629926;
 }
 #navi .commonbgr:hover
 {
-	background: url('/{{ static }}/images/bgr_common.gif') center no-repeat;
+	background: url('/{{ STATIC_URL }}/images/bgr_common.gif') center no-repeat;
 }
 #navi .active
 {
-	background: url('/{{ static }}/images/bgr_common.gif') center no-repeat;
+	background: url('/{{ STATIC_URL }}/images/bgr_common.gif') center no-repeat;
 }
 
 #navi .recactive
 {
-	background: url('/{{ static }}/images/bgr_recommended.gif') center no-repeat;
+	background: url('/{{ STATIC_URL }}/images/bgr_recommended.gif') center no-repeat;
 }
 #navi .recommendedbgr:hover
 {
-	background: url('/{{ static }}/images/bgr_recommended.gif') center no-repeat;
+	background: url('/{{ STATIC_URL }}/images/bgr_recommended.gif') center no-repeat;
 }
 
 /**search**/
@@ -148,7 +148,7 @@ div#extra{background:#FF8539}
 #content
 {
 	float:left; width:600px;
-	background: #fff url('/{{ static }}/images/left_bgr.jpg') top repeat-x;
+	background: #fff url('/{{ STATIC_URL }}/images/left_bgr.jpg') top repeat-x;
 	padding: 18px 10px 20px 10px;
 }
 #content div
@@ -164,7 +164,7 @@ div#extra{background:#FF8539}
 }
 .ratings .up
 {
-	background: url('/{{ static }}/images/up.jpg') no-repeat;
+	background: url('/{{ STATIC_URL }}/images/up.jpg') no-repeat;
 	display: block;
 	width: 17px;
 	height: 20px;
@@ -174,7 +174,7 @@ div#extra{background:#FF8539}
 
 .ratings .upmod
 {
-	background: url('/{{ static }}/images/upmod.jpg') no-repeat;
+	background: url('/{{ STATIC_URL }}/images/upmod.jpg') no-repeat;
 	display: block;
 	width: 17px;
 	height: 20px;
@@ -184,7 +184,7 @@ div#extra{background:#FF8539}
 
 .ratings .down
 {
-	background: url('/{{ static }}/images/down.jpg') no-repeat;
+	background: url('/{{ STATIC_URL }}/images/down.jpg') no-repeat;
 	display: block;
 	width: 17px;
 	height: 20px;
@@ -193,7 +193,7 @@ div#extra{background:#FF8539}
 }
 .ratings .downmod
 {
-	background: url('/{{ static }}/images/downmod.jpg') no-repeat;
+	background: url('/{{ STATIC_URL }}/images/downmod.jpg') no-repeat;
 	display: block;
 	width: 17px;
 	height: 20px;
@@ -236,13 +236,13 @@ div#sidebar
 {
 	float:right; 
 	width:330px; 
-	background: #234f32 url('/{{ static }}/images/sidebar_bgr.jpg') top repeat-x; 
+	background: #234f32 url('/{{ STATIC_URL }}/images/sidebar_bgr.jpg') top repeat-x; 
 	padding-bottom: 3px;
 }
 #sidebartop
 {
 	height: 20px;
-	background:url('/{{ static }}/images/sidebar_bgr.jpg') top repeat-x; 	
+	background:url('/{{ STATIC_URL }}/images/sidebar_bgr.jpg') top repeat-x; 	
 }
 #sidebar .box
 {
@@ -276,7 +276,7 @@ div#sidebar
 #mytopicsbox .selected
 {
 	padding-left: 15px;
-	background: url('/{{ static }}/images/selected.jpg') left no-repeat;
+	background: url('/{{ STATIC_URL }}/images/selected.jpg') left no-repeat;
 	font-size: 15px;
 	font-weight: bold;
 }
@@ -561,7 +561,7 @@ td a{
 	float: left
 }
 .emptysidebar{
-	background: #fff url('/{{ static }}/images/left_bgr.jpg') top repeat-x;
+	background: #fff url('/{{ STATIC_URL }}/images/left_bgr.jpg') top repeat-x;
 	height: 10px;
 }
 .box_border_collapsed
