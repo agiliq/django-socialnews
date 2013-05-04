@@ -1,5 +1,8 @@
 {% extends "registration/base.html" %}
 
+{% load url from future %}
+
+
 {% block title %}
 Logout - {{block.super}}
 {% endblock %}
@@ -7,7 +10,7 @@ Logout - {{block.super}}
 {% block contents %}
 <div class="post">
    <h3>You have been logged out.</h3>
-	 <a href="{% url login %}">Login again?</a> 
+	 <a href="{% url 'login' %}">Login again?</a> 
 </div>
 
 {% endblock %}
