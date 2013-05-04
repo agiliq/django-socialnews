@@ -1,5 +1,8 @@
 {% extends 'news/base.html' %}
 
+{% load url from future %}
+
+
 {% block title %}
 Manage your account
 {% endblock %}
@@ -39,7 +42,7 @@ Manage your account
     </table>
 		{% else %}
 		<div class="message">
-		You are not subscribied to any topics. <a href="{% url topic_list %}">Wanna see some topics?</a> 
+		You are not subscribied to any topics. <a href="{% url 'topic_list' %}">Wanna see some topics?</a> 
 		</div>
 		{% endif %}
 		</div>
