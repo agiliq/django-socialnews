@@ -1,5 +1,8 @@
 {% extends 'registration/base.html' %}
 
+{% load url from future %}
+
+
 {% block title %}
 Register - {{block.super}}
 {% endblock %}
@@ -37,7 +40,7 @@ Register - {{block.super}}
 <input type="submit" name="login" value="login" />
 </div>
 </form>
-<a href="{% url reset_password %}">Forgot password</a>
+<a href="{% url 'reset_password' %}">Forgot password</a>
 </div>
 </div>
 </div>
