@@ -37,31 +37,67 @@ class FormCreateUser(FormMixin, View):
 
 create_user = FormCreateUser.as_view()
 
-@login_required
-def user_manage(request):
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormMixin
+from django.core.urlresolvers import reverse
+
+
+class UserManageView(TemplateView, FormMixin):
     "Allows a user to manage their account"
-    subs = SubscribedUser.objects.filter(user = request.user).select_related()
-    passwordchangeform = bforms.PasswordChangeForm(request.user)
-    invites = Invite.objects.filter(user = request.user)
-    def_topic_form = bforms.SetDefaultForm(request.user)
-    if request.method == 'POST':
+
+    template_name = 'news/usermanage.html'
+    password_form_class = bforms.PasswordChangeForm
+    def_topic_form_class = bforms.SetDefaultForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(UserManageView, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        subs = SubscribedUser.objects.filter(user=self.request.user).select_related()
+        passwordchangeform = self.password_form_class(request.user)
+        invites = Invite.objects.filter(user=request.user)
+        def_topic_form = self.def_topic_form_class(request.user)
+        payload = dict(subs=subs, form=passwordchangeform, invites=invites, def_topic_form=def_topic_form)
+        return render(self.request, payload, 'news/usermanage.html')
+
+    def post(self, request):
         if request.POST.has_key('remove'):
             topic_name = request.POST['topic']
             topic = Topic.objects.get(name=topic_name)
             sub = SubscribedUser.objects.get(user = request.user, topic = topic)
             sub.delete()
         if request.POST.has_key('changepassword'):
-            passwordchangeform = bforms.PasswordChangeForm(request.user, request.POST)
+            passwordchangeform = self.password_form_class(request.user, request.POST)
             if passwordchangeform.is_valid():
                 passwordchangeform.save()
-                return HttpResponseRedirect('.')
+                return self.form_valid(passwordchangeform)
+            else:
+                return self.form_invalid(passwordchangeform)
+
         if request.POST.has_key('setdef'):
-            def_topic_form = bforms.SetDefaultForm(request.user, request.POST)
+            # def_topic_form = bforms.SetDefaultForm(request.user, request.POST)
+            def_topic_form = self.def_topic_form_class(request.user)
             if def_topic_form.is_valid():
                 def_topic_form.save()
-                return HttpResponseRedirect('.')
-    payload = dict(subs=subs, form=passwordchangeform, invites=invites, def_topic_form=def_topic_form)
-    return render(request, payload, 'news/usermanage.html')
+                return self.form_valid(def_topic_form)
+            else:
+                return self.form_invalid(def_topic_form)
+                #return HttpResponseRedirect('.')
+
+    def get_success_url(self):
+        return reverse(
+            'user_manage',
+        )
+
+    def form_valid(self, form):
+        #self.object = self.get_object()
+        # record the interest using the message in form.cleaned_data
+        return super(UserManageView, self).form_valid(form)
+
+user_manage = UserManageView.as_view()
+
 
 def activate_user(request, username):
     user = User.objects.get(username=username)
