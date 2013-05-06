@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.contrib.auth import views
 from django.views.generic.base import TemplateView
 
-
 from news.rss import LatestEntriesByTopic, LatestEntries
 
 admin.autodiscover()
@@ -21,14 +20,18 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('news.accounts',
-        url(r'^register/$', 'create_user', name='register'),
-        url(r'^login/$', 'login', name='login'),
-        url(r'^user/reset_password/$', 'reset_password', name='reset_password'),
-        url(r'^user/reset_password/sent/$', 'reset_password_sent', name='reset_password_sent'),
-        url(r'^user/reset_password/done/(?P<username>[^\.^/]+)/$', 'reset_password_done', name='reset_password_done'),
-        url(r'^user/activate/(?P<username>[^\.^/]+)/$', 'activate_user', name='activate_user'),                       
-        url(r'^my/$', 'user_manage', name='user_manage'),
+    url(r'^register/$', 'create_user', name='register'),
+    url(r'^user/reset_password/$', 'reset_password', name='reset_password'),
+    url(r'^user/reset_password/sent/$', 'reset_password_sent', name='reset_password_sent'),
+    url(r'^user/reset_password/done/(?P<username>[^\.^/]+)/$', 'reset_password_done', name='reset_password_done'),
+    url(r'^user/activate/(?P<username>[^\.^/]+)/$', 'activate_user', name='activate_user'),
+    url(r'^my/$', 'user_manage', name='user_manage'),
 )
+
+
+urlpatterns += patterns('',
+        url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}, name = 'login'),)
+
 
 if settings.DEBUG:
     urlpatterns += patterns('',
@@ -79,20 +82,20 @@ urlpatterns += patterns('news.topics',
     url(r'^$', 'main', name='main'),
     url(r'^new/$', 'main', {'order_by':'new'}, name='new'),
     url(r'^all/$', 'main', {'order_by':'new', 'override':'all'}, name='new'),
-    url(r'^recommended/$', 'recommended',  name='recommended'),                        
+    url(r'^recommended/$', 'recommended',  name='recommended'),
     url(r'^createtopic/', 'create', name='createtopic'),
     url(r'^about/$', 'site_about', name='site_about'),
     url(r'^topics/$', 'topic_list', name='topic_list'),
-    
+
     # url(r'^(?P<topic_name>[^\.^/]+)/$', 'topic_main', name='topic'),
     url(r'^(?P<topic_slug>[\w-]+)/$', 'topic_main', name='topic'),
     url(r'^(?P<topic_slug>[\w-]+)/new/$', 'topic_main', {'order_by':'new'}, name='topic_new', ),
     url(r'^(?P<topic_slug>[\w-]+)/manage/$', 'topic_manage', name='topic_manage'),
     url(r'^(?P<topic_slug>[\w-]+)/about/$', 'topic_about', name='topic_about'),
-)  
+)
 
 urlpatterns += patterns('news.links',
-    url(r'^submit/$', 'link_submit', name='link_submit_def'),                        
+    url(r'^submit/$', 'link_submit', name='link_submit_def'),
     url(r'^(?P<topic_slug>[\w-]+)/submit/$', 'link_submit', name='link_submit'),
     url(r'^up/(?P<link_id>\d+)/$', 'upvote_link', name='upvote_link'),
     url(r'^down/(?P<link_id>\d+)/$', 'downvote_link', name='downvote_link'),
