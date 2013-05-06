@@ -30,14 +30,14 @@
   				Howdy <a href="/user/{{user.username}}/" class="white">{{user.username}}</a>
   				| <a href="/logout/" class="white">logout</a>
   				{% else %}
-  				<a href="/register/" class="white">want to join?</a> register in seconds 
+  				<a href="/register/" class="white">want to join?</a> register in seconds
   				{% endif %}
   				| <a href="{% url 'createtopic' %}" class="white">create</a>
   				{% if topic %}
   				| <a href="{{topic.submit_url}}" class="white">submit</a>
   				{% else %}
   				| <a href="/submit/" class="white">submit</a>
-  				{% endif %} 
+  				{% endif %}
   				| <a href="/my/" class="white">settings</a>
   			</p>
 				{% endblock %}
@@ -52,17 +52,17 @@
   			<a href="{{topic.new_url}}" {% ifequal page 'new' %}class="active"{% else %}class="commonbgr"{% endifequal %}>new</a>
   			{% else %}
   			<a href="/" {% ifequal page 'hot' %}class="active"{% else %}class="commonbgr"{% endifequal %}>hot</a>
-  			<a href="/new/" {% ifequal page 'new' %}class="active"{% else %}class="commonbgr"{% endifequal %}>new</a>						
+  			<a href="/new/" {% ifequal page 'new' %}class="active"{% else %}class="commonbgr"{% endifequal %}>new</a>
   			{% endif %}
   			<a href="/all/" {% ifequal page 'all' %}class="active"{% else %}class="commonbgr"{% endifequal %}>all</a>
-  			<a href="/recommended/" {% ifequal page 'recommended' %}class="recactive"{% else %}class="recommendedbgr"{% endifequal %}>recommended</a>			
+  			<a href="/recommended/" {% ifequal page 'recommended' %}class="recactive"{% else %}class="recommendedbgr"{% endifequal %}>recommended</a>
   			{% if topic %}
   			<a href="{{topic.about_url}}" {% ifequal page 'about' %}class="active"{% else %}class="commonbgr"{% endifequal %}>about</a>
   			{% else %}
   			<a href="/about/" {% ifequal page 'about' %}class="active"{% else %}class="commonbgr"{% endifequal %}>about</a>
   			{% endif %}
   			</p>
-			{% endblock %}			
+			{% endblock %}
 			</div>
 		</div>
 	</div>
@@ -71,23 +71,23 @@
 		  {% block message %}
 		  {% if not user.is_authenticated  %}
 			<div class="topmessagebox">
-			<a href="http://42topics.com/blog/what-is-42topics/">42topics</a> is place to find interesting things to read. When you <a href="/register/">join</a>, 42topics learns your interests, and finds stories which YOU will love. <a href="/register/">Join Now</a>. <a href="http://42topics.com/blog/why-join-42topics/">Why join?</a>. <a href="http://42topics.com/blog/how-42topics-works/">How this works</a>. <a href="http://www.42topics.com/forum/">Get help</a>. 
+			<a href="http://42topics.com/blog/what-is-42topics/">42topics</a> is place to find interesting things to read. When you <a href="/register/">join</a>, 42topics learns your interests, and finds stories which YOU will love. <a href="/register/">Join Now</a>. <a href="http://42topics.com/blog/why-join-42topics/">Why join?</a>. <a href="http://42topics.com/blog/how-42topics-works/">How this works</a>. <a href="http://www.42topics.com/forum/">Get help</a>.
 			</div>
 			{% endif %}
 			{% endblock %}
 		  {% block contents %}
 			{% endblock %}
-			
+
 		</div>
 	</div>
 
-	
+
   {% block sidebarwrap %}
-	<div id="sidebar">		
+	<div id="sidebar">
 		<div id="sidebartop"></div>
-				{% block sidebar %}		
+				{% block sidebar %}
 		{% if not user.is_authenticated %}
-		<form  method="post" action="/login/">
+		<form  method="post" action="/login/">{% csrf_token %}
 		<div id="loginbox" class="box">
 			<p>
 				<label>User:</label>
@@ -98,7 +98,7 @@
 			</p>
 			<div class="clear"></div>
 			<p style="margin-top:13px; "><input type="checkbox" name="remember" /> Remember Me | <a href="/user/reset_password/" class="white">Forgot Password</a> | <a href="/register/" class="white">Sign Up</a> 				<input type="submit" id="logintext" class="submit" value="login" /></p>
-		
+
 		</div>
     </form>
 		{% endif %}
