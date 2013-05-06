@@ -23,11 +23,11 @@
     <div class="box_border_collapsed">
       <div class="box_header">
     		Login
-      </div>	
+      </div>
     <div class="box_content_collapsed">
-			
+
 			<div class="createcontent">
-				<form method="post" action=".">
+				<form method="post" action=".">{% csrf_token %}
 
     		  {{form.as_p}}
    			  <input type="hidden" name="next" value="{{ next }}" />
@@ -38,7 +38,7 @@
 			<a href="{% url 'reset_password' %}">Forgot password</a>
 		</div>
 		</div>
-</div>					
+</div>
 {% endif %}
 </div>
 
