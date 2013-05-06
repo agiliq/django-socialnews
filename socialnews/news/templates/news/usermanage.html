@@ -47,7 +47,7 @@ Manage your account
 		{% endif %}
 		</div>
 		<div class="def_topic">
-		<form action="." method="post">
+		<form action="." method="post">{% csrf_token %}
 		{{def_topic_form.as_p}}
 		<input type="submit" name="setdef" value="change default topic" />
 		</form>
