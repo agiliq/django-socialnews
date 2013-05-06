@@ -82,6 +82,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     #"django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages"
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -93,6 +94,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'news.tapicks_middleware.ExceptionHandlerMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware'
 )
 
 ROOT_URLCONF = 'socialnews.urls'
