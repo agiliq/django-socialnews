@@ -12,12 +12,14 @@ import helpers
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.views.generic.base import View
+from django.views.generic.edit import FormMixin
 
 
-class FormCreateUser(View):
+class FormCreateUser(FormMixin, View):
     form_class = bforms.UserCreationForm
     template_name = 'registration/create_user.html'
     payload = {'form': 'form', 'loginform': 'loginform'}
+    success_url = '/'
 
     def get(self, request, *args, **kwargs):
         form = bforms.UserCreationForm()
@@ -26,65 +28,14 @@ class FormCreateUser(View):
         self.payload['loginform'] = loginform
         return render(self.request, self.payload, 'registration/create_user.html')
 
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            form.save()
-            from django.contrib.auth import authenticate
-            user = authenticate(username = form.cleaned_data['username'], password = form.cleaned_data['password1'])
-            login(request, user)
-            return HttpResponseRedirect('/')
+    def form_valid(self, form):
+        form.save()
+        from django.contrib.auth import authenticate
+        user = authenticate(username = form.cleaned_data['username'], password = form.cleaned_data['password1'])
+        login(request, user)
+        return super(FormCreateUser,self).form_valid(form)
 
 create_user = FormCreateUser.as_view()
-
-
-def login(request):
-    """Login a user.
-    Actions avialable:
-    Login: Anyone"""
-    """Display and processs the login form."""
-    no_cookies = False
-    account_disabled = False
-    invalid_login = False
-    redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
-    if not redirect_to or '//' in redirect_to or ' ' in redirect_to:
-        redirect_to = settin.LOGIN_REDIRECT_URL
-
-    if request.method == 'POST':
-        if request.session.test_cookie_worked():
-            request.session.delete_test_cookie()
-            form = bforms.LoginForm(request.POST)
-            if form.is_valid():
-                user = auth.authenticate(username = form.cleaned_data['username'],
-                                         password = form.cleaned_data['password'])
-                if user:
-                    if user.is_active:
-                        request.session[settin.PERSISTENT_SESSION_KEY] = form.cleaned_data['remember_user']
-
-                        auth.login(request, user)
-                        # login successful, redirect
-                        return HttpResponseRedirect(redirect_to)
-                    else:
-                        account_disabled = True
-                else:
-                    invalid_login = True
-        else:
-            no_cookies = True
-            form = None
-    else:
-        form = bforms.LoginForm()
-
-    # cookie must be successfully set/retrieved for the form to be processed
-    request.session.set_test_cookie()
-    payload = { 'no_cookies': no_cookies,
-                                'account_disabled': account_disabled,
-                                'invalid_login': invalid_login,
-                                'form': form,
-                                REDIRECT_FIELD_NAME: redirect_to }
-    return render_to_response('registration/login.html',
-                              payload,
-                              context_instance = RequestContext(request))
-
 
 @login_required
 def user_manage(request):
