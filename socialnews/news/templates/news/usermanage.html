@@ -15,9 +15,9 @@ Manage your account
   Subscribed topics
   </div>
 
-  <div class="box_content_holder">		
+  <div class="box_content_holder">
 	<div class="subs_topic">
-	  
+
 	{% if subs %}
     <table>
     <tbody>
@@ -37,12 +37,12 @@ Manage your account
     </td>
     </tr>
     {% endfor %}
-    
+
     </tbody>
     </table>
 		{% else %}
 		<div class="message">
-		You are not subscribied to any topics. <a href="{% url 'topic_list' %}">Wanna see some topics?</a> 
+		You are not subscribied to any topics. <a href="{% url 'topic_list' %}">Wanna see some topics?</a>
 		</div>
 		{% endif %}
 		</div>
@@ -54,23 +54,23 @@ Manage your account
 		</div>
 		</div>
 		</div>
-		
+
 
 	<div class="box_border">
   <div class="box_header">
 		Change password
-  </div>		
-		<form action="." method="post">
+  </div>
+		<form action="." method="post"> {% csrf_token %}
 		{{form.as_p}}
 		<input type="submit" name="changepassword" value="Change Password" />
 		</form>
   </div>
-			
+
 		{% if invites %}
 	<div class="box_border">
   <div class="box_header">
 			 You have been invited.
-  </div>		
+  </div>
 		<table>
 		{% for invite in invites %}
 		<tr>
@@ -88,19 +88,19 @@ Manage your account
 		</table>
 	</div>
 		{% endif %}
-		
-  	<div class="box_border">		
+
+  	<div class="box_border">
   <div class="box_header">
 		Other Details
-  </div>		
+  </div>
 		<ul>
 		<li>
 		  <a href="/user/likedlinks/{{user.username}}/{{user.get_profile.secret_key}}/">Secret liked links</a>
 		</li>
 		</ul>
-  </div>	
-	</div>	
-		
+  </div>
+	</div>
+
 </div>
 {% endblock %}
 
