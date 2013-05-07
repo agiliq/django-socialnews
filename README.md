@@ -1,3 +1,8 @@
+Django-Socialnews
+---------------------
+
+[![Build Status](https://travis-ci.org/agiliq/django-socialnews.png?branch=master)](https://travis-ci.org/agiliq/django-socialnews)
+
 A redit like social news system - supports subtopics.
 
 
