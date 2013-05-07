@@ -603,7 +603,7 @@ class TestVoting(unittest.TestCase):
         #link = Link.objects.create_link(url = 'http://yahoomail.com', user=self.user, topic=self.topic, text='Mail')
         links = []
         for i in xrange(random.randint(50, 100)):
-            link = Link.objects.create_link(url = 'http://yahoomail%s.com'%i, user=self.user, topic=self.topic, text='Mail')
+            link = Link.objects.create_link(url = 'http://yahoomail%s.com'%i, user=self.user, topic=self.topic, text='Mail', summary = 'yahoo Url')
             link.save()
             links.append(link)
 
