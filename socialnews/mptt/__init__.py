@@ -38,6 +38,10 @@ def register(model, parent_attr='parent', left_attr='lft', right_attr='rght',
     opts.level_attr = level_attr
     opts.tree_manager_attr = tree_manager_attr
     opts.order_insertion_by = order_insertion_by
+    opts.get_field(left_attr).null = True
+    opts.get_field(left_attr).blank = True
+
+
 
     # Add tree fields if they do not exist
     for attr in [left_attr, right_attr, tree_id_attr, level_attr]:
