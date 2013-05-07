@@ -1,5 +1,5 @@
 import bforms
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from helpers import *
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.conf import settings as settin
