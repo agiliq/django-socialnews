@@ -944,7 +944,7 @@ class TestAddTag(unittest.TestCase):
         tag = form.save()
         self.assertEqual(Tag.objects.all().count(), count1)
         self.assertEqual(LinkTag.objects.all().count(), count2)
-        self.assertEqual(LinkTagUser.objects.all().count(), count3 + 1)
+        self.assertEqual(LinkTagUser.objects.all().count(), count3)
 
 #Test the helper function
 import helpers
