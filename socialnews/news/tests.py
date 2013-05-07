@@ -608,15 +608,6 @@ class TestVoting(unittest.TestCase):
             links.append(link)
 
 
-
-
-
-
-
-
-
-
-
 class TestPoints(unittest.TestCase):
     "Test the points system"
     def setUp(self):
