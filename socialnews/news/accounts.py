@@ -13,6 +13,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormMixin
 
 
 class FormCreateUser(FormMixin, View):
@@ -36,11 +39,6 @@ class FormCreateUser(FormMixin, View):
         return super(FormCreateUser,self).form_valid(form)
 
 create_user = FormCreateUser.as_view()
-
-from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
-from django.views.generic.edit import FormMixin
-from django.core.urlresolvers import reverse
 
 
 class UserManageView(TemplateView, FormMixin):
@@ -142,20 +140,26 @@ def reset_password_sent(request):
     return render(request, payload, 'registration/reset_password_sent.html')
 
 
-def reset_password_done(request, username):
-    user = User.objects.get(username=username)
-    try:
-        key = PasswordResetKey.objects.get(user = user)
-    except PasswordResetKey.DoesNotExist:
-        return HttpResponseForbidden('The key you provided was wrong. Your password could not be reset.')
-    request_key = request.GET.get('key', '')
-    if request_key == key.key:
-        password = helpers.generate_random_key()
-        user.set_password(password)
-        mail_text = render_to_string('registration/password_reset_done.txt', dict(user=user, password=password))
-        send_mail('Password reset', mail_text, 'hello@42topics.com', [user.email])
-        key.delete()
-        payload = {}
-        return render(request, payload, 'registration/reset_password_done.html')
-    else:
-        return HttpResponseForbidden('The key you provided was wrong. Your password could not be reset.')
+class ResetPasswordDone(View):
+    template_name = 'registrion/password_reset_done.html'
+
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        try:
+            key = PasswordResetKey.objects.get(user = user)
+        except PasswordResetKey.DoesNotExist:
+            return HttpResponseForbidden('The key you provided was wrong. Your password could not be reset.')
+        request_key = request.GET.get('key', '')
+        if request_key == key.key:
+            password = helpers.generate_random_key()
+            user.set_password(password)
+            mail_text = render_to_string('registraion/password_reset_done.txt', dict(user=user, password=password))
+            send_mail('Password reset', mail_text, 'hello@42topics.com', [user.email])
+            key.delete()
+            payload = {}
+            return render(request, payload, 'registration/password_reset_done.html')
+        else:
+            return HttpResponseForbidden('The key you provided was wrong. Your password could nit be reset.')
+
+
+reset_password_done = ResetPasswordDone.as_view()
