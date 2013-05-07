@@ -248,7 +248,7 @@ class Link(models.Model):
 
     def vote(self, user, direction = True):
 
-        "Vote the given link either up or down, using a user. Calling multiple times with same user must have now effect."
+        "Vote the given link either up or down, using a user. Calling multiple times with same user must have no effect."
         #Check if the current user can vote this, link or raise xception
         if self.topic.permissions == 'Public':
             pass #Anyone can vote
@@ -558,6 +558,7 @@ class Comment(models.Model):
     created_on = models.DateTimeField(auto_now_add = 1)
     points = models.IntegerField(default = 0)
     parent = models.ForeignKey('Comment', null=True, blank=True, related_name='children')
+
 
     objects = CommentManager()
 
