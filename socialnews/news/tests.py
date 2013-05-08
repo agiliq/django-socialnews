@@ -91,7 +91,7 @@ class TestLink(unittest.TestCase):
     def testCommentCount(self):
         "Test the comment count pseudo column."
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
-        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic,)
+        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'yahoo Url' )
         com1 = Comment.objects.create_comment(user = self.user, link = self.link, comment_text = '1 coment')
         link = Link.objects.get(pk = self.link.pk)
         self.assertEquals(link.comment_count, 1)
