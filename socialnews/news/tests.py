@@ -72,26 +72,26 @@ class TestLink(unittest.TestCase):
 
     def testLinkCreation(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
-        link = Link.objects.create_link(url = "http://yahoo.com",user = self.user, text='Yahoo', topic = self.topic)
+        link = Link.objects.create_link(url = "http://yahoo.com",user = self.user, text='Yahoo', topic = self.topic, summary = 'YahooUrl')
         #Created link must be upvoted by the user
         vote = LinkVote.objects.get(link = link, user=self.user)
         self.assertEquals(vote.direction, True)
 
     def testLinkCreation2(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK - 1
-        self.assertRaises(TooLittleKarmaForNewLink, Link.objects.create_link, url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
+        self.assertRaises(TooLittleKarmaForNewLink, Link.objects.create_link, url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'YahooUrl')
 
     def testLinkKarmaCost(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
         prev_karma = self.user.get_profile().karma
-        link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
+        link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'yahoo Url')
         new_karma = self.user.get_profile().karma
         self.assertEqual(prev_karma - new_karma, defaults.KARMA_COST_NEW_LINK)
 
     def testCommentCount(self):
         "Test the comment count pseudo column."
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
-        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'yahoo Url' )
+        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'yahoo Url')
         com1 = Comment.objects.create_comment(user = self.user, link = self.link, comment_text = '1 coment')
         link = Link.objects.get(pk = self.link.pk)
         self.assertEquals(link.comment_count, 1)
@@ -121,7 +121,7 @@ class TestLink(unittest.TestCase):
         "Test the liked/disliked pseudo column in returned queryset."
         users = []
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
-        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic,)
+        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'YahooUrl')
         for i in xrange(random.randint(5, 10)):
             user = User.objects.create_user(username='testLiked%s' % i, email='demo@demo.com', password='demo')
             profile = UserProfile(user = user, karma = 0)
