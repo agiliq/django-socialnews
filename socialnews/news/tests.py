@@ -67,8 +67,8 @@ class TestLink(unittest.TestCase):
 
     def testLinkUnique(self):
         self.user.get_profile().karma = 2 * defaults.KARMA_COST_NEW_LINK + 1
-        link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
-        self.assertRaises(IntegrityError, Link.objects.create_link, url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic)
+        link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'YahooUrl')
+        self.assertRaises(IntegrityError, Link.objects.create_link, url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'YahooUrl')
 
     def testLinkCreation(self):
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
@@ -87,7 +87,7 @@ class TestLink(unittest.TestCase):
         link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'yahoo Url')
         new_karma = self.user.get_profile().karma
         #self.assertEqual(prev_karma - new_karma, defaults.KARMA_COST_NEW_LINK)
-        self.assertEqual(new_karma - prev_karma, 1)
+        self.assertEqual(new_karma - prev_karma, 1)#satisfies only when default.KARMA_COST_NEW_LINK = 0
 
     def testCommentCount(self):
         "Test the comment count pseudo column."
