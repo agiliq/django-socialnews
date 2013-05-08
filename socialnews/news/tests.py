@@ -805,7 +805,7 @@ class TestNewTopic(unittest.TestCase):
         profile = self.user.get_profile()
         profile.karma = defaults.KARMA_COST_NEW_TOPIC + 1
         profile.save()
-        form = bforms.NewTopic(user = self.user, data = {'topic_name':'testCreatesTopic', 'topic_fullname':'testCreatesTopic'})
+        form = bforms.NewTopic(user = self.user, data = {'topic_name':'testCreatesTopic', 'topic_fullname':'testCreatesTopic', 'permission' : 'Public', 'about' : 'about'})
         status = form.is_valid()
         self.assertEqual(status, True)
         topic = form.save()
@@ -857,11 +857,11 @@ class TestNewLink(unittest.TestCase):
         self.assertEqual(link.topic, self.topic)
 
     def testInvalidOnExisting(self):
-        Link.objects.create_link(url = 'http://testInvalidOnExisting.com', user=self.user, topic=self.topic, text='Yahoo')
+        Link.objects.create_link(url = 'http://testInvalidOnExisting.com', user=self.user, topic=self.topic, text='Yahoo', summary = 'invalid_on_existing')
         profile = self.user.get_profile()
         profile.karma = defaults.KARMA_COST_NEW_LINK + 1
         profile.save()
-        form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='htp://testInvalidOnExisting.com'))
+        form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='http://testInvalidOnExisting.com'))
         self.assertEqual(form.is_bound, True)
         self.assertEqual(form.is_valid(), False)
 
