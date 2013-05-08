@@ -845,12 +845,13 @@ class TestNewLink(unittest.TestCase):
         profile = self.user.get_profile()
         profile.karma = defaults.KARMA_COST_NEW_LINK + 1
         profile.save()
-        form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='http://testCreateNewLink.com', text='123'))
+        form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='http://testCreateNewLink.com', text='123', summary = 'create_new_link'))
         self.assertEqual(form.is_bound, True)
+        print form.errors
         self.assertEqual(form.is_valid(), True)
 
         link = form.save()
-        self.assertEqual(link.url, 'http://testCreateNewLink.com')
+        self.assertEqual(link.url, u'http://testCreateNewLink.com/')
         self.assertEqual(link.text, '123')
         self.assertEqual(link.user, self.user)
         self.assertEqual(link.topic, self.topic)
