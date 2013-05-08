@@ -218,13 +218,6 @@ class TestTag(unittest.TestCase):
     def setUp(self):
         __populate_data__(self)
 
-    def testUnq(self):
-        "Two tags with same text can not be sitwide tags."
-        tag = Tag(text = 'Asdf')
-        tag.save()
-        tag = Tag(text = 'Asdf')
-        self.assertRaises(Exception, tag.save)
-
     def testUnq2(self):
         "Two tags with same text can not be a per topic tags."
         tag = Tag(text = 'Asdf', topic = self.topic)
@@ -786,6 +779,7 @@ def __populate_data__(self):
         self.link = link
         SiteSetting.objects.create(default_topic=topic)
 
+
 def __delete_data__(self):
         self.user.delete()
         self.profile.delete()
@@ -949,6 +943,8 @@ class TestGetTopic(unittest.TestCase):
     def tearDown(self):
         __delete_data__(self)
 
+
+
     def testValidTopic(self):
         "Returns a topic on get_topic, with a valid topic."
         topic = helpers.get_topic(None, self.topic.slug)
@@ -962,8 +958,10 @@ class TestGetTopic(unittest.TestCase):
 from django.test.client import Client
 class TestTopicMain(unittest.TestCase):
     def setUp(self):
+        __populate_data__(self)
         self.c = Client()
         self.user = UserProfile.objects.create_user('TestTopicMain', 'demo@demo.com', 'demo')
+
 
     def tearDown(self):
         self.user.delete()
