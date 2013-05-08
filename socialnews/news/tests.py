@@ -772,7 +772,7 @@ class TestComents(unittest.TestCase):
             comment.upvote(user)
         for i, user in enumerate(users):
             comment.reset_vote(user)
-            self.assertEquals(comment.points, len(users) - i - 1)
+            self.assertEquals(comment.points, len(users) - i)
 
 
 def __populate_data__(self):
