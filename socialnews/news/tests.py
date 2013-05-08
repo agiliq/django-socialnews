@@ -105,7 +105,7 @@ class TestLink(unittest.TestCase):
         "Comment count pseudo column in presence of multiple users"
         users = []
         self.user.get_profile().karma = defaults.KARMA_COST_NEW_LINK + 1
-        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic,)
+        self.link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'YahooUrl')
         for i in xrange(random.randint(5, 10)):
             user = User.objects.create_user(username='testCommentCountMultiUser%s' % i, email='demo@demo.com', password='demo')
             profile = UserProfile(user = user, karma = 0)
