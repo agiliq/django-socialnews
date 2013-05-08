@@ -200,8 +200,6 @@ class TestLinkVotes(unittest.TestCase):
         self.assertRaises(IntegrityError, vote.save)
 
     def testUnqTogether(self):
-        vote = LinkVote(user = self.user, link = self.link, direction = True)
-        vote.save()
         vote = LinkVote(user=self.user, link=self.link, direction=True)
         self.assertRaises(IntegrityError, vote.save)
 
