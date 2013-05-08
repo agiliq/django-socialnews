@@ -960,7 +960,7 @@ class TestTopicMain(unittest.TestCase):
     def setUp(self):
         __populate_data__(self)
         self.c = Client()
-        self.user = UserProfile.objects.create_user('TestTopicMain', 'demo@demo.com', 'demo')
+        #self.user = UserProfile.objects.create_user('TestTopicMain', 'demo@demo.com', 'demo')
 
 
     def tearDown(self):
