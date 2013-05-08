@@ -617,7 +617,7 @@ class TestPoints(unittest.TestCase):
     def testSubmissions(self):
         "Submitted stories start with the points of the submitter."
         karma = self.user.get_profile().karma
-        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testSubmissions.com/', text='testSubmissions')
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testSubmissions.com/', text='testSubmissions', summary = 'test_submissions')
         self.assertEquals(karma, link.points)
 
     def testUpvote(self):
@@ -625,7 +625,7 @@ class TestPoints(unittest.TestCase):
         profile = self.user.get_profile()
         profile.karma = random.randint(2, defaults.MAX_CHANGE_PER_VOTE)
         profile.save()
-        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote', summary = 'test_upvote')
         old_points = link.points
         link.upvote(self.user)
         new_points = link.points
@@ -636,7 +636,7 @@ class TestPoints(unittest.TestCase):
         profile = self.user.get_profile()
         profile.karma = random.randint(2, defaults.MAX_CHANGE_PER_VOTE)
         profile.save()
-        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote', summary = 'test_upvote')
         old_points = link.points
         link.upvote(self.user)
         new_points = link.points
@@ -651,7 +651,7 @@ class TestPoints(unittest.TestCase):
         profile = self.user.get_profile()
         profile.karma = defaults.KARMA_COST_NEW_LINK + 1
         profile.save()
-        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote', summary = 'test_upvote')
         user = UserProfile.objects.create_user(user_name='testUpvoteNegative', password='demo', email='demo@demo.com')
         user.get_profile().karma = -10
         old_points = link.points
@@ -664,7 +664,7 @@ class TestPoints(unittest.TestCase):
         profile = self.user.get_profile()
         profile.karma = defaults.MAX_CHANGE_PER_VOTE + 100
         profile.save()
-        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote')
+        link = Link.objects.create_link(user = self.user, topic=self.topic, url='http://testUpvote.com/', text='testUpvote', summary = 'test_upvote')
         old_points = link.points
         link.upvote(self.user)
         new_points = link.points
@@ -784,6 +784,7 @@ def __populate_data__(self):
         self.user.get_profile().karma = 2 * defaults.KARMA_COST_NEW_LINK + 1
         link = Link.objects.create_link(url = "http://yahoo.com", text='Yahoo', user = self.user, topic = self.topic, summary = 'Yahoo Url')
         self.link = link
+        SiteSetting.objects.create(default_topic=topic)
 
 def __delete_data__(self):
         self.user.delete()
