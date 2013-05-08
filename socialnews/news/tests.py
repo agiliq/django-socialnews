@@ -2,7 +2,7 @@ import unittest
 from django.contrib.auth.models import User
 from models import *
 import defaults
-from django.db.backends.sqlite3.base import IntegrityError#todo
+from django.db import IntegrityError
 import random
 import bforms
 
@@ -685,11 +685,9 @@ class TestComents(unittest.TestCase):
 
 
     def testUnq(self):
-        "Test uniwueness constraints"
+        "Test uniqueness constraints"
         vote = CommentVote(comment = self.comment, user = self.user, direction = True)
-        vote.save()
-        vote2 = CommentVote(comment = self.comment, user = self.user, direction = True)
-        self.assertRaises(IntegrityError, vote2.save)
+        self.assertRaises(IntegrityError, vote.save)
 
     def testUpvote(self):
         "Multiple upvotes increase points by one only."
