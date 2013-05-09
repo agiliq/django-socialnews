@@ -12,16 +12,16 @@ Create a new topic
 </div>
 
 <div class="box_content_holder">
-<form action="." method="post" class="new-topic">
+<form action="." method="post" class="new-topic"> {% csrf_token %}
         <div class="contactform">
         {{form.as_p}}
         <input type="submit" name="createtopic" class="generic" value="create a new topic" />
-        </div>    
-			</form>     
+        </div>
+			</form>
 </div>
 </div>
- 
+
 {% endblock %}
 
-{% block sidebar %}		
+{% block sidebar %}
 {% endblock %}
