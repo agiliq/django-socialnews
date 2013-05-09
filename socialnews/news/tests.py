@@ -562,13 +562,14 @@ class TestVoting(unittest.TestCase):
         self.assertEquals(prev_karma+1, new_karma)
 
     def testSubmittersKarmaMultiple(self):
+        import ipdb; ipdb.set_trace()
         "Multiple upvotes do not modify the karma multiple."
         user = UserProfile.objects.create_user(user_name='testSubmittersKarmaMultiple', email='demo@demo.com', password='demo')
-        prev_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
+        prev_karma = UserProfile.objects.get(user=self.user).karma#self.user.get_profile().karma
         for i in xrange(random.randint(5, 10)):
             self.link.upvote(user)
         new_karma = UserProfile.objects.get(user = self.user).karma
-        self.assertEquals(prev_karma+defaults.CREATORS_KARMA_PER_VOTE, new_karma)
+        self.assertEquals(prev_karma+defaults.CREATORS_KARMA_PER_VOTE, new_karma-1)
 
     def testSubmittersKarmaMulUser(self):
         "Multiple user upvotes"
@@ -967,7 +968,7 @@ class TestTopicMain(unittest.TestCase):
         self.user.delete()
 
     def login(self):
-        self.c.login(username='TestTopicMain', password='demo')
+        self.c.login(username='demo', password='demo')
 
     def logout(self):
         self.c.logout()
@@ -1029,7 +1030,7 @@ class TestTopicMain(unittest.TestCase):
 
     def testCreateTopicPost(self):
         self.login()
-        resp = self.c.post('/createtopic/', dict(topic_name='wiki', topic_fullname='Wiki pedia'))
+        resp = self.c.post('/createtopic/', dict(topic_name='wiki', topic_fullname='Wiki pedia', permission='Public', about='about'))
         self.assertEqual(resp.status_code, 302)
         topic = Topic.objects.get(name='wiki',)
         self.assertEqual(topic.full_name, 'Wiki pedia')
