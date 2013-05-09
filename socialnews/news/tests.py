@@ -1003,21 +1003,21 @@ class TestTopicMain(unittest.TestCase):
 
     def testSubmitLinkPost(self):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        resp = self.c.post('/wiki/submit/', {'url':'http://yahoomail.com/', 'text':'Mail'})
+        resp = self.c.post('/wiki/submit/', {'url': 'http://yahoomail.com/', 'text': 'Mail'})
         self.assertEquals(resp.status_code, 302)
         self.login()
-        resp = self.c.post('/wiki/submit/', {'url':'http://yahoomail.com/', 'text':'Mail'})
-        link = Link.objects.get(url = 'http://yahoomail.com/', topic=topic)
+        resp = self.c.post('/wiki/submit/', {'url': 'http://yahoomail.com/', 'text': 'Mail'})
+        link = Link.objects.get(url='http://yahoomail.com/', topic=topic)
         self.assertEquals(link.text, 'Mail')
         topic.delete()
 
     def testLinkDetails(self):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
-        resp = self.c.get('/wiki/%s/'%link.id)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic, summary='YahooUrl')
+        resp = self.c.get('/wiki/%s/' % link.id)
         self.assertEqual(resp.status_code, 200)
         self.login()
-        resp = self.c.get('/wiki/%s/'%link.id)
+        resp = self.c.get('/wiki/%s/' % link.id)
         self.assertEqual(resp.status_code, 200)
 
     def testCreateTopicGet(self):
@@ -1038,44 +1038,43 @@ class TestTopicMain(unittest.TestCase):
     def testUpDownvote(self):
         "Test upvote/down vote do not allow get requests."
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
-        resp = self.c.get('/up/%s/'% link.id)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic, summary='YahooUrl')
+        resp = self.c.get('/up/%s/' % link.id)
         self.assertEqual(resp.status_code, 302)
         self.login()
-        resp = self.c.get('/up/%s/'% link.id)
+        resp = self.c.get('/up/%s/' % link.id)
         self.assertEqual(resp.status_code, 403)
         self.logout()
-        resp = self.c.get('/down/%s/'% link.id)
+        resp = self.c.get('/down/%s/' % link.id)
         self.assertEqual(resp.status_code, 302)
         self.login()
-        resp = self.c.get('/down/%s/'% link.id)
+        resp = self.c.get('/down/%s/' % link.id)
         self.assertEqual(resp.status_code, 403)
         topic.delete()
 
     def testUpVotePost(self):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic, summary='YahooUrl')
         link.reset_vote(self.user)
         self.assertEquals(link.liked_by_count, 0)
-        resp = self.c.post('/up/%s/'% link.id)
+        resp = self.c.post('/up/%s/' % link.id)
         self.assertEqual(resp.status_code, 302)
         self.login()
-        resp = self.c.post('/up/%s/'% link.id)
+        resp = self.c.post('/up/%s/' % link.id)
         self.assertEqual(resp.status_code, 302)
         link = Link.objects.get(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
         self.assertEquals(link.liked_by_count, 1)
         topic.delete()
 
-
     def testDownVotePost(self):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic, summary='YahooUrl')
         link.reset_vote(self.user)
         self.assertEquals(link.disliked_by_count, 0)
-        resp = self.c.post('/down/%s/'% link.id)
+        resp = self.c.post('/down/%s/' % link.id)
         self.assertEqual(resp.status_code, 302)
         self.login()
-        resp = self.c.post('/down/%s/'% link.id)
+        resp = self.c.post('/down/%s/' % link.id)
         self.assertEqual(resp.status_code, 302)
         link = Link.objects.get(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
         self.assertEquals(link.disliked_by_count, 1)
@@ -1119,7 +1118,7 @@ class TestTopicMain(unittest.TestCase):
 
     def testSubScribePage(self):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        sub = SubscribedUser.objects.get(topic = topic, user = self.user)
+        sub = SubscribedUser.objects.get(topic=topic, user=self.user)
         user = UserProfile.objects.create_user('testSubScribePage', 'demo@demo.com', 'demo')
         self.assertRaises(SubscribedUser.DoesNotExist, SubscribedUser.objects.get, user=user, topic=topic)
         self.c.login(username='testSubScribePage', password='demo')
@@ -1150,8 +1149,8 @@ class TestTopicMain(unittest.TestCase):
     def testTags(self):
         self.login()
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic)
-        resp = self.c.post('/wiki/%s/'% link.id, dict(taglink='taglink', tag='foo'))
+        link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic, summary='YahooUrl')
+        resp = self.c.post('/wiki/%s/' % link.id, dict(taglink='taglink', tag='foo'))
         self.assertEquals(resp.status_code, 302)
         tag = LinkTag.objects.get(link=link, tag__text='foo', tag__topic__isnull=False)
         self.assertEquals(tag.tag.text, 'foo')
