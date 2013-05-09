@@ -19,41 +19,41 @@ def main(request, order_by=None, override=None):
             links = Link.objects.get_query_set_with_user(request.user).select_related()
     else:
         links = Link.objects.all().select_related()
-    
+
     if order_by == 'new':
         links = links.order_by('-created_on')
-    
+
     if override == 'all':
         page = 'all'
     elif order_by == 'new':
         page = 'new'
     else:
         page = 'hot'
-    
+
     links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
-    tags = Tag.objects.filter(topic__isnull = True).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
+    tags = Tag.objects.filter(topic__isnull=True).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
     if request.user.is_authenticated():
-        subscriptions = SubscribedUser.objects.filter(user = request.user).select_related()
+        subscriptions = SubscribedUser.objects.filter(user=request.user).select_related()
     else:
         subscriptions = SubscribedUser.objects.get_empty_query_set()
     top_topics = Topic.objects.all().order_by('-num_links')[:defaults.TOP_TOPICS_ON_MAINPAGE]
     new_topics = Topic.objects.all().order_by('-updated_on')[:defaults.NEW_TOPICS_ON_MAINPAGE]
-    payload = {'links':links, 'tags':tags, 'subscriptions':subscriptions, 'top_topics':top_topics, 'new_topics':new_topics, 'page_data':page_data, 'page': page}
+    payload = {'links': links, 'tags': tags, 'subscriptions': subscriptions, 'top_topics': top_topics, 'new_topics': new_topics, 'page_data': page_data, 'page': page}
     return render(request, payload, 'news/main.html')
-    
-    
-def topic_main(request, topic_slug, order_by = None):
+
+
+def topic_main(request, topic_slug, order_by=None):
     try:
         topic = get_topic(request, topic_slug)
     except news_exceptions.NoSuchTopic, e:
         url = reverse('createtopic')
         return HttpResponseRedirect('%s?topic_name=%s' % (url, topic_slug))
-    
+
     tags = Tag.objects.filter(topic=topic).select_related().order_by('-updated_on')[:defaults.TAGS_ON_MAINPAGE]
     if request.user.is_authenticated():
-        links = Link.objects.get_query_set_with_user(request.user).filter(topic = topic).select_related()
+        links = Link.objects.get_query_set_with_user(request.user).filter(topic=topic).select_related()
     else:
-        links = Link.objects.filter(topic = topic).select_related()
+        links = Link.objects.filter(topic=topic).select_related()
     if order_by == 'new':
         links = links.order_by('-created_on')
     links, page_data = get_paged_objects(links, request, defaults.LINKS_PER_PAGE)
@@ -63,7 +63,7 @@ def topic_main(request, topic_slug, order_by = None):
         page = 'hot'
     subscribed = False
     if request.user.is_authenticated():
-        subscriptions = SubscribedUser.objects.filter(user = request.user).select_related()
+        subscriptions = SubscribedUser.objects.filter(user=request.user).select_related()
         try:
             SubscribedUser.objects.get(topic = topic, user = request.user)
             subscribed = True
@@ -79,12 +79,12 @@ def topic_main(request, topic_slug, order_by = None):
 @login_required
 def recommended(request):
     page = 'recommended'
-    recommended = RecommendedLink.objects.filter(user = request.user).select_related()
+    recommended = RecommendedLink.objects.filter(user=request.user).select_related()
     payload = dict(recommended=recommended, page=page)
-    return render(request, payload, 'news/recommended.html')    
+    return render(request, payload, 'news/recommended.html')
 
 
-@login_required    
+@login_required
 def create(request, topic_name=None):
     if request.method == 'GET':
         if not topic_name:
@@ -97,7 +97,7 @@ def create(request, topic_name=None):
         if form.is_valid():
             topic = form.save()
             return HttpResponseRedirect(topic.get_absolute_url())
-            
+
     payload = {'form':form}
     return render(request, payload, 'news/create_topic.html')
 
