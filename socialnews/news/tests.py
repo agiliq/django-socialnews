@@ -1090,6 +1090,8 @@ class TestTopicMain(unittest.TestCase):
 
     def testUserManagePage(self):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        self.profile.default_topic = topic
+        self.profile.save()
         resp = self.c.get('/my/')
         self.assertEqual(resp.status_code, 302)
         self.login()
