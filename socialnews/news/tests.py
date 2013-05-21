@@ -1006,7 +1006,7 @@ class TestTopicMain(unittest.TestCase):
         resp = self.c.post('/wiki/submit/', {'url': 'http://yahoomail.com/', 'text': 'Mail'})
         self.assertEquals(resp.status_code, 302)
         self.login()
-        resp = self.c.post('/wiki/submit/', {'url': 'http://yahoomail.com/', 'text': 'Mail'})
+        resp = self.c.post('/wiki/submit/', {'url': 'http://yahoomail.com/', 'text': 'Mail', 'summary':'yahoomail'})
         link = Link.objects.get(url='http://yahoomail.com/', topic=topic)
         self.assertEquals(link.text, 'Mail')
         topic.delete()
