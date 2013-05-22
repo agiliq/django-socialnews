@@ -33,11 +33,10 @@ urlpatterns += patterns('',
         url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}, name = 'login'),)
 
 
-if settings.DEBUG:
-    urlpatterns += patterns('',
-        url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-        url(r'^dummy/', TemplateView.as_view(template_name='news/dummy.html'))
-    )
+urlpatterns += patterns('',
+    url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    url(r'^dummy/', TemplateView.as_view(template_name='news/dummy.html'))
+)
 
 urlpatterns += patterns('news.subscriptions',
     url(r'^subscribe/(?P<topic_slug>[\w-]+)/$', 'subscribe', name='subscribe'),
