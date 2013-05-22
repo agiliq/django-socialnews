@@ -1152,7 +1152,7 @@ class TestTopicMain(unittest.TestCase):
         self.login()
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
         link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic, summary='YahooUrl')
-        resp = self.c.post('/wiki/%s/' % link.id, dict(taglink='taglink', tag='foo'))
+        resp = self.c.post('/wiki/%s/' % link.slug, dict(taglink='taglink', tag='foo'))
         self.assertEquals(resp.status_code, 302)
         tag = LinkTag.objects.get(link=link, tag__text='foo', tag__topic__isnull=False)
         self.assertEquals(tag.tag.text, 'foo')
