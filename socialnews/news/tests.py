@@ -1014,10 +1014,10 @@ class TestTopicMain(unittest.TestCase):
     def testLinkDetails(self):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
         link = Link.objects.create_link(url='http://yahoo.com/', text='portal', user=self.user, topic=topic, summary='YahooUrl')
-        resp = self.c.get('/wiki/%s/' % link.id)
+        resp = self.c.get('/wiki/%s/' % link.slug)
         self.assertEqual(resp.status_code, 200)
         self.login()
-        resp = self.c.get('/wiki/%s/' % link.id)
+        resp = self.c.get('/wiki/%s/' % link.slug)
         self.assertEqual(resp.status_code, 200)
 
     def testCreateTopicGet(self):
