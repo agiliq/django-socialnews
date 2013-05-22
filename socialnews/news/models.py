@@ -210,7 +210,7 @@ class LinkManager(models.Manager):
     def dampen_points(self, topic):
         from django.db import connection
         cursor = connection.cursor()
-        stmt = 'UPDATE news_link SET points = ROUNDints/%s, 0) WHERE topic_id = %s AND points > 1' % (defaults.DAMP_FACTOR, topic.id)
+        stmt = 'UPDATE news_link SET points = ROUND(points/%s, 2) WHERE topic_id = %s AND points > 1' % (defaults.DAMP_FACTOR, topic.id)
         cursor.execute(stmt)
 
 
