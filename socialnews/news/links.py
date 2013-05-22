@@ -15,7 +15,7 @@ def link_submit(request, topic_slug=None):
     else:
         profile = request.user.get_profile()
         topic = profile.default_topic
-    
+
     if request.method == 'GET':
         url = request.GET.get('url', '')
         text = request.GET.get('text', '')
@@ -29,20 +29,21 @@ def link_submit(request, topic_slug=None):
     return render(request, payload, 'news/create_link.html')
 
 def link_details(request, topic_slug, link_slug):
+    import ipdb; ipdb.set_trace()
     topic = get_topic(request, topic_slug)
     if request.user.is_authenticated():
         link = Link.objects.get_query_set_with_user(request.user).get(topic=topic, slug=link_slug)
     else:
         link = Link.objects.get(topic=topic, slug=link_slug)
-    
+
     if request.user.is_authenticated():
-        comments = Comment.objects.append_user_data(Comment.tree.filter(link=link).select_related(), request.user)
+        comments = Comment.objects.append_user_data(Comment.objects.filter(link=link).select_related(), request.user)
     else:
-        comments = Comment.tree.filter(link=link).select_related()
-    
+        comments = Comment.objects.filter(link=link).select_related()
+
     form = bforms.DoComment(user=request.user, link=link)
     tag_form = bforms.AddTag(user=request.user, link=link)
-    
+
     if request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponseForbidden('Please login')
@@ -163,7 +164,7 @@ def save_link(request, link_id):
     check_permissions(link.topic, request.user)
     saved_l = SavedLink.objects.save_link(link = link, user = request.user)
     return HttpResponseRedirect(link.get_absolute_url())
-    
+
 @login_required
 def upvote_comment(request, comment_id):
     if not request.method == 'POST':
@@ -182,9 +183,9 @@ def upvote_comment(request, comment_id):
         payload = {'dir':'up', 'object':'comment', 'id':comment.id, 'state':vote.direction, 'points':comment.points}
         return HttpResponse(simplejson.dumps(payload), mimetype='text/json')
     return HttpResponseRedirect(comment.link.get_absolute_url())
-        
-    
-@login_required    
+
+
+@login_required
 def downvote_comment(request, comment_id):
     if not request.method == 'POST':
         return HttpResponseForbidden('Only Post allowed')
@@ -218,6 +219,5 @@ GROUP BY peer.link_id
 HAVING count( peer.user_id ) > 5
 ORDER BY correlation DESC
 LIMIT 0 , 10"""
-    
 
-    
+
