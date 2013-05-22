@@ -210,7 +210,7 @@ class LinkManager(models.Manager):
     def dampen_points(self, topic):
         from django.db import connection
         cursor = connection.cursor()
-        stmt = 'UPDATE news_link SET points = TRUNCATE(points/%s, 2) WHERE topic_id = %s AND points > 1' % (defaults.DAMP_FACTOR, topic.id)
+        stmt = 'UPDATE news_link SET points = ROUNDints/%s, 0) WHERE topic_id = %s AND points > 1' % (defaults.DAMP_FACTOR, topic.id)
         cursor.execute(stmt)
 
 
@@ -249,7 +249,7 @@ class Link(models.Model):
     def vote(self, user, direction = True):
 
         "Vote the given link either up or down, using a user. Calling multiple times with same user must have no effect."
-        #Check if the current user can vote this, link or raise xception
+        #Check if the current user can vote this, link or raise exception
         if self.topic.permissions == 'Public':
             pass #Anyone can vote
         else:
