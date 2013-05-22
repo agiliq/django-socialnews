@@ -554,6 +554,7 @@ class TestVoting(unittest.TestCase):
         self.assertEquals(type(vote), LinkVote)
 
     def testSubmittersKarma(self):
+        import ipdb; ipdb.set_trace()
         "Upvoting a link, increases the posters karma."
         user = UserProfile.objects.create_user(user_name='testSubmittersKarma', email='demo@demo.com', password='demo')
         prev_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
@@ -1119,13 +1120,16 @@ class TestTopicMain(unittest.TestCase):
         topic.delete()
 
     def testSubScribePage(self):
-        topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        sub = SubscribedUser.objects.get(topic=topic, user=self.user)
+        try:
+            topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
+        except IntegrityError:
+            topic = Topic.objects.get(topic_name='wiki', user=self.user)
         user = UserProfile.objects.create_user('testSubScribePage', 'demo@demo.com', 'demo')
+        sub = SubscribedUser.objects.get(topic=topic, user=self.user)
         self.assertRaises(SubscribedUser.DoesNotExist, SubscribedUser.objects.get, user=user, topic=topic)
-        self.c.login(username='testSubScribePage', password='demo')
         resp = self.c.get('/subscribe/wiki/')
-        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.status_code, 405)
+        self.c.login(username='testSubScribePage', password='demo')
         resp = self.c.post('/subscribe/wiki/')
         self.assertEqual(resp.status_code, 302)
         sub = SubscribedUser.objects.get(user=user, topic=topic)
@@ -1134,11 +1138,10 @@ class TestTopicMain(unittest.TestCase):
 
     def testUnsubscribePage(self):
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
-        resp = self.c.get('/unsubscribe/wiki/')
+        resp = self.c.post('/unsubscribe/wiki/')
         self.assertEquals(resp.status_code, 302)
-        self.login()
-        resp = self.c.get('/unsubscribe/wiki/')
-        self.assertEquals(resp.status_code, 403)
+        #user.object.get_
+        self.c.login(username='testUnsubscribePage', password='demo')
         self.assertRaises(CanNotUnsubscribe, self.c.post, '/unsubscribe/wiki/')
         user = UserProfile.objects.create_user('testUnsubscribePage', 'demo@demo.com', 'demo')
         self.c.login(username='testUnsubscribePage', password='demo')
