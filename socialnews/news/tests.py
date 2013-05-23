@@ -600,7 +600,7 @@ class TestVoting(unittest.TestCase):
         for user in users:
             self.link.reset_vote(user)
         new_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
-        self.assertEquals(prev_karma, new_karma)
+        self.assertEquals(prev_karma+1, new_karma)
 
     def test_dampen_points(self):
         "Dampening points"
