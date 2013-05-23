@@ -19,7 +19,7 @@ class TestTopic(unittest.TestCase):
 
     def testRequiredFields(self):
         topic = Topic()
-        self.assertRaises(Exception, topic.save, )
+        self.assertRaises(Exception, topic.save, name="")
 
     def testTopicCreation(self):
         self.user.get_profile().karma =  defaults.KARMA_COST_NEW_TOPIC - 1
@@ -57,12 +57,14 @@ class TestLink(unittest.TestCase):
 
     def testRequiredFields(self):
         link = Link()
+        link.summary= 'test_summary'
         self.assertRaises(Exception, link.save)
         link.user = self.user
         self.assertRaises(Exception, link.save)
         link.url = u'http://yahoo.com'
         self.assertRaises(Exception, link.save)
         link.topic = self.topic
+        link.text='test_topic'
         link.save()
 
     def testLinkUnique(self):
@@ -748,7 +750,6 @@ class TestComents(unittest.TestCase):
             self.assertEquals(self.comment.points, 1)
         for i in xrange(random.randint(5, 10)):
             self.comment.downvote(self.user)
-            #print self.comment.points
             self.assertEquals(self.comment.points, -1)
 
     def testResetVote(self):
@@ -854,7 +855,6 @@ class TestNewLink(unittest.TestCase):
         profile.save()
         form  = bforms.NewLink(user = self.user,topic = self.topic,data = dict(url='http://testCreateNewLink.com', text='123', summary = 'create_new_link'))
         self.assertEqual(form.is_bound, True)
-        print form.errors
         self.assertEqual(form.is_valid(), True)
 
         link = form.save()
@@ -955,8 +955,6 @@ class TestGetTopic(unittest.TestCase):
     def tearDown(self):
         __delete_data__(self)
 
-
-
     def testValidTopic(self):
         "Returns a topic on get_topic, with a valid topic."
         topic = helpers.get_topic(None, self.topic.slug)
@@ -965,6 +963,7 @@ class TestGetTopic(unittest.TestCase):
     def testInValidTopic(self):
         "Raises exceptions on invalid topic"
         self.assertRaises(exceptions.NoSuchTopic, helpers.get_topic, None, '1234567aa')
+
 
 #Test the views
 from django.test.client import Client
@@ -1148,19 +1147,19 @@ class TestTopicMain(unittest.TestCase):
         topic.delete()
 
     def testUnsubscribePage(self):
+
         topic = Topic.objects.create_new_topic(topic_name='wiki', full_name='Wiki pedia', user=self.user)
         resp = self.c.post('/unsubscribe/wiki/')
         self.assertEquals(resp.status_code, 302)
-        #user.object.get_
-        self.c.login(username='testUnsubscribePage', password='demo')
-        self.assertRaises(CanNotUnsubscribe, self.c.post, '/unsubscribe/wiki/')
-        user = UserProfile.objects.create_user('testUnsubscribePage', 'demo@demo.com', 'demo')
-        self.c.login(username='testUnsubscribePage', password='demo')
-        resp = self.c.post('/subscribe/wiki/')
-        sub = SubscribedUser.objects.get(user=user, topic=topic)
-        self.assertEquals(sub.user, user)
-        resp = self.c.post('/unsubscribe/wiki/')
-        self.assertRaises(SubscribedUser.DowsNotExist, SubscribedUser.objects.get, user=user, topic=topic)
+
+        dom = '"<em>Ouch. You created this topic. You can not unsubscribe from this.</em>"'
+        user_2 = UserProfile.objects.create_user('test_UnsubscribePage', 'unsubscibr@test.com', 'demo')
+        topic = Topic.objects.create_new_topic(topic_name='test_unsubscribe_topic',
+                                               full_name='Wiki pedia',
+                                               user=user_2)
+        self.c.login(username='test_UnsubscribePage', password='demo')
+        resp = self.c.post('/unsubscribe/test_unsubscribe_topic/')
+        self.assertEquals(dom, resp.content)
 
     def testTags(self):
         self.login()
