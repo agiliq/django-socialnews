@@ -737,8 +737,8 @@ class TestComents(unittest.TestCase):
             self.assertEquals(self.comment.points, 1)
         for i in xrange(random.randint(5, 10)):
             self.comment.downvote(self.user)
-            print self.comment.points
-            # self.assertEquals(self.comment.points, )
+            #print self.comment.points
+            self.assertEquals(self.comment.points, -1)
 
     def testResetVote(self):
         "Test reseting of votes."
