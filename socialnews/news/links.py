@@ -29,7 +29,6 @@ def link_submit(request, topic_slug=None):
     return render(request, payload, 'news/create_link.html')
 
 def link_details(request, topic_slug, link_slug):
-    import ipdb; ipdb.set_trace()
     topic = get_topic(request, topic_slug)
     if request.user.is_authenticated():
         link = Link.objects.get_query_set_with_user(request.user).get(topic=topic, slug=link_slug)
