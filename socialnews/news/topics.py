@@ -79,7 +79,7 @@ def topic_main(request, topic_slug, order_by=None):
 @login_required
 def recommended(request):
     page = 'recommended'
-    recommended = RecommendedLink.objects.filter(user=request.user).select_related()
+    recommended = RecommendedLink.objects.filter(user = request.user).select_related()
     payload = dict(recommended=recommended, page=page)
     return render(request, payload, 'news/recommended.html')
 
