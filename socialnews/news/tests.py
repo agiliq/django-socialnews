@@ -554,13 +554,24 @@ class TestVoting(unittest.TestCase):
         self.assertEquals(type(vote), LinkVote)
 
     def testSubmittersKarma(self):
-        import ipdb; ipdb.set_trace()
         "Upvoting a link, increases the posters karma."
-        user = UserProfile.objects.create_user(user_name='testSubmittersKarma', email='demo@demo.com', password='demo')
-        prev_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
-        self.link.upvote(user)
-        new_karma = UserProfile.objects.get(user = self.user).karma
-        self.assertEquals(prev_karma+1, new_karma)
+        user_1 = UserProfile.objects.create_user(user_name='test1SubmittersKarma', email='temp_user_1@test.com', password='demo')
+        user_2 = UserProfile.objects.create_user(user_name='test2SubmittersKarma', email='temp_user_2@test.com', password='demo')
+
+        topic = Topic.objects.create_new_topic(user=user_1,
+                                               topic_name='unix',
+                                               full_name='Unix primer')
+
+        link = Link.objects.create_link(url="http://google.com",
+                                        text='Google',
+                                        user=user_1,
+                                        topic=topic,
+                                        summary='Google Url')
+
+        prev_karma = UserProfile.objects.get(user=user_1).karma#self.user.get_profile().karma
+        link.upvote(user_2)
+        new_karma = UserProfile.objects.get(user=user_1).karma
+        self.assertEquals(prev_karma+2, new_karma)
 
     def testSubmittersKarmaMultiple(self):
         "Multiple upvotes do not modify the karma multiple."
