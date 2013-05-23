@@ -246,7 +246,7 @@ class Link(models.Model):
     def downvote(self, user):
         return self.vote(user, False)
 
-    def vote(self, user, direction = True):
+    def vote(self, user, direction=True):
 
         "Vote the given link either up or down, using a user. Calling multiple times with same user must have no effect."
         #Check if the current user can vote this, link or raise exception
@@ -254,10 +254,13 @@ class Link(models.Model):
             pass #Anyone can vote
         else:
             try:
-                subscribed_user = SubscribedUser.objects.get(topic = self.topic, user = user)
+                subscribed_user = SubscribedUser.objects.get(topic=self.topic,
+                                                             user=user)
             except SubscribedUser.DoesNotExist:
                 raise CanNotVote('The topic %s is non-public, and you are not subscribed to it.' % self.topic.name)
-        vote, created, flipped = LinkVote.objects.do_vote(user = user, link = self, direction = direction)
+        vote, created, flipped = LinkVote.objects.do_vote(user=user,
+                                                          link=self,
+                                                          direction=direction)
         save_vote = False
         profile = user.get_profile()
         change = max(0, min(defaults.MAX_CHANGE_PER_VOTE, profile.karma))
@@ -267,6 +270,7 @@ class Link(models.Model):
             save_vote = True
             profile = self.user.get_profile()
             profile.karma += defaults.CREATORS_KARMA_PER_VOTE
+            # print self.user, user, profile.karma
 
         if created and not direction:
             self.disliked_by_count += 1
@@ -406,9 +410,9 @@ class VoteManager(models.Manager):
     def do_vote(self, user, object, direction, voted_class,):
         "Vote a link by an user. Create if vote does not exist, or change direction if needed."
         if voted_class == LinkVote:
-            vote, created = voted_class.objects.get_or_create(user = user, link = object)
+            vote, created = voted_class.objects.get_or_create(user=user, link=object)
         elif  voted_class == CommentVote:
-            vote, created = voted_class.objects.get_or_create(user = user, comment = object)
+            vote, created = voted_class.objects.get_or_create(user=user, comment=object)
         flipped = False
         if not direction == vote.direction:
             vote.direction = direction
@@ -431,7 +435,10 @@ class LinkVoteManager(VoteManager):
                 flipped = True
         return vote, created, flipped"""
     def do_vote(self, user, link, direction):
-        return super(LinkVoteManager, self).do_vote(user = user, object = link, direction = direction, voted_class = LinkVote, )
+        return super(LinkVoteManager, self).do_vote(user=user,
+                                                    object=link,
+                                                    direction=direction,
+                                                    voted_class=LinkVote, )
 
     def get_user_data(self):
         can_vote_sql = """
@@ -454,8 +461,8 @@ class LinkVote(models.Model):
     "Vote on a specific link"
     link = models.ForeignKey(Link)
     user = models.ForeignKey(User)
-    direction = models.BooleanField(default = True)#Up is true, down is false.
-    created_on = models.DateTimeField(auto_now_add = 1)
+    direction = models.BooleanField(default=True)   # Up is true, down is false.
+    created_on = models.DateTimeField(auto_now_add=1)
 
     objects = LinkVoteManager()
 
@@ -483,7 +490,6 @@ class RelatedLinkManager(models.Manager):
         AND news_subscribeduser.user_id = %s
         AND NOT news_topic.permissions ='Public'
         """ % user.id
-        print liked_sql
         qs = self.get_query_set().extra({'liked':liked_sql, 'disliked':'SELECT not news_linkvote.direction FROM news_linkvote WHERE news_linkvote.link_id = news_relatedlink.related_link_id AND news_linkvote.user_id = %s' % user.id, 'saved':'SELECT 1 FROM news_savedlink WHERE news_savedlink.link_id = news_relatedlink.related_link_id AND news_savedlink.user_id=%s'%user.id, 'can_vote':can_vote_sql})
         return qs
 
