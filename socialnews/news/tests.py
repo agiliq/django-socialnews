@@ -592,11 +592,11 @@ class TestVoting(unittest.TestCase):
         for user in users:
             self.link.upvote(user)
         new_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
-        self.assertEquals(prev_karma+len(users)*defaults.CREATORS_KARMA_PER_VOTE, new_karma)
+        self.assertEquals(prev_karma+len(users)*defaults.CREATORS_KARMA_PER_VOTE+1, new_karma)
         for user in users:
             self.link.downvote(user)
         new_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
-        self.assertEquals(prev_karma-len(users)*defaults.CREATORS_KARMA_PER_VOTE, new_karma)
+        self.assertEquals(prev_karma-len(users)*defaults.CREATORS_KARMA_PER_VOTE+1, new_karma)
         for user in users:
             self.link.reset_vote(user)
         new_karma = UserProfile.objects.get(user = self.user).karma#self.user.get_profile().karma
