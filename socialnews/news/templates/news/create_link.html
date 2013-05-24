@@ -12,7 +12,7 @@ Add a link
 </div>
 
 <div class="box_content_holder">
-<form action="." method="post" class="new-link">
+<form action="." method="post" class="new-link"> {% csrf_token %}
 <div>
 {{form.as_p}}
 <input type="submit" name="addlink" value="Add a link" class="generic"/>
@@ -22,5 +22,5 @@ Add a link
 </div>
 {% endblock %}
 
-{% block sidebar %}		
+{% block sidebar %}
 {% endblock %}
