@@ -21,7 +21,7 @@
 	<p> {{ link.text }} </p>
 	{% if user.is_authenticated %}
 	  <div class="commentform">
-		<form action="." method="post" id="commentform" class="new-comment">
+		<form action="." method="post" id="commentform" class="new-comment"> {% csrf_token %}
 		  <div>
 			{{form.as_p}}
 			<input type="submit" name="comment" value="comment" />
@@ -33,7 +33,7 @@
 
   <a name="comments"></a>
 
-  <div id="comments">				
+  <div id="comments">
     {% if comments %}
       {% for comment, structure in comments|tree_info %}
         {% if structure.new_level %}
@@ -62,12 +62,12 @@
 	<ul id="tags">
 	  {% for tag in link.linktag_set.get_topic_tags %}
         <li>
-		  <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>, 
+		  <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>,
 		</li>
 	  {% endfor %}
-	</ul>		
+	</ul>
 
-	<form action="." method="post" id="tagform">
+	<form action="." method="post" id="tagform"> {% csrf_token %}
 	  {{tag_form.as_p}}
 	  <input type="submit" name="taglink" value="taglink" />
 	</form>
