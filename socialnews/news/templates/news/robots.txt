@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /up/
-Disallow: /down/
-Disallow: /save/
