@@ -1,0 +1,40 @@
+{% extends 'news/base.html' %}
+
+{% block title %}
+{{link.text}} - related - {{block.super}}
+{% endblock %}
+
+
+{% block contents %}
+<div class="post">
+{% include 'news/link_row.html' %}
+
+{% include 'news/link_details_menu.html' %}
+
+{% if related %}
+{% for obj in related %}
+{% include 'news/link_row_related.html' %}
+{% endfor %}
+{% else %}
+We have not yet found anything related to this story. Might be if you checked back later?
+{% endif %}
+
+</div>
+{% endblock %}
+
+{% block sidebar %}
+	 		{{ block.super }}
+			<div class="clear"></div>
+	 		<div class="box others">
+
+				<h3>Tags</h3>
+				<ul id="tags">
+        {% for tag in link.linktag_set.get_topic_tags %}
+        <li>
+        <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>, 
+        </li>
+        {% endfor %}
+        </ul>				
+			</div>
+						
+{% endblock %}

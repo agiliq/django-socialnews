@@ -1,0 +1,50 @@
+{% extends 'registration/base.html' %}
+
+{% load url from future %}
+
+
+{% block title %}
+Register - {{block.super}}
+{% endblock %}
+
+{% block message %}
+{% endblock %}
+
+{% block contents %}
+<div class="post">
+<div class="registerdiv">
+<div class="box_border_collapsed">
+  <div class="box_header">
+		Register
+  </div>
+<div class="box_content_collapsed">
+<form action="." method="post"> {% csrf_token %}
+<div class="form">
+{{form.as_p}}
+<input type="submit" name="register" value="register" />
+</div>
+</form>
+</div>
+</div>
+</div>
+
+<div class="logindiv">
+<div class="box_border_collapsed">
+  <div class="box_header">
+		Login
+  </div>
+<div class="box_content_collapsed">
+<form action="/login/" method="post"> {% csrf_token %}
+<div class="form">
+{{loginform.as_p}}
+<input type="submit" name="login" value="login" />
+</div>
+</form>
+<a href="{% url 'reset_password' %}">Forgot password</a>
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}
+

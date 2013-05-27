@@ -1,0 +1,183 @@
+{% load url from future %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="verify-v1" content="uZt8vM9bI0UUPU71yQJwhpL986hLN4bsYMhlbJ9OhhQ=" />
+{% block rss %}
+{% if topic %}
+<link rel="alternate" type="application/rss+xml" title="{{topic}} RSS Feed" href="/feeds/topics/{{topic.name}}/" />
+{% else %}
+<link rel="alternate" type="application/rss+xml" title="Latest RSS Feed" href="/feeds/latest/" />
+{% endif %}
+{% endblock %}
+
+<title>
+{% block title %}
+42topics.com
+{% endblock %}
+</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="generator" content="HAPedit 3.1" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}base.css" />
+</head>
+<body>
+<div id="container">
+	<div id="header">
+		<div id="register">
+				{% block topbar %}
+				<p>
+  				{% if user.is_authenticated %}
+  				Howdy <a href="/user/{{user.username}}/" class="white">{{user.username}}</a>
+  				| <a href="/logout/" class="white">logout</a>
+  				{% else %}
+  				<a href="/register/" class="white">want to join?</a> register in seconds
+  				{% endif %}
+  				| <a href="{% url 'createtopic' %}" class="white">create</a>
+  				{% if topic %}
+  				| <a href="{{topic.submit_url}}" class="white">submit</a>
+  				{% else %}
+  				| <a href="/submit/" class="white">submit</a>
+  				{% endif %}
+  				| <a href="/my/" class="white">settings</a>
+  			</p>
+				{% endblock %}
+		</div>
+		<div id="logodiv"><a href="/"><img src="{{ STATIC_URL }}images/logo.jpg" alt="Logo" /></a></div>
+		<div id="hornavi">
+			<div id="navi">
+			{% block nav %}
+  			<p>
+  		  {% if topic %}
+  			<a href="{{topic.get_absolute_url}}" {% ifequal page 'hot' %}class="active"{% else %}class="commonbgr"{% endifequal %}>hot</a>
+  			<a href="{{topic.new_url}}" {% ifequal page 'new' %}class="active"{% else %}class="commonbgr"{% endifequal %}>new</a>
+  			{% else %}
+  			<a href="/" {% ifequal page 'hot' %}class="active"{% else %}class="commonbgr"{% endifequal %}>hot</a>
+  			<a href="/new/" {% ifequal page 'new' %}class="active"{% else %}class="commonbgr"{% endifequal %}>new</a>
+  			{% endif %}
+  			<a href="/all/" {% ifequal page 'all' %}class="active"{% else %}class="commonbgr"{% endifequal %}>all</a>
+  			<a href="/recommended/" {% ifequal page 'recommended' %}class="recactive"{% else %}class="recommendedbgr"{% endifequal %}>recommended</a>
+  			{% if topic %}
+  			<a href="{{topic.about_url}}" {% ifequal page 'about' %}class="active"{% else %}class="commonbgr"{% endifequal %}>about</a>
+  			{% else %}
+  			<a href="/about/" {% ifequal page 'about' %}class="active"{% else %}class="commonbgr"{% endifequal %}>about</a>
+  			{% endif %}
+  			</p>
+			{% endblock %}
+			</div>
+		</div>
+	</div>
+	<div id="wrapper">
+		<div id="content">
+		  {% block message %}
+		  {% if not user.is_authenticated  %}
+			<div class="topmessagebox">
+			<a href="http://42topics.com/blog/what-is-42topics/">42topics</a> is place to find interesting things to read. When you <a href="/register/">join</a>, 42topics learns your interests, and finds stories which YOU will love. <a href="/register/">Join Now</a>. <a href="http://42topics.com/blog/why-join-42topics/">Why join?</a>. <a href="http://42topics.com/blog/how-42topics-works/">How this works</a>. <a href="http://www.42topics.com/forum/">Get help</a>.
+			</div>
+			{% endif %}
+			{% endblock %}
+		  {% block contents %}
+			{% endblock %}
+
+		</div>
+	</div>
+
+
+  {% block sidebarwrap %}
+	<div id="sidebar">
+		<div id="sidebartop"></div>
+				{% block sidebar %}
+		{% if not user.is_authenticated %}
+		<form  method="post" action="/login/">{% csrf_token %}
+		<div id="loginbox" class="box">
+			<p>
+				<label>User:</label>
+				<label>Password:</label>
+				<input type="text" value="" name="username" />
+				<input type="password" value="" name="password" />
+				<input type="hidden" name="next" value="" />
+			</p>
+			<div class="clear"></div>
+			<p style="margin-top:13px; "><input type="checkbox" name="remember" /> Remember Me | <a href="/user/reset_password/" class="white">Forgot Password</a> | <a href="/register/" class="white">Sign Up</a> 				<input type="submit" id="logintext" class="submit" value="login" /></p>
+
+		</div>
+    </form>
+		{% endif %}
+			{% include 'news/subscribed_topics.html' %}
+			{% include 'news/topic_list_sidebar.html' %}
+			<div class="clear"></div>
+		{% endblock %}
+	</div>
+	{% endblock %}
+
+	<div id="footer">
+		<div id="footerline"></div>
+		<div id="copyrightbox">
+			<p>
+			<a href="http://www.42topics.com/forum/topic/2" class="white">Feedback</a>|
+			<a href="http://www.42topics.com/forum" class="white">Forum</a>|
+			<a href="http://www.42topics.com/blog" class="white">Blog</a>|
+			<a href="/buttons/" class="white">Buttons</a>
+			<br/>
+			Copyright (c) 2008 42topics, Inc. All rights reserved
+			</p>
+		</div>
+	</div>
+</div>
+
+<script language="JavaScript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.forms.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript">
+
+<!--
+{% if user.is_authenticated %}
+var logged_in = true;
+{% else %}
+var logged_in = false;
+{% endif %}
+{% if access %}
+var access = '{{access}}';
+{% else %}
+var access = false;
+{% endif %}
+//-->
+</script>
+
+{% block jqueryarea %}
+<script language="JavaScript" type="text/javascript" src="{{ STATIC_URL }}js/voting.js">
+<!--
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="{{ STATIC_URL }}js/main.js">
+<!--
+//-->
+</script>
+
+
+{% endblock %}
+
+{% block analytics %}
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-367368-7");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+{% endblock %}
+
+{% block trackingcode %}
+
+{% endblock %}
+
+</body>
+</html>

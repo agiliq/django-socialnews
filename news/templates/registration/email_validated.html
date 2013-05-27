@@ -1,0 +1,14 @@
+{% extends "registration/base.html" %}
+
+{% load url from future %}
+
+
+{% block title %}
+Email validated
+{% endblock %}
+
+{% block contents %}
+<div class="post">
+Hi {{user.username}}. Your email id has been validated. <a href="{% url 'login' %}">Wanna login?</a>
+</div>
+{% endblock %}

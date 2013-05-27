@@ -1,0 +1,75 @@
+{% extends 'news/base.html' %}
+
+{% load mptt_tags %}
+
+{% block title %}
+  {{ link.text }} - {{ block.super }}
+{% endblock %}
+
+{% block jqueryarea %}
+  <script language="JavaScript" type="text/javascript" src="/{{ STATIC_URL }}/js/voting.js"></script>
+  <script language="JavaScript" type="text/javascript" src="/{{ STATIC_URL }}/js/main.js"></script>
+{% endblock %}
+
+{% block contents %}
+
+{% include 'news/link_row.html' %}
+
+<div class="post">
+  <div id="comment_border">
+	{% include 'news/link_details_menu.html' %}
+	<p> {{ link.text }} </p>
+	{% if user.is_authenticated %}
+	  <div class="commentform">
+		<form action="." method="post" id="commentform" class="new-comment"> {% csrf_token %}
+		  <div>
+			{{form.as_p}}
+			<input type="submit" name="comment" value="comment" />
+		  </div>
+		</form>
+      </div>
+	{% endif %}
+  </div>
+
+  <a name="comments"></a>
+
+  <div id="comments">
+    {% if comments %}
+      {% for comment, structure in comments|tree_info %}
+        {% if structure.new_level %}
+          <ul class="comments"><li>
+        {% else %}
+		  </li><li>
+		{% endif %}
+        {% include 'news/comment_row.html' %}
+        {% for level in structure.closed_levels %}</li></ul>{% endfor %}
+      {% endfor %}
+    {% else %}
+      <div class="nocomment">There are no comments on this story, yet.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block tags %}
+{% endblock %}
+
+{% block sidebar %}
+  {{ block.super }}
+  <div class="clear"></div>
+  <div class="box others">
+	<h3>Tags</h3>
+	<ul id="tags">
+	  {% for tag in link.linktag_set.get_topic_tags %}
+        <li>
+		  <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>,
+		</li>
+	  {% endfor %}
+	</ul>
+
+	<form action="." method="post" id="tagform"> {% csrf_token %}
+	  {{tag_form.as_p}}
+	  <input type="submit" name="taglink" value="taglink" />
+	</form>
+  </div>
+{% endblock %}

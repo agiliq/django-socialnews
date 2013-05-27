@@ -1,0 +1,55 @@
+{% extends 'news/base.html' %}
+
+{% block jqueryarea %}
+{{block.super}}
+
+{% endblock %}
+
+{% block title %}
+{{topic.name}} - {{block.super}}
+{% endblock %}
+
+{% block tabs %}
+<ul class="tabs">
+<li>
+Howdy {{user.username}}
+</li>
+<li>
+<a href="{{topic.get_absolute_url}}">{{topic.name}}</a>
+</li>
+<li>
+<a href="/recommended/">recommended</a>
+</li>
+<li><a href="{{topic.submit_url}}">Submit Link</a></li>
+</ul>
+{% endblock %}
+
+{% block contents %}
+
+{% for link in links %}
+{% include 'news/link_row.html' %}
+{% endfor %}
+
+{% include 'news/pagination.html' %}
+
+{% endblock %}
+
+{% block sidebar %}
+	 		{{ block.super }}
+	 		<div class="box singlecol meta block">
+				<h3>Meta</h3>
+			<ul>
+      <li>
+					<a href="{{topic.about_url}}">About</a>
+			</li>
+			<li>
+			{% if subscribed %}
+			<a href="{{topic.unsubscribe_url}}" class="unsubscribe">Unsubscribe</a>
+			{% else %}
+			<a href="{{topic.subscribe_url}}" class="subscribe">Subscribe</a>
+			{% endif %}
+			</li>
+			</ul>
+			</div>
+
+{% endblock %}

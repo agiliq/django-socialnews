@@ -1,0 +1,40 @@
+{% extends 'news/base.html' %}
+
+{% load url from future %}
+
+
+{% block title %}
+{{pageuser.username}} - Comments - {{block.super}}
+{% endblock %}
+
+
+{% block contents %}
+<div class="post">
+{% if comments %}
+{% for comment in comments %}
+{% include 'news/comment_row_new.html' %}
+{% endfor %}
+{% else %}
+No comments! Aargh.
+{% endif %}
+</div>
+
+{% endblock %}
+
+{% block sidebar %}
+    {{block.super}}
+		
+		<div class="clear"></div>
+	 	<div class="box others actions">
+				<h3>Actions</h3>
+        <ul>
+        <li><a href="/user/{{username}}/">Links</a></li>
+				<li>Comments</li>
+				{% ifequal user pageuser %}
+				<li><a href="{% url 'liked_links' %}">Liked</a>  </li>
+				<li><a href="{% url 'disliked_links' %}">Disliked</a>  </li>
+				<li><a href="{% url 'saved_links' %}">Saved</a>  </li>				
+				{% endifequal %}
+        </ul>
+			</div>
+{% endblock %}

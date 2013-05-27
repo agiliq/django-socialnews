@@ -1,0 +1,44 @@
+{% extends 'news/base.html' %}
+
+{% block title %}
+Topics - {{block.super}}
+{% endblock %}
+
+{% block contents %}
+<div class="post">
+<table>
+{% for topic in top_topics %}
+<tr>
+<td>
+
+<a href="{{topic.get_absolute_url}}">{{topic.name}}</a>
+</td>
+<td>
+{% if topic.is_subscribed %}
+<a href="{{topic.unsubscribe_url}}" class="unsubscribe">Unsubscribe</a>
+{% else %}
+<a href="{{topic.subscribe_url}}" class="subscribe">Subscribe</a>
+{% endif %}
+</td>
+</tr>
+<tr>
+<td>
+<div class="description">
+{{topic.fullname}}
+</div>
+<div class="about">
+{{topic.about}}
+<div>
+</td>
+
+</tr>
+{% endfor %}
+</table>
+</div>
+
+{% include 'news/pagination.html' %}
+
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

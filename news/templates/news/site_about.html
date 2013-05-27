@@ -1,0 +1,57 @@
+{% extends 'news/base.html' %}
+
+{% block title %}
+About - {{block.title}}
+{% endblock %}
+
+{% block contents %}
+<div class="post">
+  <div class="posthead">
+	<div>Total users: {{user_count}}</div>
+	<div>Total topic: {{topic_count}}</div>	
+	</div>
+	
+  <div class="floatdiv">
+	<h3>Top users</h3><em>Are you here?</em>
+    <table>
+    {% for user in top_users %}
+    <tr>
+    <td><a href="/user/{{user.user.username}}/">{{user.user.username}}</a></td>
+    <td> [{{user.karma}}]</td>
+    </tr>
+    {% endfor %}
+    </table>
+  </div>
+	
+		 <div class="floatdiv">
+	<h3>Top topics</h3>
+    <table>
+    {% for topic in top_topics %}
+    <tr>
+    <td><a href="{{topic.get_absolute_url}}">{{topic.full_name}}</a></td>
+    <td> [{{topic.num_links}}]</td>
+    </tr>
+    {% endfor %}
+    </table>
+  </div>
+	
+	 <div class="floatdiv">
+	<h3>Top links</h3>
+    <table>
+    {% for link in top_links %}
+    <tr>
+    <td><a href="{{link.url}}">{{link.text|truncatewords:3}}</a></td>
+    <td> [{{link.liked_by_count}}]</td>
+    </tr>
+    {% endfor %}
+    </table>
+  </div>
+	
+
+	
+</div>
+{% endblock %}
+
+{% block sidebar %}
+
+{% endblock %}

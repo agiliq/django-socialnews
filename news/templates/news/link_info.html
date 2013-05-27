@@ -1,0 +1,72 @@
+{% extends 'news/base.html' %}
+
+{% block title %}
+{{link.text}} - info - {{block.super}}
+{% endblock %}
+
+
+{% block contents %}
+<div class="post">
+{% include 'news/link_row.html' %}
+
+{% include 'news/link_details_menu.html' %}
+				<div>
+				
+
+				<table class="link-info">
+				<tr>
+				<td>
+				Submitted on
+				</td>
+				<td>
+				{{link.created_on|date}}
+				</td>
+				</tr>
+				
+				<tr>
+				<td>
+				Points
+				</td>
+				<td>
+				{{link.vis_points}}
+				</td>
+				</tr>
+				
+				<tr>
+				<td>
+				Liked by
+				</td>
+				<td>
+				{{link.liked_by_count}}
+				</td>
+				</tr>
+				
+				<tr>
+				<td>
+				Disliked by
+				</td>
+				<td>
+				{{link.disliked_by_count}}				
+				</td>
+				</tr>
+				</table>			
+				</div>
+</div>				
+{% endblock %}
+
+{% block sidebar %}
+	 		{{ block.super }}
+			<div class="clear"></div>
+	 		<div class="box others">
+
+				<h3>Tags</h3>
+				<ul id="tags">
+        {% for tag in link.linktag_set.get_topic_tags %}
+        <li>
+        <a href="{{tag.tag.get_absolute_url}}">{{tag.tag.text}}</a>, 
+        </li>
+        {% endfor %}
+        </ul>				
+			</div>
+						
+{% endblock %}

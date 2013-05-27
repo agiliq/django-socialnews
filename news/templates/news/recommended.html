@@ -1,0 +1,17 @@
+{% extends 'news/base.html' %}
+
+{% block title %}
+Recommended - {{user.username}} - {{block.super}}
+{% endblock %}
+
+{% block contents %}
+{% if recommended %}
+{% for rlink in recommended %}
+{% with rlink as obj %}
+{% include 'news/link_row_wrapped.html' %}
+{% endwith %}
+{% endfor %}
+{% else %}
+We have not yet found any recommnded links for you. We can only find what you like once you submit, like or dislike a story. So use the site and we will try to find something to your interests.
+{% endif %}
+{% endblock %}

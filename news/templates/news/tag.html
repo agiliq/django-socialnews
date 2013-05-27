@@ -1,0 +1,35 @@
+{% extends 'news/base.html' %}
+
+{% block title %}
+{{tag.text}} - 
+{% if topic %} {{topic.name}} - {% endif %}
+{{block.super}}
+{% endblock %}
+
+
+{% block contents %}
+
+{% for linktag in linktags %}
+{% with linktag as obj %}
+{% include 'news/link_row_wrapped.html' %}
+{% endwith %}
+{% endfor %}
+
+
+{% include 'news/pagination.html' %}
+
+{% endblock %}
+
+{% block sidebar %}
+	 		{% if topic %}
+			<div class="box hot">
+				<h3>{{ topic.name }} - {{tag.text}}</h3>
+			</div>
+			{% else %}
+			<div class="box hot">
+				<h3>{{tag.text}}</h3>
+			</div>
+			
+			{% endif %}
+{% endblock %}
+

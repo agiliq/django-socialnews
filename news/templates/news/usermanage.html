@@ -1,0 +1,108 @@
+{% extends 'news/base.html' %}
+
+{% load url from future %}
+
+
+{% block title %}
+Manage your account
+{% endblock %}
+
+
+{% block contents %}
+<div class="post">
+	<div class="box_border">
+  <div class="box_header">
+  Subscribed topics
+  </div>
+
+  <div class="box_content_holder">
+	<div class="subs_topic">
+
+	{% if subs %}
+    <table>
+    <tbody>
+    {% for sub in subs %}
+    <tr>
+    <td>
+    {{sub.topic.name}}
+    </td>
+    <td>
+    {% if sub.is_creator %}
+    Owner
+    {% else %}
+    {% with sub.topic as topic %}
+    <a href="{{topic.unsubscribe_url}}" class="unsubscribe">Unsubscribe</a>
+    {% endwith %}
+    {% endif %}
+    </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+    </table>
+		{% else %}
+		<div class="message">
+		You are not subscribied to any topics. <a href="{% url 'topic_list' %}">Wanna see some topics?</a>
+		</div>
+		{% endif %}
+		</div>
+		<div class="def_topic">
+		<form action="." method="post">{% csrf_token %}
+		{{def_topic_form.as_p}}
+		<input type="submit" name="setdef" value="change default topic" />
+		</form>
+		</div>
+		</div>
+		</div>
+
+
+	<div class="box_border">
+  <div class="box_header">
+		Change password
+  </div>
+		<form action="." method="post"> {% csrf_token %}
+		{{form.as_p}}
+		<input type="submit" name="changepassword" value="Change Password" />
+		</form>
+  </div>
+
+		{% if invites %}
+	<div class="box_border">
+  <div class="box_header">
+			 You have been invited.
+  </div>
+		<table>
+		{% for invite in invites %}
+		<tr>
+		    <td>
+				  {{invite.topic.name}}
+				</td>
+				<td>
+				  <a href="{{invite.topic.subscribe_url}}" class="subscribe">Subscribe</a>
+				</td>
+				<td>
+				  {{invite.invite_text}}
+				</td>
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+		{% endif %}
+
+  	<div class="box_border">
+  <div class="box_header">
+		Other Details
+  </div>
+		<ul>
+		<li>
+		  <a href="/user/likedlinks/{{user.username}}/{{user.get_profile.secret_key}}/">Secret liked links</a>
+		</li>
+		</ul>
+  </div>
+	</div>
+
+</div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

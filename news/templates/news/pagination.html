@@ -1,0 +1,11 @@
+<div class="pagination" id="footernavigation">
+<p class="pagination">
+{% if page_data.has_prev_page %}
+<a href=".?page={{page_data.prev_page}}">&laquo; Previous</a>
+{% endif %}
+
+{% if page_data.has_next_page %}
+<a href=".?page={{page_data.next_page}}">Next &raquo;</a>
+{% endif %}
+</p>
+</div>
