@@ -2,7 +2,7 @@
 import os
 import sys
 
-proj_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+proj_dir = os.path.dirname(os.path.realpath(__file__))
 
 sys.path.insert(0, proj_dir)
 
@@ -68,6 +68,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
+    "%s/static" %proj_dir,
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
