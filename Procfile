@@ -1,1 +1,1 @@
-web: gunicorn socialnews.wsgi
+web: gunicorn socialnews.wsgi --settings socialnews.settings.heroku
