@@ -1,4 +1,10 @@
 # Django settings for implist project.
+import os
+import sys
+
+proj_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.insert(0, proj_dir)
 
 DEBUG = True
 DEBUG_SQL= False
@@ -54,7 +60,7 @@ MEDIA_ROOT = ''
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = ''
 
-STATIC_ROOT = 'static'
+STATIC_ROOT = "%s/static" % proj_dir
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
