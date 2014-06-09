@@ -30,7 +30,7 @@ urlpatterns += patterns('news.accounts',
 
 
 urlpatterns += patterns('',
-        url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}, name = 'login'),)
+    url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}, name = 'login'),)
 
 
 urlpatterns += patterns('',

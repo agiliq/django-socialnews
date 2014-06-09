@@ -1,8 +1,11 @@
 # Django settings for implist project.
+import os
 
 DEBUG = True
 DEBUG_SQL= False
 TEMPLATE_DEBUG = DEBUG
+
+PROJECT_DIR = os.path.dirname(__file__)
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -39,6 +42,8 @@ MEDIA_ROOT = ''
 MEDIA_URL = ''
 
 STATIC_ROOT = 'static'
+# STATIC_ROOT=os.path.join(PROJECT_DIR, 'static_media/')
+
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -49,6 +54,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_DIR, 'static'),
 )
 
 # List of finder classes that know how to find static files in
