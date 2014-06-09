@@ -1,2 +1,4 @@
-django
--e hg+http://bitbucket.org/neithere/django-autoslug@5e4fdf3adf45#egg=django-autoslug
+Django==1.5
+argparse==1.2.1
+django-autoslug==1.7.2
+wsgiref==0.1.2
